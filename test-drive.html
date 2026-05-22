@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Test Drive</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{font-family:monospace;padding:20px;background:#1a1a1a;color:#0f0;}
+button{background:#c17b6a;color:#fff;border:none;border-radius:8px;padding:12px 20px;font-size:16px;cursor:pointer;margin:8px 0;display:block;width:100%;}
+#log{white-space:pre-wrap;font-size:13px;line-height:1.6;margin-top:16px;}
+.ok{color:#0f0;}.err{color:#f66;}.info{color:#ff0;}
+</style>
+</head>
+<body>
+<h2 style="color:#e8c4b0">🔍 Test Drive Connection</h2>
+<button onclick="runTest()">▶ Rulează testul</button>
+<div id="log">Apasă butonul...</div>
+
+<script src="https://accounts.google.com/gsi/client" onload="window.gisOk=true"></script>
+<script>
+const CLIENT_ID = '1052793114050-u5rn59kdoippvvnec3n2dv5hnq6ql0k1.apps.googleusercontent.com';
+const FILE_ID   = '105Y7IV3vN1AAWzeN_NnzAxYi0aWwhvAp';
+const SCOPE     = 'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/userinfo.email';
+let token = null;
+
+function log(msg, cls='info') {
+  const d = document.getElementById('log');
+  d.innerHTML += `<span class="${cls}">${msg}</span>\n`;
+}
+
+function runTest() {
+  document.getElementById('log').innerHTML = '';
+  if (!window.gisOk) { log('❌ GIS nu s-a încărcat', 'err'); return; }
+  log('✅ GIS încărcat OK');
+  log('⏳ Cerere token Google...');
+  const client = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: SCOPE,
+    callback: async (resp) => {
+      if (resp.error) { log('❌ Token error: ' + resp.error, 'err'); return; }
+      token = resp.access_token;
+      log('✅ Token obținut OK');
+      await step1_userInfo();
+      await step2_fileMetadata();
+      await step3_fileContent();
+      await step4_writeTest();
+    }
+  });
+  client.requestAccessToken();
+}
+
+async function step1_userInfo() {
+  log('\n--- STEP 1: User Info ---');
+  try {
+    const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: 'Bearer ' + token }
+    });
+    const d = await r.json();
+    log(`✅ Logat ca: ${d.email}`, 'ok');
+  } catch(e) { log('❌ ' + e.message, 'err'); }
+}
+
+async function step2_fileMetadata() {
+  log('\n--- STEP 2: File Metadata ---');
+  try {
+    const r = await fetch(
+      `https://www.googleapis.com/drive/v3/files/${FILE_ID}?fields=id,name,size,mimeType,permissions`,
+      { headers: { Authorization: 'Bearer ' + token } }
+    );
+    log(`HTTP Status: ${r.status}`);
+    const d = await r.json();
+    if (r.ok) {
+      log(`✅ Fișier găsit: ${d.name}`, 'ok');
+      log(`   Size: ${d.size || '0'} bytes`);
+      log(`   MimeType: ${d.mimeType}`);
+    } else {
+      log(`❌ Eroare: ${JSON.stringify(d)}`, 'err');
+    }
+  } catch(e) { log('❌ ' + e.message, 'err'); }
+}
+
+async function step3_fileContent() {
+  log('\n--- STEP 3: File Content (alt=media) ---');
+  try {
+    const r = await fetch(
+      `https://www.googleapis.com/drive/v3/files/${FILE_ID}?alt=media`,
+      { headers: { Authorization: 'Bearer ' + token } }
+    );
+    log(`HTTP Status: ${r.status}`);
+    if (r.ok) {
+      const text = await r.text();
+      log(`✅ Conținut (primii 200 chars): ${text.substring(0,200) || '(GOL)'}`, 'ok');
+    } else {
+      const err = await r.text();
+      log(`❌ Eroare: ${err}`, 'err');
+    }
+  } catch(e) { log('❌ ' + e.message, 'err'); }
+}
+
+async function step4_writeTest() {
+  log('\n--- STEP 4: Write Test ---');
+  try {
+    const r = await fetch(
+      `https://www.googleapis.com/upload/drive/v3/files/${FILE_ID}?uploadType=media`,
+      {
+        method: 'PATCH',
+        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ _test: true, ts: Date.now() })
+      }
+    );
+    log(`HTTP Status: ${r.status}`);
+    if (r.ok) {
+      log('✅ Scriere reușită!', 'ok');
+    } else {
+      const err = await r.text();
+      log(`❌ Scriere eșuată: ${err}`, 'err');
+    }
+  } catch(e) { log('❌ ' + e.message, 'err'); }
+}
+</script>
+</body>
+</html>

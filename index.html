@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Nuntă 💍">
+<meta name="theme-color" content="#3d2b2b">
+<link rel="manifest" href="manifest.json">
+<title>Agenda Nuntă</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#faf6f1;--blush:#e8c4b0;--rose:#c17b6a;--deep:#3d2b2b;--gold:#b89a6e;--sage:#7a9e7a;--light:#f0e8df;--white:#fff;--muted:#9a8070;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--deep);display:flex;flex-direction:column;max-width:540px;margin:0 auto;}
+.hidden{display:none!important;}
+
+/* AUTH */
+#auth-screen{position:fixed;inset:0;background:var(--deep);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;}
+#auth-screen .logo{font-size:56px;margin-bottom:14px;}
+#auth-screen h2{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--blush);margin-bottom:8px;}
+#auth-screen p{font-size:14px;color:var(--gold);opacity:.8;margin-bottom:28px;line-height:1.6;}
+#auth-error{font-size:13px;color:#f9a;margin-top:12px;}
+
+/* HEADER */
+#header{background:var(--deep);padding:calc(var(--safe-top)+13px) 18px 11px;flex-shrink:0;text-align:center;}
+#header .sub{font-size:10px;color:var(--gold);letter-spacing:.22em;text-transform:uppercase;margin-bottom:3px;}
+#header h1{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--blush);line-height:1.2;}
+#header .venue{font-size:12px;color:var(--gold);opacity:.75;margin-top:2px;}
+#header .wdate{font-size:12px;color:var(--blush);opacity:.6;margin-top:1px;}
+#countdown{display:none;justify-content:center;gap:22px;margin-top:8px;}
+#countdown .cn{display:block;font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--gold);line-height:1;font-weight:700;}
+#countdown .cl{font-size:9px;color:var(--blush);opacity:.6;letter-spacing:.15em;text-transform:uppercase;}
+
+/* SYNC BAR */
+#sync-bar{background:rgba(61,43,43,.96);padding:5px 14px 7px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+#sync-status{font-size:11px;color:var(--gold);opacity:.9;}
+#sync-btn{background:none;border:1px solid var(--gold);border-radius:20px;padding:3px 11px;font-size:11px;color:var(--gold);cursor:pointer;}
+#sync-btn:active{background:var(--gold);color:var(--deep);}
+
+/* TABS */
+#tabs{display:flex;overflow-x:auto;background:var(--light);border-bottom:2px solid var(--blush);flex-shrink:0;scrollbar-width:none;}
+#tabs::-webkit-scrollbar{display:none;}
+#tabs button{flex:0 0 auto;background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;padding:7px 13px;cursor:pointer;font-family:'Jost',sans-serif;font-size:10px;color:var(--rose);white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:54px;}
+#tabs button .ti{font-size:17px;}
+#tabs button.active{color:var(--deep);border-bottom-color:var(--rose);background:var(--cream);}
+
+/* CONTENT */
+#content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:15px 13px calc(var(--safe-bottom)+18px);}
+.section{display:none;animation:fadeIn .25s;}
+.section.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* COMMON */
+.sec-title{font-family:'Cormorant Garamond',serif;font-size:21px;color:var(--rose);margin-bottom:13px;padding-bottom:7px;border-bottom:1px solid var(--blush);display:flex;align-items:center;gap:6px;}
+.card{background:var(--white);border-radius:13px;box-shadow:0 2px 14px rgba(61,43,43,.09);padding:13px 14px;margin-bottom:9px;border-left:3px solid var(--blush);}
+.field{margin-bottom:10px;}
+.field label{display:block;font-size:10px;color:var(--gold);letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px;}
+input[type=text],input[type=number],input[type=date],input[type=time],select,textarea{width:100%;background:var(--light);border:1.5px solid var(--blush);border-radius:10px;padding:12px 13px;font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);outline:none;-webkit-appearance:none;appearance:none;}
+input:focus,select:focus,textarea:focus{border-color:var(--rose);}
+textarea{min-height:78px;resize:vertical;font-size:15px;}
+.row{display:flex;gap:8px;}.row>*{flex:1;}
+.btn{background:var(--rose);color:#fff;border:none;border-radius:11px;padding:13px 20px;font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;cursor:pointer;width:100%;letter-spacing:.04em;transition:background .15s;}
+.btn:active{background:var(--deep);}
+.btn.ghost{background:transparent;color:var(--rose);border:1.5px solid var(--rose);}
+.btn.small{padding:9px 14px;font-size:14px;width:auto;}
+.btn.google{background:#4285f4;display:flex;align-items:center;justify-content:center;gap:8px;}
+.del{background:none;border:none;color:var(--blush);font-size:18px;cursor:pointer;padding:4px 6px;line-height:1;flex-shrink:0;}
+.del:active{color:var(--rose);}
+.prog-wrap{background:var(--light);border-radius:20px;height:7px;overflow:hidden;margin:4px 0;}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--blush),var(--rose));border-radius:20px;transition:width .5s;}
+.prog-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:3px;}
+.prog-pct{color:var(--rose);font-weight:600;}
+.tag{display:inline-block;font-size:11px;background:var(--light);color:var(--gold);border-radius:20px;padding:2px 9px;font-weight:500;white-space:nowrap;}
+.empty{text-align:center;color:var(--blush);padding:26px 0;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;}
+.badge{font-size:11px;border-radius:20px;padding:2px 9px;display:inline-block;}
+.badge.confirmat{background:#d9f0d9;color:#3a7a3a;}.badge.asteptat{background:#fff3cd;color:#856404;}.badge.anulat{background:#fde8e8;color:#8a3030;}
+.badge.rezervat{background:#d9f0d9;color:#3a7a3a;}.badge.negociere{background:#fff3cd;color:#856404;}.badge.cautat{background:#fde8e8;color:#8a3030;}
+.ci{display:flex;align-items:center;gap:10px;background:var(--white);border-radius:12px;padding:12px 13px;margin-bottom:7px;box-shadow:0 1px 7px rgba(61,43,43,.08);border-left:3px solid var(--blush);transition:opacity .2s,border-color .2s;}
+.ci.done{opacity:.5;border-left-color:var(--sage);}.ci.done .ci-text{text-decoration:line-through;}
+.ci input[type=checkbox]{accent-color:var(--rose);width:22px;height:22px;flex-shrink:0;cursor:pointer;}
+.ci-text{flex:1;font-family:'Cormorant Garamond',serif;font-size:16px;}
+.b-summary{background:var(--deep);border-radius:15px;padding:15px 17px;margin-bottom:13px;}
+.b-stats{display:flex;justify-content:space-between;gap:8px;}.b-stat{text-align:center;flex:1;}
+.b-val{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:700;}
+.b-lbl{font-size:9px;color:rgba(250,246,241,.5);letter-spacing:.1em;text-transform:uppercase;}
+.b-prog-wrap{background:rgba(255,255,255,.12);border-radius:20px;height:7px;margin-top:12px;overflow:hidden;}
+.b-prog-bar{height:100%;background:linear-gradient(90deg,var(--sage),var(--rose));border-radius:20px;transition:width .5s;}
+.gi{display:flex;align-items:center;gap:10px;background:var(--white);border-radius:12px;padding:11px 13px;margin-bottom:7px;box-shadow:0 1px 7px rgba(61,43,43,.08);}
+.g-avatar{width:40px;height:40px;border-radius:50%;background:var(--blush);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:19px;color:var(--deep);flex-shrink:0;}
+.gi-info{flex:1;min-width:0;}.gi-name{font-family:'Cormorant Garamond',serif;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}.gi-side{font-size:11px;color:var(--gold);}
+.stats-row{display:flex;gap:7px;margin-bottom:12px;}
+.stat-box{flex:1;background:var(--white);border-radius:12px;padding:9px 4px;text-align:center;box-shadow:0 1px 7px rgba(61,43,43,.08);}
+.stat-val{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;}.stat-lbl{font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
+.vc{display:flex;gap:10px;align-items:center;}.vc-icon{font-size:27px;flex-shrink:0;}.vc-info{flex:1;min-width:0;}
+.vc-name{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;}.vc-sub{font-size:12px;color:var(--gold);}
+.vc-right{text-align:right;flex-shrink:0;}.vc-price{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--rose);font-weight:700;}
+.tl{display:flex;gap:10px;margin-bottom:8px;}
+.tl-time{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--rose);width:48px;flex-shrink:0;text-align:right;padding-top:4px;}
+.tl-mid{display:flex;flex-direction:column;align-items:center;flex-shrink:0;}
+.tl-dot{width:12px;height:12px;border-radius:50%;background:var(--rose);border:2px solid var(--cream);box-shadow:0 0 0 2px var(--blush);margin-top:4px;}
+.tl-line{width:2px;flex:1;background:var(--blush);min-height:18px;margin-top:2px;}
+.tl-box{flex:1;background:var(--white);border-radius:10px;padding:10px 12px;box-shadow:0 1px 7px rgba(61,43,43,.08);display:flex;gap:8px;align-items:flex-start;}
+.tl-event{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;}.tl-note{font-size:12px;color:var(--gold);margin-top:2px;}
+.check-label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--deep);cursor:pointer;flex:1;white-space:nowrap;}
+.check-label input[type=checkbox]{accent-color:var(--rose);width:18px;height:18px;cursor:pointer;flex-shrink:0;}
+.filter-btn{flex:0 0 auto;background:var(--light);border:1.5px solid var(--blush);border-radius:20px;padding:5px 12px;font-size:12px;font-family:'Jost',sans-serif;color:var(--muted);cursor:pointer;white-space:nowrap;}
+.filter-btn.active{background:var(--rose);border-color:var(--rose);color:#fff;}
+.g-card{background:var(--white);border-radius:13px;padding:12px 14px;margin-bottom:8px;box-shadow:0 1px 7px rgba(61,43,43,.08);border-left:3px solid var(--blush);}
+.g-card.confirmat{border-left-color:var(--sage);}
+.g-card.anulat{border-left-color:var(--muted);opacity:.6;}
+.g-card-top{display:flex;align-items:center;gap:10px;}
+.g-card-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;}
+.chip{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--light);color:var(--muted);}
+.chip.rose{background:#fde8e8;color:var(--rose);}
+.chip.sage{background:#d9f0d9;color:#3a7a3a;}
+.chip.gold{background:#fff3cd;color:#856404;}
+.b-vendor-card{background:var(--white);border-radius:13px;padding:13px 14px;margin-bottom:9px;box-shadow:0 2px 14px rgba(61,43,43,.09);}
+.b-vendor-top{display:flex;align-items:flex-start;gap:10px;}
+.b-vendor-name{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;flex:1;}
+.b-vendor-cat{font-size:11px;color:var(--gold);margin-top:2px;}
+.b-vendor-amounts{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--light);}
+.b-amount-box{flex:1;text-align:center;}
+.b-amount-val{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:700;}
+.b-amount-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
+.status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.dot-neinceput{background:#e07070;}.dot-avans{background:#f0b429;}.dot-platit{background:var(--sage);}
+.calc-section-title{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--rose);margin:16px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--blush);}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;}
+.calc-box{background:var(--white);border-radius:12px;padding:12px;text-align:center;box-shadow:0 1px 7px rgba(61,43,43,.08);}
+.calc-val{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;line-height:1.2;}
+.calc-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:4px;line-height:1.3;}
+.calc-bilant{background:var(--white);border-radius:13px;padding:14px 16px;box-shadow:0 2px 14px rgba(61,43,43,.09);margin-bottom:4px;}
+.bilant-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:14px;color:var(--deep);}
+.sfat-card{background:var(--white);border-radius:12px;padding:11px 14px;margin-bottom:8px;box-shadow:0 1px 7px rgba(61,43,43,.08);border-left:3px solid var(--gold);font-size:13px;color:var(--muted);line-height:1.6;}
+.sfat-card.warning{border-left-color:var(--rose);}.sfat-card.ok{border-left-color:var(--sage);}
+
+.nc{position:relative;}
+.calc-section-title{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--rose);margin:16px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--blush);}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;}
+.calc-box{background:var(--white);border-radius:12px;padding:12px;text-align:center;box-shadow:0 1px 7px rgba(61,43,43,.08);}
+.calc-val{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;line-height:1.2;}
+.calc-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:4px;line-height:1.3;}
+.calc-bilant{background:var(--white);border-radius:13px;padding:14px 16px;box-shadow:0 2px 14px rgba(61,43,43,.09);margin-bottom:4px;}
+.bilant-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:14px;color:var(--deep);}
+.sfat-card{background:var(--white);border-radius:12px;padding:11px 14px;margin-bottom:8px;box-shadow:0 1px 7px rgba(61,43,43,.08);border-left:3px solid var(--gold);font-size:13px;color:var(--muted);line-height:1.6;}
+.sfat-card.warning{border-left-color:var(--rose);}.sfat-card.ok{border-left-color:var(--sage);}
+
+.nc{position:relative;}.nc-text{font-family:'Cormorant Garamond',serif;font-size:15px;padding-right:24px;white-space:pre-wrap;}.nc-date{font-size:11px;color:var(--gold);margin-top:6px;}.nc .del{position:absolute;top:8px;right:8px;}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth-screen">
+  <div class="logo">💍</div>
+  <h2>Dalia &amp; Razvan</h2>
+  <p>Autentifică-te cu Google<br>pentru a accesa agenda nunții.</p>
+  <button class="btn google" onclick="signIn()" style="max-width:280px;font-size:15px;padding:14px 20px;">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908C16.658 14.013 17.64 11.706 17.64 9.2z" fill="#fff"/>
+      <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#fff"/>
+      <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#fff"/>
+      <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#fff"/>
+    </svg>
+    Autentificare cu Google
+  </button>
+  <div id="auth-error" class="hidden"></div>
+</div>
+
+<!-- APP -->
+<div id="header" class="hidden">
+  <div class="sub">💍 Planificator Nuntă</div>
+  <h1 id="h-names">Agenda Noastră</h1>
+  <div class="venue hidden" id="h-venue"></div>
+  <div class="wdate hidden" id="h-date"></div>
+  <div id="countdown">
+    <div class="cu"><span class="cn" id="cd-z">—</span><span class="cl">zile</span></div>
+    <div class="cu"><span class="cn" id="cd-h">—</span><span class="cl">ore</span></div>
+  </div>
+</div>
+
+<div id="sync-bar" class="hidden">
+  <span id="sync-status">⏳ Se conectează...</span>
+  <button id="sync-btn" onclick="signOut()">🚪 Ieșire</button>
+</div>
+
+<div id="tabs" class="hidden">
+  <button class="active" onclick="showTab('setup',this)"><span class="ti">⚙️</span>Info</button>
+  <button onclick="showTab('tasks',this)"><span class="ti">✅</span>Sarcini</button>
+  <button onclick="showTab('budget',this)"><span class="ti">💰</span>Buget</button>
+  <button onclick="showTab('guests',this)"><span class="ti">👥</span>Invitați</button>
+  <button onclick="showTab('vendors',this)"><span class="ti">🏷️</span>Furnizori</button>
+  <button onclick="showTab('program',this)"><span class="ti">📅</span>Program</button>
+  <button onclick="showTab('notes',this)"><span class="ti">📝</span>Note</button>
+  <button onclick="showTab('calc',this)"><span class="ti">🧮</span>Calculator</button>
+</div>
+
+<div id="content" class="hidden">
+
+<div id="sec-setup" class="section active">
+  <div class="sec-title">⚙️ Configurare</div>
+  <div class="card" style="border-left-color:var(--gold)">
+    <div class="field"><label>Mireasa</label><input type="text" id="s-bride" placeholder="ex: Ana" oninput="saveSetup()"></div>
+    <div class="field"><label>Mirele</label><input type="text" id="s-groom" placeholder="ex: Mihai" oninput="saveSetup()"></div>
+    <div class="field"><label>Data nunții</label><input type="date" id="s-date" onchange="saveSetup()"></div>
+    <div class="field"><label>Locația</label><input type="text" id="s-venue" placeholder="ex: Restaurantul Florilor" oninput="saveSetup()"></div>
+    <div class="field" style="margin-bottom:0"><label>Buget total (RON)</label><input type="number" id="s-budget" placeholder="ex: 50000" oninput="saveSetup()"></div>
+  </div>
+  <div class="card" style="border-left-color:var(--sage)">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:17px;margin-bottom:6px">Progres sarcini</div>
+    <div class="prog-label"><span id="sp-done">0/0</span><span class="prog-pct" id="sp-pct">0%</span></div>
+    <div class="prog-wrap"><div class="prog-bar" id="sp-bar" style="width:0%"></div></div>
+  </div>
+  <div class="card" style="border-left-color:var(--muted)">
+    <div style="font-size:13px;color:var(--muted);margin-bottom:4px">👤 Logat ca:</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:16px" id="user-name">—</div>
+    <div style="font-size:12px;color:var(--gold)" id="user-email"></div>
+  </div>
+</div>
+
+<div id="sec-tasks" class="section">
+  <div class="sec-title">✅ Sarcini</div>
+  <div class="prog-label"><span id="ci-done">0/0</span><span class="prog-pct" id="ci-pct">0%</span></div>
+  <div class="prog-wrap" style="margin-bottom:13px"><div class="prog-bar" id="ci-bar" style="width:0%"></div></div>
+  <div class="field"><input type="text" id="ci-text" placeholder="Sarcină nouă..."></div>
+  <div class="row" style="margin-bottom:10px">
+    <select id="ci-cat"><option>General</option><option>Decor</option><option>Catering</option><option>Muzică</option><option>Foto/Video</option><option>Ținute</option><option>Legal</option><option>Altele</option></select>
+    <button class="btn small" onclick="addTask()">+ Adaugă</button>
+  </div>
+  <div id="tasks-list"></div>
+</div>
+
+<div id="sec-budget" class="section">
+  <div class="sec-title">💰 Buget</div>
+
+  <!-- SUMMARY -->
+  <div class="b-summary">
+    <div class="b-stats">
+      <div class="b-stat"><div class="b-val" id="b-total" style="color:var(--gold)">—</div><div class="b-lbl">Buget total</div></div>
+      <div class="b-stat"><div class="b-val" id="b-chelt" style="color:var(--blush)">0</div><div class="b-lbl">Contractat</div></div>
+      <div class="b-stat"><div class="b-val" id="b-ramas" style="color:var(--sage)">—</div><div class="b-lbl">Disponibil</div></div>
+    </div>
+    <div class="b-prog-wrap"><div class="b-prog-bar" id="b-bar" style="width:0%"></div></div>
+    <div id="b-pers-info" style="font-size:11px;color:var(--gold);opacity:.8;margin-top:6px;text-align:center"></div>
+    <div style="display:flex;justify-content:space-between;margin-top:10px">
+      <div class="b-stat"><div class="b-val" id="b-avans-total" style="color:var(--rose);font-size:14px">0</div><div class="b-lbl">Avansuri plătite</div></div>
+      <div class="b-stat"><div class="b-val" id="b-rest-total" style="color:var(--gold);font-size:14px">0</div><div class="b-lbl">Rest de plătit</div></div>
+      <div class="b-stat"><div class="b-val" id="b-per-pers" style="color:var(--blush);font-size:14px">—</div><div class="b-lbl">Per persoană</div></div>
+    </div>
+  </div>
+
+  <!-- ADD FORM -->
+  <div class="card" style="border-left-color:var(--rose);margin-bottom:13px">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--rose);margin-bottom:10px">+ Furnizor / Cheltuială</div>
+    <div style="font-size:11px;color:var(--gold);margin-bottom:8px" id="b-currency-hint">Prețurile sunt în € EUR. Modifică în tab Info.</div>
+    <div class="field"><input type="text" id="b-name" placeholder="Furnizor (ex: Fotograf Alexandru)"></div>
+    <div class="row" style="margin-bottom:8px">
+      <select id="b-cat">
+        <option>Foto/Video</option><option>Muzică/DJ</option><option>Catering</option>
+        <option>Florărie</option><option>Decor</option><option>Rochie/Costum</option>
+        <option>Locație</option><option>Transport</option><option>Tort</option>
+        <option>Inele</option><option>Makeup/Hair</option><option>Altele</option>
+      </select>
+      <input type="number" id="b-pret-total" placeholder="Preț total RON">
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <input type="number" id="b-avans" placeholder="Avans plătit RON">
+      <select id="b-status-plata">
+        <option value="neinceput">🔴 Neplătit</option>
+        <option value="avans">🟡 Avans dat</option>
+        <option value="platit">🟢 Achitat</option>
+      </select>
+    </div>
+    <div class="field" style="margin-bottom:10px"><input type="text" id="b-contact" placeholder="Contact furnizor (tel/email)"></div>
+    <button class="btn" onclick="addBudget()">+ Adaugă</button>
+  </div>
+
+  <div id="budget-list"></div>
+</div>
+
+<div id="sec-guests" class="section">
+  <div class="sec-title">👥 Invitați</div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-val" id="g-total" style="color:var(--rose)">0</div><div class="stat-lbl">Total</div></div>
+    <div class="stat-box"><div class="stat-val" id="g-conf" style="color:var(--sage)">0</div><div class="stat-lbl">Confirmați</div></div>
+    <div class="stat-box"><div class="stat-val" id="g-wait" style="color:var(--gold)">0</div><div class="stat-lbl">Așteptați</div></div>
+    <div class="stat-box"><div class="stat-val" id="g-cancel" style="color:var(--muted)">0</div><div class="stat-lbl">Anulați</div></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-val" id="g-copii" style="color:var(--blush)">0</div><div class="stat-lbl">Copii</div></div>
+    <div class="stat-box"><div class="stat-val" id="g-transfer" style="color:var(--gold)">0</div><div class="stat-lbl">Transfer</div></div>
+    <div class="stat-box"><div class="stat-val" id="g-cazare" style="color:var(--sage)">0</div><div class="stat-lbl">Cazare</div></div>
+    <div class="stat-box"><div class="stat-val" id="g-vege" style="color:var(--sage)">0</div><div class="stat-lbl">Vege</div></div>
+  </div>
+
+  <!-- ADD FORM -->
+  <div class="card" style="border-left-color:var(--rose);margin-bottom:13px">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--rose);margin-bottom:10px">+ Invitat nou</div>
+    <div class="field"><input type="text" id="g-name" placeholder="Nume complet"></div>
+    <div class="row" style="margin-bottom:8px">
+      <select id="g-side"><option>Mireasă</option><option>Mire</option><option>Comun</option></select>
+      <select id="g-status"><option value="asteptat">⏳ Așteptat</option><option value="confirmat">✅ Confirmat</option><option value="anulat">❌ Anulat</option></select>
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <input type="text" id="g-phone" placeholder="📱 Telefon">
+      <select id="g-menu"><option value="carne">🥩 Carne</option><option value="peste">🐟 Pește</option><option value="vege">🥗 Vegetarian</option></select>
+    </div>
+    <div class="row" style="margin-bottom:10px">
+      <label class="check-label"><input type="checkbox" id="g-copil"> 👶 Copil</label>
+      <label class="check-label"><input type="checkbox" id="g-nec-transfer"> 🚌 Transfer</label>
+      <label class="check-label"><input type="checkbox" id="g-nec-cazare"> 🏨 Cazare</label>
+    </div>
+    <button class="btn" onclick="addGuest()">+ Adaugă invitat</button>
+  </div>
+
+  <!-- FILTER -->
+  <div style="display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none">
+    <button class="filter-btn active" onclick="filterGuests('toti',this)">Toți</button>
+    <button class="filter-btn" onclick="filterGuests('confirmat',this)">✅ Confirmați</button>
+    <button class="filter-btn" onclick="filterGuests('asteptat',this)">⏳ Așteptați</button>
+    <button class="filter-btn" onclick="filterGuests('anulat',this)">❌ Anulați</button>
+    <button class="filter-btn" onclick="filterGuests('transfer',this)">🚌 Transfer</button>
+    <button class="filter-btn" onclick="filterGuests('cazare',this)">🏨 Cazare</button>
+  </div>
+
+  <div id="guests-list"></div>
+</div>
+
+<div id="sec-vendors" class="section">
+  <div class="sec-title">🏷️ Furnizori</div>
+  <div class="field"><input type="text" id="v-name" placeholder="Furnizor (ex: DJ Alex)"></div>
+  <div class="row"><input type="text" id="v-cat" placeholder="Categorie"><input type="number" id="v-price" placeholder="Preț RON"></div>
+  <div class="row" style="margin:8px 0 10px"><input type="text" id="v-contact" placeholder="Telefon / contact"><select id="v-status"><option value="cautat">🔍 Căutat</option><option value="negociere">⏳ Negociere</option><option value="rezervat">✅ Rezervat</option></select></div>
+  <button class="btn" style="margin-bottom:13px" onclick="addVendor()">+ Adaugă furnizor</button>
+  <div id="vendors-list"></div>
+</div>
+
+<div id="sec-program" class="section">
+  <div class="sec-title">📅 Program zi</div>
+  <div class="row"><input type="time" id="p-time"><input type="text" id="p-event" placeholder="Eveniment"></div>
+  <div class="field" style="margin:8px 0 10px"><input type="text" id="p-note" placeholder="Notă opțională"></div>
+  <button class="btn" style="margin-bottom:13px" onclick="addProgram()">+ Adaugă moment</button>
+  <div id="program-list"></div>
+</div>
+
+<div id="sec-notes" class="section">
+  <div class="sec-title">📝 Note & Idei</div>
+  <div class="field"><textarea id="note-text" placeholder="Scrie o idee, un gând..."></textarea></div>
+  <button class="btn" style="margin-bottom:13px" onclick="addNote()">+ Salvează nota</button>
+  <div id="notes-list"></div>
+</div>
+
+<div id="sec-calc" class="section">
+  <div class="sec-title">🧮 Calculator Nuntă</div>
+
+  <!-- INPUT PRINCIPAL -->
+  <div class="card" style="border-left-color:var(--gold)">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--deep);margin-bottom:12px">📊 Date de bază</div>
+    <div class="row" style="margin-bottom:8px">
+      <div class="field" style="margin:0">
+        <label>Nr. persoane invitate</label>
+        <input type="number" id="calc-persoane" placeholder="ex: 150" oninput="calcUpdate()">
+      </div>
+      <div class="field" style="margin:0">
+        <label>Cadou estimat / persoană (RON)</label>
+        <input type="number" id="calc-cadou" placeholder="ex: 500" oninput="calcUpdate()">
+      </div>
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <div class="field" style="margin:0">
+        <label>Preț meniu / persoană (RON)</label>
+        <input type="number" id="calc-meniu" placeholder="ex: 350" oninput="calcUpdate()">
+      </div>
+      <div class="field" style="margin:0">
+        <label>Buget total disponibil (RON)</label>
+        <input type="number" id="calc-buget" placeholder="ex: 60000" oninput="calcUpdate()">
+      </div>
+    </div>
+    <div class="row">
+      <div class="field" style="margin:0">
+        <label>% confirmare estimată</label>
+        <input type="number" id="calc-confirmare" placeholder="ex: 85" value="85" oninput="calcUpdate()">
+      </div>
+      <div class="field" style="margin:0">
+        <label>Nr. copii estimați</label>
+        <input type="number" id="calc-copii" placeholder="ex: 10" value="0" oninput="calcUpdate()">
+      </div>
+    </div>
+  </div>
+
+  <!-- REZULTATE CADOURI -->
+  <div class="calc-section-title">🎁 Estimare cadouri</div>
+  <div class="calc-grid">
+    <div class="calc-box">
+      <div class="calc-val" id="cr-total-pers" style="color:var(--rose)">—</div>
+      <div class="calc-lbl">Persoane care vin (estimat)</div>
+    </div>
+    <div class="calc-box">
+      <div class="calc-val" id="cr-cadouri" style="color:var(--sage)">—</div>
+      <div class="calc-lbl">Total cadouri estimate</div>
+    </div>
+    <div class="calc-box">
+      <div class="calc-val" id="cr-minim" style="color:var(--gold)">—</div>
+      <div class="calc-lbl">Scenariu pesimist (-20%)</div>
+    </div>
+    <div class="calc-box">
+      <div class="calc-val" id="cr-maxim" style="color:var(--sage)">—</div>
+      <div class="calc-lbl">Scenariu optimist (+20%)</div>
+    </div>
+  </div>
+
+  <!-- REZULTATE COSTURI -->
+  <div class="calc-section-title">💸 Estimare costuri</div>
+  <div class="calc-grid">
+    <div class="calc-box">
+      <div class="calc-val" id="cc-meniu" style="color:var(--rose)">—</div>
+      <div class="calc-lbl">Cost total meniu</div>
+    </div>
+    <div class="calc-box">
+      <div class="calc-val" id="cc-altele" style="color:var(--gold)">—</div>
+      <div class="calc-lbl">Buget rămas pentru altele</div>
+    </div>
+    <div class="calc-box">
+      <div class="calc-val" id="cc-per-pers-total" style="color:var(--deep)">—</div>
+      <div class="calc-lbl">Cost total / persoană</div>
+    </div>
+    <div class="calc-box">
+      <div class="calc-val" id="cc-copii" style="color:var(--blush)">—</div>
+      <div class="calc-lbl">Cost meniu copii (50%)</div>
+    </div>
+  </div>
+
+  <!-- BILANT FINAL -->
+  <div class="calc-section-title">⚖️ Bilanț final estimat</div>
+  <div class="calc-bilant" id="calc-bilant">
+    <div class="bilant-row">
+      <span>Total cadouri estimate</span>
+      <span id="bil-cadouri" style="color:var(--sage)">—</span>
+    </div>
+    <div class="bilant-row">
+      <span>Total cheltuieli (din buget)</span>
+      <span id="bil-chelt" style="color:var(--rose)">—</span>
+    </div>
+    <div class="bilant-row" style="border-top:1px solid var(--blush);padding-top:8px;margin-top:4px">
+      <span><strong>Diferență estimată</strong></span>
+      <span id="bil-diff" style="font-weight:700;font-size:18px">—</span>
+    </div>
+    <div id="bil-mesaj" style="font-size:13px;color:var(--muted);margin-top:8px;font-style:italic;text-align:center"></div>
+  </div>
+
+  <!-- SFATURI -->
+  <div class="calc-section-title">💡 Sfaturi pe baza datelor tale</div>
+  <div id="calc-sfaturi"></div>
+
+</div>
+
+</div><!-- /content -->
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut as fbSignOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+// ── FIREBASE CONFIG ──────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyDntSyzZCwJVZcEs-vmF5rSMY3hmrXIvuk",
+  authDomain: "nunta-app-4d21f.firebaseapp.com",
+  databaseURL: "https://nunta-app-4d21f-default-rtdb.firebaseio.com",
+  projectId: "nunta-app-4d21f",
+  storageBucket: "nunta-app-4d21f.firebasestorage.app",
+  messagingSenderId: "1085680574398",
+  appId: "1:1085680574398:web:bfa01c928adfd0b3b5e3ef"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getDatabase(app);
+const provider = new GoogleAuthProvider();
+
+// Preia rezultatul după redirect Google
+getRedirectResult(auth).catch(e => {
+  if (e.code !== 'auth/no-current-user') {
+    const el = document.getElementById('auth-error');
+    if (el) { el.textContent = 'Eroare: ' + e.message; el.classList.remove('hidden'); }
+  }
+});
+
+// ── DEFAULT DATA ──────────────────────────────────────────────
+const DEFAULT_TASKS = [
+  {id:1,text:'Stabilește data și locația',cat:'General',done:false},
+  {id:2,text:'Fixează bugetul total',cat:'General',done:false},
+  {id:3,text:'Alege rochia de mireasă',cat:'Ținute',done:false},
+  {id:4,text:'Alege costumul mirelui',cat:'Ținute',done:false},
+  {id:5,text:'Rezervă fotograful',cat:'Foto/Video',done:false},
+  {id:6,text:'Rezervă videograful',cat:'Foto/Video',done:false},
+  {id:7,text:'Rezervă DJ / Formație',cat:'Muzică',done:false},
+  {id:8,text:'Degustare meniu catering',cat:'Catering',done:false},
+  {id:9,text:'Comandă tortul',cat:'Catering',done:false},
+  {id:10,text:'Aranjamente florale',cat:'Decor',done:false},
+  {id:11,text:'Trimite invitațiile',cat:'General',done:false},
+  {id:12,text:'Comandă inelele',cat:'Ținute',done:false},
+  {id:13,text:'Programare stare civilă',cat:'Legal',done:false},
+  {id:14,text:'Planifică luna de miere',cat:'Altele',done:false},
+];
+
+let S = {
+  setup:{bride:'',groom:'',date:'',venue:'',budget:''},
+  tasks:DEFAULT_TASKS.map(t=>({...t})),
+  budget:[],guests:[],vendors:[],program:[],notes:[]
+};
+
+let saveTimer = null;
+let isLoading = false;
+
+// ── AUTH ──────────────────────────────────────────────────────
+window.signIn = async () => {
+  try {
+    await signInWithRedirect(auth, provider);
+  } catch(e) {
+    const el = document.getElementById('auth-error');
+    el.textContent = 'Eroare: ' + e.message;
+    el.classList.remove('hidden');
+  }
+};
+
+window.signOut = async () => {
+  await fbSignOut(auth);
+};
+
+onAuthStateChanged(auth, user => {
+  if (user) {
+    document.getElementById('auth-screen').classList.add('hidden');
+    document.getElementById('header').classList.remove('hidden');
+    document.getElementById('sync-bar').classList.remove('hidden');
+    document.getElementById('tabs').classList.remove('hidden');
+    document.getElementById('content').classList.remove('hidden');
+    document.getElementById('user-name').textContent = user.displayName || '—';
+    document.getElementById('user-email').textContent = user.email || '';
+    setStatus('⏳ Se încarcă...');
+    listenToData();
+  } else {
+    document.getElementById('auth-screen').classList.remove('hidden');
+    document.getElementById('header').classList.add('hidden');
+    document.getElementById('sync-bar').classList.add('hidden');
+    document.getElementById('tabs').classList.add('hidden');
+    document.getElementById('content').classList.add('hidden');
+  }
+});
+
+// ── FIREBASE REALTIME DB ──────────────────────────────────────
+let isSyncing = false;
+
+// Convertește obiectele Firebase (cu chei numerice) înapoi în array-uri JS
+function toArray(val) {
+  if (!val) return [];
+  if (Array.isArray(val)) return val;
+  // Firebase stochează array-urile ca {0: ..., 1: ...} — le convertim
+  return Object.values(val);
+}
+
+function listenToData() {
+  const dataRef = ref(db, 'nunta');
+  onValue(dataRef, (snapshot) => {
+    if (isSyncing) return; // ignorăm update-ul cauzat de propria salvare
+    const data = snapshot.val();
+    if (data) {
+      if (data.setup) S.setup = data.setup;
+      // Toate array-urile trebuie convertite
+      ['tasks','budget','guests','vendors','program','notes'].forEach(k => {
+        if (data[k] !== undefined && data[k] !== null) {
+          S[k] = toArray(data[k]);
+        }
+      });
+    }
+    renderAll();
+    setStatus('✅ Sincronizat · ' + now());
+  }, (error) => {
+    setStatus('❌ ' + error.message);
+  });
+}
+
+function saveToFirebase() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    setStatus('💾 Se salvează...');
+    isSyncing = true;
+    try {
+      await set(ref(db, 'nunta'), S);
+      setStatus('✅ Salvat · ' + now());
+    } catch(e) {
+      setStatus('❌ Eroare salvare: ' + e.message);
+    }
+    // Eliberăm lock-ul după 2s (timp suficient pentru Firebase să confirme)
+    setTimeout(() => { isSyncing = false; }, 2000);
+  }, 800);
+}
+
+// ── TABS ──────────────────────────────────────────────────────
+window.showTab = (id, btn) => {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  btn.classList.add('active');
+  btn.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+};
+
+// ── SETUP ─────────────────────────────────────────────────────
+window.saveSetup = () => {
+  S.setup.bride    = document.getElementById('s-bride').value;
+  S.setup.groom    = document.getElementById('s-groom').value;
+  S.setup.date     = document.getElementById('s-date').value;
+  S.setup.venue    = document.getElementById('s-venue').value;
+  S.setup.budget   = document.getElementById('s-budget').value;
+  S.setup.currency = document.getElementById('s-currency').value;
+  S.setup.curs     = document.getElementById('s-curs').value;
+  updateHeader();
+  renderBudget();
+  calcUpdate();
+  saveToFirebase();
+};
+
+function loadSetup() {
+  document.getElementById('s-bride').value    = S.setup.bride    || '';
+  document.getElementById('s-groom').value    = S.setup.groom    || '';
+  document.getElementById('s-date').value     = S.setup.date     || '';
+  document.getElementById('s-venue').value    = S.setup.venue    || '';
+  document.getElementById('s-budget').value   = S.setup.budget   || '';
+  document.getElementById('s-currency').value = S.setup.currency || 'EUR';
+  document.getElementById('s-curs').value     = S.setup.curs     || '';
+}
+
+function updateHeader() {
+  const {bride,groom,date,venue} = S.setup;
+  document.getElementById('h-names').textContent = (bride||groom) ? `${bride||'—'} & ${groom||'—'}` : 'Agenda Noastră';
+  const vEl = document.getElementById('h-venue');
+  if (venue) { vEl.textContent='📍 '+venue; vEl.classList.remove('hidden'); } else vEl.classList.add('hidden');
+  const dEl = document.getElementById('h-date');
+  if (date) {
+    const dt = new Date(date);
+    dEl.textContent = dt.toLocaleDateString('ro-RO',{day:'numeric',month:'long',year:'numeric'});
+    dEl.classList.remove('hidden');
+    const diff = dt - new Date();
+    const cd = document.getElementById('countdown');
+    if (diff > 0) {
+      cd.style.display='flex';
+      document.getElementById('cd-z').textContent = Math.floor(diff/86400000);
+      document.getElementById('cd-h').textContent = Math.floor((diff%86400000)/3600000);
+    } else cd.style.display='none';
+  } else { dEl.classList.add('hidden'); document.getElementById('countdown').style.display='none'; }
+}
+
+// ── PROGRESS ──────────────────────────────────────────────────
+function renderProgress() {
+  const t=S.tasks, done=t.filter(x=>x.done).length, pct=t.length?Math.round(done/t.length*100):0;
+  ['ci','sp'].forEach(p=>{
+    const d=document.getElementById(p+'-done'), pc=document.getElementById(p+'-pct'), b=document.getElementById(p+'-bar');
+    if(d) d.textContent=`${done}/${t.length}`;
+    if(pc) pc.textContent=pct+'%';
+    if(b) b.style.width=pct+'%';
+  });
+}
+
+// ── TASKS ─────────────────────────────────────────────────────
+const CAT_COLOR={General:'#b89a6e',Decor:'#9b7ec8',Catering:'#c17b3a','Muzică':'#c17b6a','Foto/Video':'#5a8a9a','Ținute':'#b06090',Legal:'#9a8070',Altele:'#7a9e7a'};
+
+window.addTask = () => {
+  const t=document.getElementById('ci-text').value.trim(); if(!t) return;
+  S.tasks.push({id:Date.now(),text:t,cat:document.getElementById('ci-cat').value,done:false});
+  document.getElementById('ci-text').value='';
+  renderTasks(); saveToFirebase();
+};
+window.toggleTask = (id) => {
+  const t=S.tasks.find(x=>x.id===id); if(t) t.done=!t.done;
+  renderTasks(); saveToFirebase();
+};
+window.delTask = (id) => { S.tasks=S.tasks.filter(x=>x.id!==id); renderTasks(); saveToFirebase(); };
+
+function renderTasks() {
+  renderProgress();
+  document.getElementById('tasks-list').innerHTML = S.tasks.length
+    ? S.tasks.map(t=>`<div class="ci${t.done?' done':''}"><input type="checkbox"${t.done?' checked':''} onchange="toggleTask(${t.id})"><span class="ci-text">${esc(t.text)}</span><span class="tag" style="color:${CAT_COLOR[t.cat]||'#b89a6e'}">${t.cat}</span><button class="del" onclick="delTask(${t.id})">✕</button></div>`).join('')
+    : '<div class="empty">Nicio sarcină.</div>';
+}
+
+// ── BUDGET ────────────────────────────────────────────────────
+window.addBudget = () => {
+  const name = document.getElementById('b-name').value.trim();
+  const pretTotal = parseFloat(document.getElementById('b-pret-total').value) || 0;
+  if (!name || !pretTotal) return;
+  const avans = parseFloat(document.getElementById('b-avans').value) || 0;
+  S.budget.push({
+    id: Date.now(),
+    name,
+    cat: document.getElementById('b-cat').value,
+    pretTotal,
+    avans,
+    rest: pretTotal - avans,
+    statusPlata: document.getElementById('b-status-plata').value,
+    contact: document.getElementById('b-contact').value.trim(),
+  });
+  document.getElementById('b-name').value = '';
+  document.getElementById('b-pret-total').value = '';
+  document.getElementById('b-avans').value = '';
+  document.getElementById('b-contact').value = '';
+  renderBudget(); saveToFirebase();
+};
+window.delBudget = (id) => { S.budget=S.budget.filter(x=>x.id!==id); renderBudget(); saveToFirebase(); };
+
+function renderBudget() {
+  const bugetTotal = parseFloat(S.setup.budget) || 0;
+  const totalContractat = S.budget.reduce((s,x)=>s+(x.pretTotal||x.amount||0), 0);
+  const totalAvans = S.budget.reduce((s,x)=>s+(x.avans||0), 0);
+  const totalRest = S.budget.reduce((s,x)=>s+(x.rest!==undefined?x.rest:(x.pretTotal||x.amount||0)-(x.avans||0)), 0);
+  const disponibil = bugetTotal - totalContractat;
+  const pct = bugetTotal ? Math.min(100, Math.round(totalContractat/bugetTotal*100)) : 0;
+  const cur = getCurrency();
+  const curs = getCurs();
+
+  // Nr persoane din calculator (prioritate) sau din invitati confirmati
+  const nrCalc = parseFloat(document.getElementById('calc-persoane') && document.getElementById('calc-persoane').value) || 0;
+  const pctConf = parseFloat(document.getElementById('calc-confirmare') && document.getElementById('calc-confirmare').value) || 85;
+  const nrConf = S.guests.filter(g=>g.status==='confirmat').length;
+  const nrPers = nrCalc ? Math.round(nrCalc * pctConf / 100) : (nrConf || S.guests.length || 1);
+  const perPers = totalContractat && nrPers ? (totalContractat / nrPers) : 0;
+
+  document.getElementById('b-total').textContent = bugetTotal ? fmt(bugetTotal) : '—';
+  document.getElementById('b-chelt').textContent = fmt(totalContractat);
+  document.getElementById('b-ramas').textContent = bugetTotal ? fmt(disponibil) : '—';
+  document.getElementById('b-bar').style.width = pct+'%';
+  document.getElementById('b-avans-total').textContent = fmt(totalAvans);
+  document.getElementById('b-rest-total').textContent = fmt(totalRest);
+  document.getElementById('b-per-pers').textContent = perPers ? fmt(perPers) : '—';
+
+  // Linie info persoane
+  const persInfo = document.getElementById('b-pers-info');
+  if (persInfo) {
+    if (nrCalc) persInfo.textContent = `Calculat pentru ${nrPers} persoane (${nrCalc} invitați × ${pctConf}% confirmare)`;
+    else if (nrConf) persInfo.textContent = `Calculat pentru ${nrConf} persoane confirmate`;
+    else persInfo.textContent = `Adaugă nr. persoane în tab Calculator pentru calcul exact`;
+  }
+
+  const statusLabel = {neinceput:'🔴 Neplătit', avans:'🟡 Avans dat', platit:'🟢 Achitat'};
+  const catIcons = {'Foto/Video':'📷','Muzică/DJ':'🎵','Catering':'🍽️','Florărie':'💐','Decor':'✨','Rochie/Costum':'👗','Locație':'🏛️','Transport':'🚗','Tort':'🎂','Inele':'💍','Makeup/Hair':'💄','Altele':'🏷️'};
+
+  document.getElementById('budget-list').innerHTML = S.budget.length ? S.budget.map(b => {
+    const total = b.pretTotal || b.amount || 0;
+    const avans = b.avans || 0;
+    const rest  = b.rest !== undefined ? b.rest : total - avans;
+    const status = b.statusPlata || (avans > 0 && avans < total ? 'avans' : avans >= total && total > 0 ? 'platit' : 'neinceput');
+    const cat = b.cat || 'Altele';
+    const totalRON = cur === 'EUR' && curs ? ` <span style="font-size:11px;color:var(--muted)">(${Math.round(total*curs).toLocaleString('ro-RO')} RON)</span>` : '';
+    return `<div class="b-vendor-card" style="border-left:3px solid ${status==='platit'?'var(--sage)':status==='avans'?'var(--gold)':'var(--rose)'}">
+      <div class="b-vendor-top">
+        <div style="font-size:26px;flex-shrink:0">${catIcons[cat]||'🏷️'}</div>
+        <div style="flex:1;min-width:0">
+          <div class="b-vendor-name">${esc(b.name)}</div>
+          <div class="b-vendor-cat">${cat}${b.contact?' · '+esc(b.contact):''}</div>
+          <span class="tag" style="margin-top:4px;display:inline-block">${statusLabel[status]||'🔴 Neplătit'}</span>
+        </div>
+        <button class="del" onclick="delBudget(${b.id})">✕</button>
+      </div>
+      <div class="b-vendor-amounts">
+        <div class="b-amount-box">
+          <div class="b-amount-val" style="color:var(--deep)">${fmt(total)}${totalRON}</div>
+          <div class="b-amount-lbl">Total</div>
+        </div>
+        <div class="b-amount-box">
+          <div class="b-amount-val" style="color:var(--sage)">${fmt(avans)}</div>
+          <div class="b-amount-lbl">Avans plătit</div>
+        </div>
+        <div class="b-amount-box">
+          <div class="b-amount-val" style="color:var(--rose)">${fmt(rest)}</div>
+          <div class="b-amount-lbl">Rest de plătit</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('') : '<div class="empty">Niciun furnizor adăugat.</div>';
+}
+
+// ── GUESTS ────────────────────────────────────────────────────
+let guestFilter = 'toti';
+
+window.addGuest = () => {
+  const n = document.getElementById('g-name').value.trim(); if(!n) return;
+  S.guests.push({
+    id: Date.now(),
+    name: n,
+    side: document.getElementById('g-side').value,
+    status: document.getElementById('g-status').value,
+    phone: document.getElementById('g-phone').value.trim(),
+    menu: document.getElementById('g-menu').value,
+    copil: document.getElementById('g-copil').checked,
+    transfer: document.getElementById('g-nec-transfer').checked,
+    cazare: document.getElementById('g-nec-cazare').checked,
+  });
+  // Reset form
+  document.getElementById('g-name').value='';
+  document.getElementById('g-phone').value='';
+  document.getElementById('g-copil').checked=false;
+  document.getElementById('g-nec-transfer').checked=false;
+  document.getElementById('g-nec-cazare').checked=false;
+  renderGuests(); saveToFirebase();
+};
+
+window.updGuest = (id, val) => {
+  const g = S.guests.find(x=>x.id===id); if(g) g.status=val;
+  renderGuests(); saveToFirebase();
+};
+window.delGuest = (id) => { S.guests=S.guests.filter(x=>x.id!==id); renderGuests(); saveToFirebase(); };
+window.filterGuests = (f, btn) => {
+  guestFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGuests();
+};
+
+function renderGuests() {
+  const gs = S.guests;
+  document.getElementById('g-total').textContent = gs.length;
+  document.getElementById('g-conf').textContent = gs.filter(g=>g.status==='confirmat').length;
+  document.getElementById('g-wait').textContent = gs.filter(g=>g.status==='asteptat').length;
+  document.getElementById('g-cancel').textContent = gs.filter(g=>g.status==='anulat').length;
+  document.getElementById('g-copii').textContent = gs.filter(g=>g.copil).length;
+  document.getElementById('g-transfer').textContent = gs.filter(g=>g.transfer).length;
+  document.getElementById('g-cazare').textContent = gs.filter(g=>g.cazare).length;
+  document.getElementById('g-vege').textContent = gs.filter(g=>g.menu==='vege').length;
+
+  let filtered = gs;
+  if (guestFilter === 'confirmat') filtered = gs.filter(g=>g.status==='confirmat');
+  else if (guestFilter === 'asteptat') filtered = gs.filter(g=>g.status==='asteptat');
+  else if (guestFilter === 'anulat') filtered = gs.filter(g=>g.status==='anulat');
+  else if (guestFilter === 'transfer') filtered = gs.filter(g=>g.transfer);
+  else if (guestFilter === 'cazare') filtered = gs.filter(g=>g.cazare);
+
+  const menuLabel = {carne:'🥩 Carne', peste:'🐟 Pește', vege:'🥗 Vege'};
+  const statusBg = {confirmat:'#d9f0d9', asteptat:'#fff3cd', anulat:'#fde8e8'};
+  const statusColor = {confirmat:'#3a7a3a', asteptat:'#856404', anulat:'#8a3030'};
+
+  document.getElementById('guests-list').innerHTML = filtered.length ? filtered.map(g => `
+    <div class="g-card ${g.status||'asteptat'}">
+      <div class="g-card-top">
+        <div class="g-avatar">${(g.name||'?')[0].toUpperCase()}</div>
+        <div style="flex:1;min-width:0">
+          <div class="gi-name">${esc(g.name||'')}</div>
+          <div class="gi-side">${g.side||''}${g.phone?' · '+esc(g.phone):''}</div>
+        </div>
+        <select onchange="updGuest(${g.id},this.value)" style="font-size:12px;border-radius:20px;padding:4px 8px;width:auto;background:${statusBg[g.status||'asteptat']};color:${statusColor[g.status||'asteptat']}">
+          <option value="asteptat"${(g.status||'asteptat')==='asteptat'?' selected':''}>⏳ Așteptat</option>
+          <option value="confirmat"${g.status==='confirmat'?' selected':''}>✅ Confirmat</option>
+          <option value="anulat"${g.status==='anulat'?' selected':''}>❌ Anulat</option>
+        </select>
+        <button class="del" onclick="delGuest(${g.id})">✕</button>
+      </div>
+      <div class="g-card-chips">
+        <span class="chip">${menuLabel[g.menu]||'🥩 Carne'}</span>
+        ${g.copil?'<span class="chip rose">👶 Copil</span>':''}
+        ${g.transfer?'<span class="chip gold">🚌 Transfer</span>':''}
+        ${g.cazare?'<span class="chip sage">🏨 Cazare</span>':''}
+      </div>
+    </div>`).join('') : `<div class="empty">Niciun invitat${guestFilter!=='toti'?' în această categorie':''}.</div>`;
+}
+
+// ── VENDORS ───────────────────────────────────────────────────
+const VICONS={foto:'📷',video:'🎬',muzic:'🎵',dj:'🎧',cater:'🍽️',flor:'💐',decor:'✨',trans:'🚗',tort:'🎂',rochi:'👗',costu:'🤵',make:'💄'};
+function vIcon(s){const k=Object.keys(VICONS).find(k=>s&&s.toLowerCase().includes(k));return k?VICONS[k]:'🏷️';}
+const VS={rezervat:'✅ Rezervat',negociere:'⏳ Negociere',cautat:'🔍 Căutat'};
+
+window.addVendor = () => {
+  const n=document.getElementById('v-name').value.trim(); if(!n) return;
+  S.vendors.push({id:Date.now(),name:n,cat:document.getElementById('v-cat').value,price:parseFloat(document.getElementById('v-price').value)||0,status:document.getElementById('v-status').value,contact:document.getElementById('v-contact').value});
+  document.getElementById('v-name').value=''; document.getElementById('v-price').value=''; document.getElementById('v-contact').value='';
+  renderVendors(); saveToFirebase();
+};
+window.delVendor = (id) => { S.vendors=S.vendors.filter(x=>x.id!==id); renderVendors(); saveToFirebase(); };
+
+function renderVendors() {
+  document.getElementById('vendors-list').innerHTML = S.vendors.length
+    ? S.vendors.map(v=>`<div class="card" style="border-left-color:${v.status==='rezervat'?'var(--sage)':v.status==='negociere'?'var(--gold)':'var(--rose)'}"><div class="vc"><div class="vc-icon">${vIcon(v.cat||v.name)}</div><div class="vc-info"><div class="vc-name">${esc(v.name)}</div><div class="vc-sub">${v.cat||''}${v.contact?' • '+esc(v.contact):''}</div><span class="badge ${v.status}">${VS[v.status]}</span></div><div class="vc-right">${v.price?`<div class="vc-price">${v.price.toLocaleString('ro-RO')}<br><small>RON</small></div>`:''}<button class="del" onclick="delVendor(${v.id})">✕</button></div></div></div>`)
+    .join('') : '<div class="empty">Niciun furnizor.</div>';
+}
+
+// ── PROGRAM ───────────────────────────────────────────────────
+window.addProgram = () => {
+  const t=document.getElementById('p-time').value, e=document.getElementById('p-event').value.trim(); if(!t||!e) return;
+  S.program.push({id:Date.now(),time:t,event:e,note:document.getElementById('p-note').value});
+  S.program.sort((a,b)=>a.time.localeCompare(b.time));
+  document.getElementById('p-event').value=''; document.getElementById('p-note').value='';
+  renderProgram(); saveToFirebase();
+};
+window.delProgram = (id) => { S.program=S.program.filter(x=>x.id!==id); renderProgram(); saveToFirebase(); };
+
+function renderProgram() {
+  document.getElementById('program-list').innerHTML = S.program.length
+    ? S.program.map((p,i)=>`<div class="tl"><div class="tl-time">${p.time}</div><div class="tl-mid"><div class="tl-dot"></div>${i<S.program.length-1?'<div class="tl-line"></div>':''}</div><div class="tl-box"><div style="flex:1"><div class="tl-event">${esc(p.event)}</div>${p.note?`<div class="tl-note">${esc(p.note)}</div>`:''}</div><button class="del" onclick="delProgram(${p.id})">✕</button></div></div>`)
+    .join('') : '<div class="empty">Adaugă momente din ziua nunții.</div>';
+}
+
+// ── NOTES ─────────────────────────────────────────────────────
+window.addNote = () => {
+  const t=document.getElementById('note-text').value.trim(); if(!t) return;
+  S.notes.unshift({id:Date.now(),text:t,date:new Date().toLocaleDateString('ro-RO')});
+  document.getElementById('note-text').value=''; renderNotes(); saveToFirebase();
+};
+window.delNote = (id) => { S.notes=S.notes.filter(x=>x.id!==id); renderNotes(); saveToFirebase(); };
+
+function renderNotes() {
+  document.getElementById('notes-list').innerHTML = S.notes.length
+    ? S.notes.map(n=>`<div class="card nc" style="border-left-color:var(--gold)"><button class="del" onclick="delNote(${n.id})">✕</button><div class="nc-text">${esc(n.text)}</div><div class="nc-date">${n.date}</div></div>`)
+    .join('') : '<div class="empty">Nicio notă.</div>';
+}
+
+// ── RENDER ALL ────────────────────────────────────────────────
+// ── CALCULATOR ────────────────────────────────────────────────
+window.calcUpdate = () => {
+  const persoane   = parseFloat(document.getElementById('calc-persoane').value)  || 0;
+  const cadou      = parseFloat(document.getElementById('calc-cadou').value)     || 0;
+  const meniu      = parseFloat(document.getElementById('calc-meniu').value)     || 0;
+  const buget      = parseFloat(document.getElementById('calc-buget').value)     || 0;
+  const pctConf    = parseFloat(document.getElementById('calc-confirmare').value)|| 85;
+  const copii      = parseFloat(document.getElementById('calc-copii').value)     || 0;
+
+  // Actualizează hint-ul de monedă
+  const hint = document.getElementById('b-currency-hint');
+  if (hint) hint.textContent = `Prețurile sunt în ${getCurrency() === 'EUR' ? '€ EUR' : 'RON'}. Modifică în tab Info.`;
+
+  if (!persoane) return;
+
+  // Persoane care vin
+  const vin        = Math.round(persoane * pctConf / 100);
+  const vinAdulti  = Math.max(0, vin - copii);
+
+  // Cadouri
+  const totalCadouri  = vin * cadou;
+  const cadouriMin    = Math.round(totalCadouri * 0.80);
+  const cadouriMax    = Math.round(totalCadouri * 1.20);
+
+  // Costuri
+  const costMeniuAdulti = vinAdulti * meniu;
+  const costMeniuCopii  = copii * meniu * 0.5;
+  const costMeniuTotal  = costMeniuAdulti + costMeniuCopii;
+  const bugetAltele     = buget - costMeniuTotal;
+  const costPerPers     = vin > 0 ? Math.round(buget / vin) : 0;
+
+  // Bilanț
+  const totalChelt  = buget || costMeniuTotal;
+  const diff        = totalCadouri - totalChelt;
+
+  // Render valori
+  const set = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+
+  set('cr-total-pers',  vin + ' persoane');
+  set('cr-cadouri',     fmt(totalCadouri));
+  set('cr-minim',       fmt(cadouriMin));
+  set('cr-maxim',       fmt(cadouriMax));
+  set('cc-meniu',       fmt(costMeniuTotal));
+  set('cc-altele',      buget ? fmt(Math.max(0, bugetAltele)) : '—');
+  set('cc-per-pers-total', costPerPers ? fmt(costPerPers) : '—');
+  set('cc-copii',       copii > 0 ? fmt(costMeniuCopii) : '0 RON');
+
+  // Bilanț
+  set('bil-cadouri', fmt(totalCadouri));
+  set('bil-chelt',   fmt(totalChelt));
+  const diffEl = document.getElementById('bil-diff');
+  if (diffEl) {
+    diffEl.textContent = (diff >= 0 ? '+' : '') + fmt(diff);
+    diffEl.style.color = diff >= 0 ? 'var(--sage)' : 'var(--rose)';
+  }
+  const mesajEl = document.getElementById('bil-mesaj');
+  if (mesajEl) {
+    if (!cadou || !buget) mesajEl.textContent = 'Completează cadoul estimat și bugetul pentru bilanț complet.';
+    else if (diff > 0) mesajEl.textContent = '🎉 Cadourile acoperă cheltuielile! Surplus estimat de ' + fmt(diff) + '.';
+    else mesajEl.textContent = '⚠️ Cheltuielile depășesc cadourile cu ' + fmt(Math.abs(diff)) + '. Ajustează bugetul.';
+  }
+
+  // Sfaturi inteligente
+  const sfaturi = [];
+
+  if (meniu && buget) {
+    const pctMeniu = Math.round(costMeniuTotal / buget * 100);
+    if (pctMeniu > 60) sfaturi.push({cls:'warning', text:`🍽️ Meniul reprezintă <strong>${pctMeniu}%</strong> din buget. Recomandăm maxim 50-55% pentru a avea buget suficient pentru foto, muzică și decor.`});
+    else sfaturi.push({cls:'ok', text:`🍽️ Meniul reprezintă <strong>${pctMeniu}%</strong> din buget — proporție bună!`});
+  }
+
+  if (buget && bugetAltele > 0) {
+    const sugFoto   = Math.round(bugetAltele * 0.25);
+    const sugMuzica = Math.round(bugetAltele * 0.20);
+    const sugFlori  = Math.round(bugetAltele * 0.15);
+    const sugRochie = Math.round(bugetAltele * 0.10);
+    sfaturi.push({cls:'', text:`💡 Din bugetul rămas după meniu (<strong>${fmt(bugetAltele)}</strong>) recomandăm:<br>
+      📷 Foto/Video: ~${fmt(sugFoto)} (25%)<br>
+      🎵 Muzică/DJ: ~${fmt(sugMuzica)} (20%)<br>
+      💐 Flori/Decor: ~${fmt(sugFlori)} (15%)<br>
+      👗 Rochie/Costum: ~${fmt(sugRochie)} (10%)`});
+  }
+
+  if (cadou && totalCadouri > 0 && buget > 0) {
+    const acoperire = Math.round(totalCadouri / buget * 100);
+    if (acoperire >= 100) sfaturi.push({cls:'ok', text:`🎁 Cadourile estimate acoperă <strong>${acoperire}%</strong> din bugetul total. Felicitări!`});
+    else sfaturi.push({cls:'warning', text:`🎁 Cadourile acoperă doar <strong>${acoperire}%</strong> din buget. Diferența de <strong>${fmt(buget-totalCadouri)}</strong> trebuie acoperită din economii.`});
+  }
+
+  if (pctConf < 80) sfaturi.push({cls:'warning', text:`👥 Rata de confirmare de ${pctConf}% e sub medie. De obicei 80-90% din invitați confirmă prezența.`});
+  if (copii > 0) sfaturi.push({cls:'', text:`👶 Ai ${copii} copii estimați. Meniul pentru copii e calculat la 50% din prețul adult = <strong>${fmt(costMeniuCopii)}</strong>.`});
+  if (vin > 0 && !meniu) sfaturi.push({cls:'warning', text:`⚠️ Adaugă prețul meniului per persoană pentru a vedea estimările complete.`});
+
+  const sfaturiEl = document.getElementById('calc-sfaturi');
+  if (sfaturiEl) sfaturiEl.innerHTML = sfaturi.map(s=>`<div class="sfat-card ${s.cls}">${s.text}</div>`).join('');
+
+  // Actualizează bugetul cu noile persoane
+  renderBudget();
+};
+
+function renderAll() { loadSetup(); updateHeader(); renderTasks(); renderBudget(); renderGuests(); renderVendors(); renderProgram(); renderNotes(); }
+
+// ── UTILS ─────────────────────────────────────────────────────
+function getCurrency() { return S.setup.currency || 'EUR'; }
+function getCurs() { return parseFloat(S.setup.curs) || 5.00; }
+
+// Formateaza suma cu simbolul valutei curente
+function fmt(n, currency) {
+  const cur = currency || getCurrency();
+  const sym = cur === 'EUR' ? '€' : ' RON';
+  const prefix = cur === 'EUR' ? '€' : '';
+  const suffix = cur === 'EUR' ? '' : ' RON';
+  return prefix + Math.round(n).toLocaleString('ro-RO') + suffix;
+}
+
+// Converteste EUR -> RON daca e necesar
+function toRON(n) {
+  if (getCurrency() === 'RON') return n;
+  return n * getCurs();
+}
+
+// Afiseaza suma cu optiune de conversie
+function fmtWithConvert(n) {
+  const cur = getCurrency();
+  if (cur === 'EUR' && getCurs()) {
+    const ron = Math.round(n * getCurs());
+    return `€${Math.round(n).toLocaleString('ro-RO')} <span style="font-size:11px;color:var(--muted)">(${ron.toLocaleString('ro-RO')} RON)</span>`;
+  }
+  return fmt(n);
+}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmt(n){return n.toLocaleString('ro-RO')+' RON';}
+function now(){return new Date().toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'});}
+function setStatus(msg){const el=document.getElementById('sync-status');if(el)el.textContent=msg;}
+
+</script>
+
+<script>
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+</script>
+</body>
+</html>
