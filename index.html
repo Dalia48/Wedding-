@@ -244,7 +244,6 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
       <div class="b-stat"><div class="b-val" id="b-ramas" style="color:var(--sage)">—</div><div class="b-lbl">Disponibil</div></div>
     </div>
     <div class="b-prog-wrap"><div class="b-prog-bar" id="b-bar" style="width:0%"></div></div>
-    <div id="b-pers-info" style="font-size:11px;color:var(--gold);opacity:.8;margin-top:6px;text-align:center"></div>
     <div style="display:flex;justify-content:space-between;margin-top:10px">
       <div class="b-stat"><div class="b-val" id="b-avans-total" style="color:var(--rose);font-size:14px">0</div><div class="b-lbl">Avansuri plătite</div></div>
       <div class="b-stat"><div class="b-val" id="b-rest-total" style="color:var(--gold);font-size:14px">0</div><div class="b-lbl">Rest de plătit</div></div>
@@ -255,7 +254,6 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
   <!-- ADD FORM -->
   <div class="card" style="border-left-color:var(--rose);margin-bottom:13px">
     <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--rose);margin-bottom:10px">+ Furnizor / Cheltuială</div>
-    <div style="font-size:11px;color:var(--gold);margin-bottom:8px" id="b-currency-hint">Prețurile sunt în € EUR. Modifică în tab Info.</div>
     <div class="field"><input type="text" id="b-name" placeholder="Furnizor (ex: Fotograf Alexandru)"></div>
     <div class="row" style="margin-bottom:8px">
       <select id="b-cat">
@@ -464,7 +462,7 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, browserLocalPersistence, setPersistence, signOut as fbSignOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
 // ── FIREBASE CONFIG ──────────────────────────────────────────
@@ -482,14 +480,6 @@ const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getDatabase(app);
 const provider = new GoogleAuthProvider();
-provider.setCustomParameters({ prompt: 'select_account' });
-
-// Păstrează sesiunea permanent (nu expiră)
-setPersistence(auth, browserLocalPersistence).catch(() => {});
-
-// Preia rezultatul după redirect
-getRedirectResult(auth).catch(() => {});
-
 
 // ── DEFAULT DATA ──────────────────────────────────────────────
 const DEFAULT_TASKS = [
@@ -520,17 +510,12 @@ let isLoading = false;
 
 // ── AUTH ──────────────────────────────────────────────────────
 window.signIn = async () => {
-  const el = document.getElementById('auth-error');
-  el.classList.add('hidden');
   try {
     await signInWithPopup(auth, provider);
   } catch(e) {
-    if (e.code === 'auth/popup-blocked' || e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') {
-      await signInWithRedirect(auth, provider);
-    } else {
-      el.textContent = 'Eroare: ' + e.message;
-      el.classList.remove('hidden');
-    }
+    const el = document.getElementById('auth-error');
+    el.textContent = 'Eroare: ' + e.message;
+    el.classList.remove('hidden');
   }
 };
 
@@ -617,27 +602,21 @@ window.showTab = (id, btn) => {
 
 // ── SETUP ─────────────────────────────────────────────────────
 window.saveSetup = () => {
-  S.setup.bride    = document.getElementById('s-bride').value;
-  S.setup.groom    = document.getElementById('s-groom').value;
-  S.setup.date     = document.getElementById('s-date').value;
-  S.setup.venue    = document.getElementById('s-venue').value;
-  S.setup.budget   = document.getElementById('s-budget').value;
-  S.setup.currency = document.getElementById('s-currency').value;
-  S.setup.curs     = document.getElementById('s-curs').value;
+  S.setup.bride  = document.getElementById('s-bride').value;
+  S.setup.groom  = document.getElementById('s-groom').value;
+  S.setup.date   = document.getElementById('s-date').value;
+  S.setup.venue  = document.getElementById('s-venue').value;
+  S.setup.budget = document.getElementById('s-budget').value;
   updateHeader();
-  renderBudget();
-  calcUpdate();
   saveToFirebase();
 };
 
 function loadSetup() {
-  document.getElementById('s-bride').value    = S.setup.bride    || '';
-  document.getElementById('s-groom').value    = S.setup.groom    || '';
-  document.getElementById('s-date').value     = S.setup.date     || '';
-  document.getElementById('s-venue').value    = S.setup.venue    || '';
-  document.getElementById('s-budget').value   = S.setup.budget   || '';
-  document.getElementById('s-currency').value = S.setup.currency || 'EUR';
-  document.getElementById('s-curs').value     = S.setup.curs     || '';
+  document.getElementById('s-bride').value  = S.setup.bride  || '';
+  document.getElementById('s-groom').value  = S.setup.groom  || '';
+  document.getElementById('s-date').value   = S.setup.date   || '';
+  document.getElementById('s-venue').value  = S.setup.venue  || '';
+  document.getElementById('s-budget').value = S.setup.budget || '';
 }
 
 function updateHeader() {
@@ -721,18 +700,11 @@ function renderBudget() {
   const bugetTotal = parseFloat(S.setup.budget) || 0;
   const totalContractat = S.budget.reduce((s,x)=>s+(x.pretTotal||x.amount||0), 0);
   const totalAvans = S.budget.reduce((s,x)=>s+(x.avans||0), 0);
-  const totalRest = S.budget.reduce((s,x)=>s+(x.rest!==undefined?x.rest:(x.pretTotal||x.amount||0)-(x.avans||0)), 0);
+  const totalRest = S.budget.reduce((s,x)=>s+(x.rest||(x.pretTotal||x.amount||0)-(x.avans||0)), 0);
   const disponibil = bugetTotal - totalContractat;
   const pct = bugetTotal ? Math.min(100, Math.round(totalContractat/bugetTotal*100)) : 0;
-  const cur = getCurrency();
-  const curs = getCurs();
-
-  // Nr persoane din calculator (prioritate) sau din invitati confirmati
-  const nrCalc = parseFloat(document.getElementById('calc-persoane') && document.getElementById('calc-persoane').value) || 0;
-  const pctConf = parseFloat(document.getElementById('calc-confirmare') && document.getElementById('calc-confirmare').value) || 85;
-  const nrConf = S.guests.filter(g=>g.status==='confirmat').length;
-  const nrPers = nrCalc ? Math.round(nrCalc * pctConf / 100) : (nrConf || S.guests.length || 1);
-  const perPers = totalContractat && nrPers ? (totalContractat / nrPers) : 0;
+  const nrConf = S.guests.filter(g=>g.status==='confirmat').length || S.guests.length || 1;
+  const perPers = totalContractat && nrConf ? Math.round(totalContractat/nrConf) : 0;
 
   document.getElementById('b-total').textContent = bugetTotal ? fmt(bugetTotal) : '—';
   document.getElementById('b-chelt').textContent = fmt(totalContractat);
@@ -741,14 +713,6 @@ function renderBudget() {
   document.getElementById('b-avans-total').textContent = fmt(totalAvans);
   document.getElementById('b-rest-total').textContent = fmt(totalRest);
   document.getElementById('b-per-pers').textContent = perPers ? fmt(perPers) : '—';
-
-  // Linie info persoane
-  const persInfo = document.getElementById('b-pers-info');
-  if (persInfo) {
-    if (nrCalc) persInfo.textContent = `Calculat pentru ${nrPers} persoane (${nrCalc} invitați × ${pctConf}% confirmare)`;
-    else if (nrConf) persInfo.textContent = `Calculat pentru ${nrConf} persoane confirmate`;
-    else persInfo.textContent = `Adaugă nr. persoane în tab Calculator pentru calcul exact`;
-  }
 
   const statusLabel = {neinceput:'🔴 Neplătit', avans:'🟡 Avans dat', platit:'🟢 Achitat'};
   const catIcons = {'Foto/Video':'📷','Muzică/DJ':'🎵','Catering':'🍽️','Florărie':'💐','Decor':'✨','Rochie/Costum':'👗','Locație':'🏛️','Transport':'🚗','Tort':'🎂','Inele':'💍','Makeup/Hair':'💄','Altele':'🏷️'};
@@ -759,7 +723,6 @@ function renderBudget() {
     const rest  = b.rest !== undefined ? b.rest : total - avans;
     const status = b.statusPlata || (avans > 0 && avans < total ? 'avans' : avans >= total && total > 0 ? 'platit' : 'neinceput');
     const cat = b.cat || 'Altele';
-    const totalRON = cur === 'EUR' && curs ? ` <span style="font-size:11px;color:var(--muted)">(${Math.round(total*curs).toLocaleString('ro-RO')} RON)</span>` : '';
     return `<div class="b-vendor-card" style="border-left:3px solid ${status==='platit'?'var(--sage)':status==='avans'?'var(--gold)':'var(--rose)'}">
       <div class="b-vendor-top">
         <div style="font-size:26px;flex-shrink:0">${catIcons[cat]||'🏷️'}</div>
@@ -771,18 +734,9 @@ function renderBudget() {
         <button class="del" onclick="delBudget(${b.id})">✕</button>
       </div>
       <div class="b-vendor-amounts">
-        <div class="b-amount-box">
-          <div class="b-amount-val" style="color:var(--deep)">${fmt(total)}${totalRON}</div>
-          <div class="b-amount-lbl">Total</div>
-        </div>
-        <div class="b-amount-box">
-          <div class="b-amount-val" style="color:var(--sage)">${fmt(avans)}</div>
-          <div class="b-amount-lbl">Avans plătit</div>
-        </div>
-        <div class="b-amount-box">
-          <div class="b-amount-val" style="color:var(--rose)">${fmt(rest)}</div>
-          <div class="b-amount-lbl">Rest de plătit</div>
-        </div>
+        <div class="b-amount-box"><div class="b-amount-val" style="color:var(--deep)">${fmt(total)}</div><div class="b-amount-lbl">Total</div></div>
+        <div class="b-amount-box"><div class="b-amount-val" style="color:var(--sage)">${fmt(avans)}</div><div class="b-amount-lbl">Avans plătit</div></div>
+        <div class="b-amount-box"><div class="b-amount-val" style="color:var(--rose)">${fmt(rest)}</div><div class="b-amount-lbl">Rest de plătit</div></div>
       </div>
     </div>`;
   }).join('') : '<div class="empty">Niciun furnizor adăugat.</div>';
@@ -930,10 +884,6 @@ window.calcUpdate = () => {
   const pctConf    = parseFloat(document.getElementById('calc-confirmare').value)|| 85;
   const copii      = parseFloat(document.getElementById('calc-copii').value)     || 0;
 
-  // Actualizează hint-ul de monedă
-  const hint = document.getElementById('b-currency-hint');
-  if (hint) hint.textContent = `Prețurile sunt în ${getCurrency() === 'EUR' ? '€ EUR' : 'RON'}. Modifică în tab Info.`;
-
   if (!persoane) return;
 
   // Persoane care vin
@@ -1016,42 +966,11 @@ window.calcUpdate = () => {
 
   const sfaturiEl = document.getElementById('calc-sfaturi');
   if (sfaturiEl) sfaturiEl.innerHTML = sfaturi.map(s=>`<div class="sfat-card ${s.cls}">${s.text}</div>`).join('');
-
-  // Actualizează bugetul cu noile persoane
-  renderBudget();
 };
 
 function renderAll() { loadSetup(); updateHeader(); renderTasks(); renderBudget(); renderGuests(); renderVendors(); renderProgram(); renderNotes(); }
 
 // ── UTILS ─────────────────────────────────────────────────────
-function getCurrency() { return S.setup.currency || 'EUR'; }
-function getCurs() { return parseFloat(S.setup.curs) || 5.00; }
-
-// Formateaza suma cu simbolul valutei curente
-function fmt(n, currency) {
-  const cur = currency || getCurrency();
-  const sym = cur === 'EUR' ? '€' : ' RON';
-  const prefix = cur === 'EUR' ? '€' : '';
-  const suffix = cur === 'EUR' ? '' : ' RON';
-  return prefix + Math.round(n).toLocaleString('ro-RO') + suffix;
-}
-
-// Converteste EUR -> RON daca e necesar
-function toRON(n) {
-  if (getCurrency() === 'RON') return n;
-  return n * getCurs();
-}
-
-// Afiseaza suma cu optiune de conversie
-function fmtWithConvert(n) {
-  const cur = getCurrency();
-  if (cur === 'EUR' && getCurs()) {
-    const ron = Math.round(n * getCurs());
-    return `€${Math.round(n).toLocaleString('ro-RO')} <span style="font-size:11px;color:var(--muted)">(${ron.toLocaleString('ro-RO')} RON)</span>`;
-  }
-  return fmt(n);
-}
-
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function fmt(n){return n.toLocaleString('ro-RO')+' RON';}
 function now(){return new Date().toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'});}
