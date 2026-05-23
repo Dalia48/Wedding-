@@ -334,6 +334,12 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
     <div class="stat-box"><div class="stat-val" id="g-cancel" style="color:var(--muted)">0</div><div class="stat-lbl">Anulați</div></div>
   </div>
   <div class="stats-row">
+    <div class="stat-box"><div class="stat-val" id="g-mireasa" style="color:var(--rose)">0</div><div class="stat-lbl">Mireasă</div></div>
+    <div class="stat-box"><div class="stat-val" id="g-mire" style="color:var(--gold)">0</div><div class="stat-lbl">Mire</div></div>
+    <div class="stat-box"><div class="stat-val" id="g-comun" style="color:var(--sage)">0</div><div class="stat-lbl">Comun</div></div>
+    <div class="stat-box"><div class="stat-val" id="g-staff" style="color:var(--muted)">0</div><div class="stat-lbl">Staff</div></div>
+  </div>
+  <div class="stats-row">
     <div class="stat-box"><div class="stat-val" id="g-copii" style="color:var(--blush)">0</div><div class="stat-lbl">Copii</div></div>
     <div class="stat-box"><div class="stat-val" id="g-transfer" style="color:var(--gold)">0</div><div class="stat-lbl">Transfer</div></div>
     <div class="stat-box"><div class="stat-val" id="g-cazare" style="color:var(--sage)">0</div><div class="stat-lbl">Cazare</div></div>
@@ -348,7 +354,7 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
       <input type="number" id="g-nr" placeholder="Pers." min="1" value="1" style="flex:0.7">
     </div>
     <div class="row" style="margin-bottom:8px">
-      <select id="g-side"><option>Mireasă</option><option>Mire</option><option>Comun</option></select>
+      <select id="g-side"><option>Mireasă</option><option>Mire</option><option>Comun</option><option>Staff</option></select>
       <select id="g-status"><option value="asteptat">⏳ Așteptat</option><option value="confirmat">✅ Confirmat</option><option value="anulat">❌ Anulat</option></select>
     </div>
     <div class="row" style="margin-bottom:8px">
@@ -364,13 +370,27 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
   </div>
 
   <!-- FILTER -->
-  <div style="display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none">
+  <div style="display:flex;gap:6px;margin-bottom:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px">
     <button class="filter-btn active" onclick="filterGuests('toti',this)">Toți</button>
+    <button class="filter-btn" onclick="filterGuests('mireasa',this)">💐 Mireasă</button>
+    <button class="filter-btn" onclick="filterGuests('mire',this)">🤵 Mire</button>
+    <button class="filter-btn" onclick="filterGuests('comun',this)">👫 Comun</button>
+    <button class="filter-btn" onclick="filterGuests('staff',this)">🎯 Staff</button>
+  </div>
+  <div style="display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none">
     <button class="filter-btn" onclick="filterGuests('confirmat',this)">✅ Confirmați</button>
     <button class="filter-btn" onclick="filterGuests('asteptat',this)">⏳ Așteptați</button>
     <button class="filter-btn" onclick="filterGuests('anulat',this)">❌ Anulați</button>
     <button class="filter-btn" onclick="filterGuests('transfer',this)">🚌 Transfer</button>
     <button class="filter-btn" onclick="filterGuests('cazare',this)">🏨 Cazare</button>
+  </div>
+  <!-- EXPORT BUTTONS -->
+  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+    <button class="btn small ghost" onclick="exportGuests('toti')" style="flex:1;min-width:120px">📄 Export toți</button>
+    <button class="btn small ghost" onclick="exportGuests('mireasa')" style="flex:1;min-width:120px">📄 Mireasă</button>
+    <button class="btn small ghost" onclick="exportGuests('mire')" style="flex:1;min-width:120px">📄 Mire</button>
+    <button class="btn small ghost" onclick="exportGuests('comun')" style="flex:1;min-width:120px">📄 Comun</button>
+    <button class="btn small ghost" onclick="exportGuests('staff')" style="flex:1;min-width:120px">📄 Staff</button>
   </div>
 
   <div id="guests-list"></div>
@@ -550,7 +570,7 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
       <div class="field" style="margin:0;flex:0.7"><label>Nr. pers.</label><input type="number" id="edit-g-nr" placeholder="1" min="1"></div>
     </div>
     <div class="row" style="margin-bottom:8px">
-      <select id="edit-g-side"><option>Mireasă</option><option>Mire</option><option>Comun</option></select>
+      <select id="edit-g-side"><option>Mireasă</option><option>Mire</option><option>Comun</option><option>Staff</option></select>
       <select id="edit-g-status">
         <option value="asteptat">⏳ Așteptat</option>
         <option value="confirmat">✅ Confirmat</option>
@@ -922,36 +942,50 @@ window.filterGuests = (f, btn) => {
 function renderGuests() {
   const gs = S.guests;
 
-  // Calculează totaluri bazate pe NR PERSOANE (nu nr invitații)
-  const totalPers    = gs.reduce((s,g)=>s+(g.nr||1), 0);
-  const confPers     = gs.filter(g=>g.status==='confirmat').reduce((s,g)=>s+(g.nr||1), 0);
-  const waitPers     = gs.filter(g=>g.status==='asteptat').reduce((s,g)=>s+(g.nr||1), 0);
-  const cancelPers   = gs.filter(g=>g.status==='anulat').reduce((s,g)=>s+(g.nr||1), 0);
-  const copiiCount   = gs.filter(g=>g.copil).reduce((s,g)=>s+(g.nr||1), 0);
-  const transferCount= gs.filter(g=>g.transfer).reduce((s,g)=>s+(g.nr||1), 0);
-  const cazareCount  = gs.filter(g=>g.cazare).reduce((s,g)=>s+(g.nr||1), 0);
-  const vegeCount    = gs.filter(g=>g.menu==='vege').reduce((s,g)=>s+(g.nr||1), 0);
+  // Totaluri bazate pe NR PERSOANE
+  const totalPers     = gs.reduce((s,g)=>s+(g.nr||1), 0);
+  const confPers      = gs.filter(g=>g.status==='confirmat').reduce((s,g)=>s+(g.nr||1), 0);
+  const waitPers      = gs.filter(g=>g.status==='asteptat').reduce((s,g)=>s+(g.nr||1), 0);
+  const cancelPers    = gs.filter(g=>g.status==='anulat').reduce((s,g)=>s+(g.nr||1), 0);
+  const mireasaPers   = gs.filter(g=>g.side==='Mireasă').reduce((s,g)=>s+(g.nr||1), 0);
+  const mirePers      = gs.filter(g=>g.side==='Mire').reduce((s,g)=>s+(g.nr||1), 0);
+  const comunPers     = gs.filter(g=>g.side==='Comun').reduce((s,g)=>s+(g.nr||1), 0);
+  const staffPers     = gs.filter(g=>g.side==='Staff').reduce((s,g)=>s+(g.nr||1), 0);
+  const copiiCount    = gs.filter(g=>g.copil).reduce((s,g)=>s+(g.nr||1), 0);
+  const transferCount = gs.filter(g=>g.transfer).reduce((s,g)=>s+(g.nr||1), 0);
+  const cazareCount   = gs.filter(g=>g.cazare).reduce((s,g)=>s+(g.nr||1), 0);
+  const vegeCount     = gs.filter(g=>g.menu==='vege').reduce((s,g)=>s+(g.nr||1), 0);
 
-  document.getElementById('g-total').textContent = totalPers;
-  document.getElementById('g-conf').textContent = confPers;
-  document.getElementById('g-wait').textContent = waitPers;
-  document.getElementById('g-cancel').textContent = cancelPers;
-  document.getElementById('g-copii').textContent = copiiCount;
-  document.getElementById('g-transfer').textContent = transferCount;
-  document.getElementById('g-cazare').textContent = cazareCount;
-  document.getElementById('g-vege').textContent = vegeCount;
+  const setEl = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+  setEl('g-total', totalPers);
+  setEl('g-conf', confPers);
+  setEl('g-wait', waitPers);
+  setEl('g-cancel', cancelPers);
+  setEl('g-mireasa', mireasaPers);
+  setEl('g-mire', mirePers);
+  setEl('g-comun', comunPers);
+  setEl('g-staff', staffPers);
+  setEl('g-copii', copiiCount);
+  setEl('g-transfer', transferCount);
+  setEl('g-cazare', cazareCount);
+  setEl('g-vege', vegeCount);
 
   // Filtrare
   let filtered = gs;
-  if (guestFilter === 'confirmat') filtered = gs.filter(g=>g.status==='confirmat');
+  if (guestFilter === 'confirmat')  filtered = gs.filter(g=>g.status==='confirmat');
   else if (guestFilter === 'asteptat') filtered = gs.filter(g=>g.status==='asteptat');
-  else if (guestFilter === 'anulat') filtered = gs.filter(g=>g.status==='anulat');
+  else if (guestFilter === 'anulat')   filtered = gs.filter(g=>g.status==='anulat');
   else if (guestFilter === 'transfer') filtered = gs.filter(g=>g.transfer);
-  else if (guestFilter === 'cazare') filtered = gs.filter(g=>g.cazare);
+  else if (guestFilter === 'cazare')   filtered = gs.filter(g=>g.cazare);
+  else if (guestFilter === 'mireasa')  filtered = gs.filter(g=>g.side==='Mireasă');
+  else if (guestFilter === 'mire')     filtered = gs.filter(g=>g.side==='Mire');
+  else if (guestFilter === 'comun')    filtered = gs.filter(g=>g.side==='Comun');
+  else if (guestFilter === 'staff')    filtered = gs.filter(g=>g.side==='Staff');
 
   const menuLabel = {carne:'🥩 Carne', peste:'🐟 Pește', vege:'🥗 Vege'};
   const statusBg = {confirmat:'#d9f0d9', asteptat:'#fff3cd', anulat:'#fde8e8'};
   const statusColor = {confirmat:'#3a7a3a', asteptat:'#856404', anulat:'#8a3030'};
+  const sideIcon = {'Mireasă':'💐','Mire':'🤵','Comun':'👫','Staff':'🎯'};
 
   document.getElementById('guests-list').innerHTML = filtered.length ? filtered.map(g => {
     const nr = g.nr || 1;
@@ -961,12 +995,12 @@ function renderGuests() {
         <div class="g-avatar" style="${nr>1?'background:var(--rose);color:#fff;font-size:14px;':''}">${nr>1?nr+'👥':((g.name||'?')[0].toUpperCase())}</div>
         <div style="flex:1;min-width:0">
           <div class="gi-name">${esc(g.name||'')}</div>
-          <div class="gi-side">${g.side||''}${nr>1?' · <strong>'+nr+' persoane</strong>':''}${g.phone?' · '+esc(g.phone):''}</div>
+          <div class="gi-side">${sideIcon[g.side]||''} ${g.side||''}${nr>1?' · <strong>'+nr+' pers.</strong>':''}${g.phone?' · '+esc(g.phone):''}</div>
         </div>
-        <select onchange="updGuest(${g.id},this.value)" style="font-size:12px;border-radius:20px;padding:4px 8px;width:auto;background:${statusBg[st]};color:${statusColor[st]}">
-          <option value="asteptat"${st==='asteptat'?' selected':''}>⏳ Așteptat</option>
-          <option value="confirmat"${st==='confirmat'?' selected':''}>✅ Confirmat</option>
-          <option value="anulat"${st==='anulat'?' selected':''}>❌ Anulat</option>
+        <select onchange="updGuest(${g.id},this.value)" style="font-size:11px;border-radius:20px;padding:3px 6px;width:auto;background:${statusBg[st]};color:${statusColor[st]}">
+          <option value="asteptat"${st==='asteptat'?' selected':''}>⏳</option>
+          <option value="confirmat"${st==='confirmat'?' selected':''}>✅</option>
+          <option value="anulat"${st==='anulat'?' selected':''}>❌</option>
         </select>
         <button class="edit-btn" onclick="openGuestEdit(${g.id})">✏️</button>
         <button class="del" onclick="delGuest(${g.id})">✕</button>
@@ -1193,6 +1227,91 @@ window.saveGuestEdit = () => {
   g.cazare = document.getElementById('edit-g-cazare').checked;
   closeGuestModalBtn();
   renderGuests(); saveToFirebase();
+};
+
+// ── EXPORT GUESTS TXT ────────────────────────────────────────
+window.exportGuests = (filtru) => {
+  const gs = S.guests;
+  let lista;
+  const titlu = {
+    toti: 'Listă completă invitați',
+    mireasa: 'Invitați mireasă',
+    mire: 'Invitați mire',
+    comun: 'Invitați comuni',
+    staff: 'Staff'
+  };
+
+  if (filtru === 'toti') lista = gs;
+  else if (filtru === 'mireasa') lista = gs.filter(g=>g.side==='Mireasă');
+  else if (filtru === 'mire')    lista = gs.filter(g=>g.side==='Mire');
+  else if (filtru === 'comun')   lista = gs.filter(g=>g.side==='Comun');
+  else if (filtru === 'staff')   lista = gs.filter(g=>g.side==='Staff');
+
+  const statusLabel = {confirmat:'✅ Confirmat', asteptat:'⏳ Așteptat', anulat:'❌ Anulat'};
+  const menuLabel   = {carne:'Carne', peste:'Pește', vege:'Vegetarian'};
+
+  const totalPers = lista.reduce((s,g)=>s+(g.nr||1), 0);
+  const confPers  = lista.filter(g=>g.status==='confirmat').reduce((s,g)=>s+(g.nr||1), 0);
+
+  const bride = S.setup?.bride || 'Mireasă';
+  const groom = S.setup?.groom || 'Mire';
+  const date  = S.setup?.date ? new Date(S.setup.date).toLocaleDateString('ro-RO',{day:'numeric',month:'long',year:'numeric'}) : '';
+
+  let txt = '';
+  txt += '═'.repeat(50) + '
+';
+  txt += `  ${bride} & ${groom} — Nuntă ${date}
+`;
+  txt += `  ${titlu[filtru] || filtru}
+`;
+  txt += '═'.repeat(50) + '
+
+';
+  txt += `Total: ${totalPers} persoane (${lista.length} invitații)
+`;
+  txt += `Confirmați: ${confPers} persoane
+
+`;
+  txt += '─'.repeat(50) + '
+';
+
+  // Grupăm pe status
+  ['confirmat','asteptat','anulat'].forEach(st => {
+    const grup = lista.filter(g=>(g.status||'asteptat')===st);
+    if (!grup.length) return;
+    const persSt = grup.reduce((s,g)=>s+(g.nr||1), 0);
+    txt += `
+${statusLabel[st]} (${persSt} pers.)
+`;
+    txt += '─'.repeat(30) + '
+';
+    grup.forEach((g, i) => {
+      const nr = g.nr || 1;
+      txt += `${i+1}. ${g.name}${nr>1?' ('+nr+' pers.)':''}
+`;
+      const detalii = [];
+      if (g.phone) detalii.push('📱 '+g.phone);
+      if (g.menu && g.menu!=='carne') detalii.push('🍽️ '+menuLabel[g.menu]);
+      if (g.copil) detalii.push('👶 Copil');
+      if (g.transfer) detalii.push('🚌 Transfer');
+      if (g.cazare) detalii.push('🏨 Cazare');
+      if (detalii.length) txt += '   '+detalii.join(' · ')+'
+';
+    });
+  });
+
+  txt += '
+' + '═'.repeat(50) + '
+';
+  txt += `Exportat: ${new Date().toLocaleString('ro-RO')}
+`;
+
+  const blob = new Blob([txt], {type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `invitati-${filtru}-${new Date().toISOString().slice(0,10)}.txt`;
+  a.click();
+  URL.revokeObjectURL(a.href);
 };
 
 function renderAll() { loadSetup(); updateHeader(); renderTasks(); renderBudget(); renderGuests(); renderVendors(); renderProgram(); renderNotes(); }
