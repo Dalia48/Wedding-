@@ -343,7 +343,10 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
   <!-- ADD FORM -->
   <div class="card" style="border-left-color:var(--rose);margin-bottom:13px">
     <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--rose);margin-bottom:10px">+ Invitat nou</div>
-    <div class="field"><input type="text" id="g-name" placeholder="Nume complet"></div>
+    <div class="row" style="margin-bottom:8px">
+      <input type="text" id="g-name" placeholder="Nume (ex: Familia Ionescu)" style="flex:2">
+      <input type="number" id="g-nr" placeholder="Pers." min="1" value="1" style="flex:0.7">
+    </div>
     <div class="row" style="margin-bottom:8px">
       <select id="g-side"><option>Mireasă</option><option>Mire</option><option>Comun</option></select>
       <select id="g-status"><option value="asteptat">⏳ Așteptat</option><option value="confirmat">✅ Confirmat</option><option value="anulat">❌ Anulat</option></select>
@@ -542,7 +545,10 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
       <button class="modal-close" onclick="closeGuestModalBtn()">✕</button>
     </div>
     <input type="hidden" id="edit-g-id">
-    <div class="field"><label>Nume complet</label><input type="text" id="edit-g-name" placeholder="Nume complet"></div>
+    <div class="row" style="margin-bottom:8px">
+      <div class="field" style="margin:0;flex:2"><label>Nume</label><input type="text" id="edit-g-name" placeholder="ex: Familia Ionescu"></div>
+      <div class="field" style="margin:0;flex:0.7"><label>Nr. pers.</label><input type="number" id="edit-g-nr" placeholder="1" min="1"></div>
+    </div>
     <div class="row" style="margin-bottom:8px">
       <select id="edit-g-side"><option>Mireasă</option><option>Mire</option><option>Comun</option></select>
       <select id="edit-g-status">
@@ -813,11 +819,12 @@ function renderBudget() {
   const disponibil = bugetTotal - totalContractat;
   const pct = bugetTotal ? Math.min(100, Math.round(totalContractat/bugetTotal*100)) : 0;
 
-  // Nr persoane din Calculator (prioritate) sau invitați confirmați
+  // Nr persoane din Calculator (prioritate) sau suma persoanelor confirmate
   const calcPers = parseFloat(document.getElementById('calc-persoane')?.value) || 0;
   const calcConf = parseFloat(document.getElementById('calc-confirmare')?.value) || 85;
-  const nrConf = S.guests.filter(g=>g.status==='confirmat').length;
-  const nrPers = calcPers ? Math.round(calcPers * calcConf / 100) : (nrConf || S.guests.length || 1);
+  const nrConfPers = S.guests.filter(g=>g.status==='confirmat').reduce((s,g)=>s+(g.nr||1), 0);
+  const nrTotalPers = S.guests.reduce((s,g)=>s+(g.nr||1), 0);
+  const nrPers = calcPers ? Math.round(calcPers * calcConf / 100) : (nrConfPers || nrTotalPers || 1);
   const perPers = totalContractat && nrPers ? totalContractat / nrPers : 0;
 
   // Afișare valori (innerHTML pentru EUR+RON)
@@ -877,9 +884,11 @@ let guestFilter = 'toti';
 
 window.addGuest = () => {
   const n = document.getElementById('g-name').value.trim(); if(!n) return;
+  const nr = parseInt(document.getElementById('g-nr').value) || 1;
   S.guests.push({
     id: Date.now(),
     name: n,
+    nr: nr,
     side: document.getElementById('g-side').value,
     status: document.getElementById('g-status').value,
     phone: document.getElementById('g-phone').value.trim(),
@@ -890,6 +899,7 @@ window.addGuest = () => {
   });
   // Reset form
   document.getElementById('g-name').value='';
+  document.getElementById('g-nr').value='1';
   document.getElementById('g-phone').value='';
   document.getElementById('g-copil').checked=false;
   document.getElementById('g-nec-transfer').checked=false;
@@ -911,15 +921,27 @@ window.filterGuests = (f, btn) => {
 
 function renderGuests() {
   const gs = S.guests;
-  document.getElementById('g-total').textContent = gs.length;
-  document.getElementById('g-conf').textContent = gs.filter(g=>g.status==='confirmat').length;
-  document.getElementById('g-wait').textContent = gs.filter(g=>g.status==='asteptat').length;
-  document.getElementById('g-cancel').textContent = gs.filter(g=>g.status==='anulat').length;
-  document.getElementById('g-copii').textContent = gs.filter(g=>g.copil).length;
-  document.getElementById('g-transfer').textContent = gs.filter(g=>g.transfer).length;
-  document.getElementById('g-cazare').textContent = gs.filter(g=>g.cazare).length;
-  document.getElementById('g-vege').textContent = gs.filter(g=>g.menu==='vege').length;
 
+  // Calculează totaluri bazate pe NR PERSOANE (nu nr invitații)
+  const totalPers    = gs.reduce((s,g)=>s+(g.nr||1), 0);
+  const confPers     = gs.filter(g=>g.status==='confirmat').reduce((s,g)=>s+(g.nr||1), 0);
+  const waitPers     = gs.filter(g=>g.status==='asteptat').reduce((s,g)=>s+(g.nr||1), 0);
+  const cancelPers   = gs.filter(g=>g.status==='anulat').reduce((s,g)=>s+(g.nr||1), 0);
+  const copiiCount   = gs.filter(g=>g.copil).reduce((s,g)=>s+(g.nr||1), 0);
+  const transferCount= gs.filter(g=>g.transfer).reduce((s,g)=>s+(g.nr||1), 0);
+  const cazareCount  = gs.filter(g=>g.cazare).reduce((s,g)=>s+(g.nr||1), 0);
+  const vegeCount    = gs.filter(g=>g.menu==='vege').reduce((s,g)=>s+(g.nr||1), 0);
+
+  document.getElementById('g-total').textContent = totalPers;
+  document.getElementById('g-conf').textContent = confPers;
+  document.getElementById('g-wait').textContent = waitPers;
+  document.getElementById('g-cancel').textContent = cancelPers;
+  document.getElementById('g-copii').textContent = copiiCount;
+  document.getElementById('g-transfer').textContent = transferCount;
+  document.getElementById('g-cazare').textContent = cazareCount;
+  document.getElementById('g-vege').textContent = vegeCount;
+
+  // Filtrare
   let filtered = gs;
   if (guestFilter === 'confirmat') filtered = gs.filter(g=>g.status==='confirmat');
   else if (guestFilter === 'asteptat') filtered = gs.filter(g=>g.status==='asteptat');
@@ -931,18 +953,20 @@ function renderGuests() {
   const statusBg = {confirmat:'#d9f0d9', asteptat:'#fff3cd', anulat:'#fde8e8'};
   const statusColor = {confirmat:'#3a7a3a', asteptat:'#856404', anulat:'#8a3030'};
 
-  document.getElementById('guests-list').innerHTML = filtered.length ? filtered.map(g => `
-    <div class="g-card ${g.status||'asteptat'}">
+  document.getElementById('guests-list').innerHTML = filtered.length ? filtered.map(g => {
+    const nr = g.nr || 1;
+    const st = g.status || 'asteptat';
+    return `<div class="g-card ${st}">
       <div class="g-card-top">
-        <div class="g-avatar">${(g.name||'?')[0].toUpperCase()}</div>
+        <div class="g-avatar" style="${nr>1?'background:var(--rose);color:#fff;font-size:14px;':''}">${nr>1?nr+'👥':((g.name||'?')[0].toUpperCase())}</div>
         <div style="flex:1;min-width:0">
           <div class="gi-name">${esc(g.name||'')}</div>
-          <div class="gi-side">${g.side||''}${g.phone?' · '+esc(g.phone):''}</div>
+          <div class="gi-side">${g.side||''}${nr>1?' · <strong>'+nr+' persoane</strong>':''}${g.phone?' · '+esc(g.phone):''}</div>
         </div>
-        <select onchange="updGuest(${g.id},this.value)" style="font-size:12px;border-radius:20px;padding:4px 8px;width:auto;background:${statusBg[g.status||'asteptat']};color:${statusColor[g.status||'asteptat']}">
-          <option value="asteptat"${(g.status||'asteptat')==='asteptat'?' selected':''}>⏳ Așteptat</option>
-          <option value="confirmat"${g.status==='confirmat'?' selected':''}>✅ Confirmat</option>
-          <option value="anulat"${g.status==='anulat'?' selected':''}>❌ Anulat</option>
+        <select onchange="updGuest(${g.id},this.value)" style="font-size:12px;border-radius:20px;padding:4px 8px;width:auto;background:${statusBg[st]};color:${statusColor[st]}">
+          <option value="asteptat"${st==='asteptat'?' selected':''}>⏳ Așteptat</option>
+          <option value="confirmat"${st==='confirmat'?' selected':''}>✅ Confirmat</option>
+          <option value="anulat"${st==='anulat'?' selected':''}>❌ Anulat</option>
         </select>
         <button class="edit-btn" onclick="openGuestEdit(${g.id})">✏️</button>
         <button class="del" onclick="delGuest(${g.id})">✕</button>
@@ -953,7 +977,8 @@ function renderGuests() {
         ${g.transfer?'<span class="chip gold">🚌 Transfer</span>':''}
         ${g.cazare?'<span class="chip sage">🏨 Cazare</span>':''}
       </div>
-    </div>`).join('') : `<div class="empty">Niciun invitat${guestFilter!=='toti'?' în această categorie':''}.</div>`;
+    </div>`;
+  }).join('') : `<div class="empty">Niciun invitat${guestFilter!=='toti'?' în această categorie':''}.</div>`;
 }
 
 // ── VENDORS ───────────────────────────────────────────────────
@@ -1142,6 +1167,7 @@ window.openGuestEdit = (id) => {
   const g = S.guests.find(x=>x.id===id); if(!g) return;
   document.getElementById('edit-g-id').value = id;
   document.getElementById('edit-g-name').value = g.name || '';
+  document.getElementById('edit-g-nr').value = g.nr || 1;
   document.getElementById('edit-g-side').value = g.side || 'Mireasă';
   document.getElementById('edit-g-status').value = g.status || 'asteptat';
   document.getElementById('edit-g-phone').value = g.phone || '';
@@ -1157,6 +1183,7 @@ window.saveGuestEdit = () => {
   const id = parseInt(document.getElementById('edit-g-id').value);
   const g = S.guests.find(x=>x.id===id); if(!g) return;
   g.name = document.getElementById('edit-g-name').value.trim();
+  g.nr = parseInt(document.getElementById('edit-g-nr').value) || 1;
   g.side = document.getElementById('edit-g-side').value;
   g.status = document.getElementById('edit-g-status').value;
   g.phone = document.getElementById('edit-g-phone').value.trim();
