@@ -158,6 +158,16 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
 .sfat-card.warning{border-left-color:var(--rose);}.sfat-card.ok{border-left-color:var(--sage);}
 
 .nc{position:relative;}
+
+/* EDIT MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(61,43,43,.55);z-index:500;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px);}
+.modal-overlay.hidden{display:none;}
+.modal-box{background:var(--cream);border-radius:20px 20px 0 0;padding:20px 18px calc(var(--safe-bottom)+24px);width:100%;max-width:540px;max-height:85vh;overflow-y:auto;box-shadow:0 -4px 30px rgba(61,43,43,.2);}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--rose);margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+.modal-close{background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer;padding:0 4px;line-height:1;}
+.modal-close:active{color:var(--rose);}
+.edit-btn{background:none;border:1px solid var(--blush);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--gold);cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.edit-btn:active{background:var(--gold);color:var(--white);}
 .calc-section-title{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--rose);margin:16px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--blush);}
 .calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;}
 .calc-box{background:var(--white);border-radius:12px;padding:12px;text-align:center;box-shadow:0 1px 7px rgba(61,43,43,.08);}
@@ -168,7 +178,17 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
 .sfat-card{background:var(--white);border-radius:12px;padding:11px 14px;margin-bottom:8px;box-shadow:0 1px 7px rgba(61,43,43,.08);border-left:3px solid var(--gold);font-size:13px;color:var(--muted);line-height:1.6;}
 .sfat-card.warning{border-left-color:var(--rose);}.sfat-card.ok{border-left-color:var(--sage);}
 
-.nc{position:relative;}.nc-text{font-family:'Cormorant Garamond',serif;font-size:15px;padding-right:24px;white-space:pre-wrap;}.nc-date{font-size:11px;color:var(--gold);margin-top:6px;}.nc .del{position:absolute;top:8px;right:8px;}
+.nc{position:relative;}
+
+/* EDIT MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(61,43,43,.55);z-index:500;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px);}
+.modal-overlay.hidden{display:none;}
+.modal-box{background:var(--cream);border-radius:20px 20px 0 0;padding:20px 18px calc(var(--safe-bottom)+24px);width:100%;max-width:540px;max-height:85vh;overflow-y:auto;box-shadow:0 -4px 30px rgba(61,43,43,.2);}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--rose);margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+.modal-close{background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer;padding:0 4px;line-height:1;}
+.modal-close:active{color:var(--rose);}
+.edit-btn{background:none;border:1px solid var(--blush);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--gold);cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.edit-btn:active{background:var(--gold);color:var(--white);}.nc-text{font-family:'Cormorant Garamond',serif;font-size:15px;padding-right:24px;white-space:pre-wrap;}.nc-date{font-size:11px;color:var(--gold);margin-top:6px;}.nc .del{position:absolute;top:8px;right:8px;}
 </style>
 </head>
 <body>
@@ -395,12 +415,12 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
     </div>
     <div class="row" style="margin-bottom:8px">
       <div class="field" style="margin:0">
-        <label>Preț meniu / persoană (RON)</label>
-        <input type="number" id="calc-meniu" placeholder="ex: 350" oninput="calcUpdate()">
+        <label>Preț meniu / persoană (€)</label>
+        <input type="number" id="calc-meniu" placeholder="ex: 70" oninput="calcUpdate()">
       </div>
       <div class="field" style="margin:0">
-        <label>Buget total disponibil (RON)</label>
-        <input type="number" id="calc-buget" placeholder="ex: 60000" oninput="calcUpdate()">
+        <label>Buget total disponibil (€)</label>
+        <input type="number" id="calc-buget" placeholder="ex: 12000" oninput="calcUpdate()">
       </div>
     </div>
     <div class="row">
@@ -482,6 +502,71 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
 </div>
 
 </div><!-- /content -->
+
+<!-- EDIT BUDGET MODAL -->
+<div id="modal-budget" class="modal-overlay hidden" onclick="closeBudgetModal(event)">
+  <div class="modal-box">
+    <div class="modal-title">
+      ✏️ Editează furnizor
+      <button class="modal-close" onclick="closeBudgetModalBtn()">✕</button>
+    </div>
+    <input type="hidden" id="edit-b-id">
+    <div class="field"><label>Nume furnizor</label><input type="text" id="edit-b-name" placeholder="ex: Fotograf Alexandru"></div>
+    <div class="row" style="margin-bottom:8px">
+      <select id="edit-b-cat">
+        <option>Foto/Video</option><option>Muzică/DJ</option><option>Catering</option>
+        <option>Florărie</option><option>Decor</option><option>Rochie/Costum</option>
+        <option>Locație</option><option>Transport</option><option>Tort</option>
+        <option>Inele</option><option>Makeup/Hair</option><option>Altele</option>
+      </select>
+      <input type="number" id="edit-b-pret" placeholder="Preț total (€)">
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <input type="number" id="edit-b-avans" placeholder="Avans plătit (€)">
+      <select id="edit-b-status">
+        <option value="neinceput">🔴 Neplătit</option>
+        <option value="avans">🟡 Avans dat</option>
+        <option value="platit">🟢 Achitat</option>
+      </select>
+    </div>
+    <div class="field" style="margin-bottom:14px"><label>Contact</label><input type="text" id="edit-b-contact" placeholder="tel/email"></div>
+    <button class="btn" onclick="saveBudgetEdit()">💾 Salvează modificările</button>
+  </div>
+</div>
+
+<!-- EDIT GUEST MODAL -->
+<div id="modal-guest" class="modal-overlay hidden" onclick="closeGuestModal(event)">
+  <div class="modal-box">
+    <div class="modal-title">
+      ✏️ Editează invitat
+      <button class="modal-close" onclick="closeGuestModalBtn()">✕</button>
+    </div>
+    <input type="hidden" id="edit-g-id">
+    <div class="field"><label>Nume complet</label><input type="text" id="edit-g-name" placeholder="Nume complet"></div>
+    <div class="row" style="margin-bottom:8px">
+      <select id="edit-g-side"><option>Mireasă</option><option>Mire</option><option>Comun</option></select>
+      <select id="edit-g-status">
+        <option value="asteptat">⏳ Așteptat</option>
+        <option value="confirmat">✅ Confirmat</option>
+        <option value="anulat">❌ Anulat</option>
+      </select>
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <input type="text" id="edit-g-phone" placeholder="📱 Telefon">
+      <select id="edit-g-menu">
+        <option value="carne">🥩 Carne</option>
+        <option value="peste">🐟 Pește</option>
+        <option value="vege">🥗 Vegetarian</option>
+      </select>
+    </div>
+    <div class="row" style="margin-bottom:14px">
+      <label class="check-label"><input type="checkbox" id="edit-g-copil"> 👶 Copil</label>
+      <label class="check-label"><input type="checkbox" id="edit-g-transfer"> 🚌 Transfer</label>
+      <label class="check-label"><input type="checkbox" id="edit-g-cazare"> 🏨 Cazare</label>
+    </div>
+    <button class="btn" onclick="saveGuestEdit()">💾 Salvează modificările</button>
+  </div>
+</div>
 
 <!-- Firebase SDK -->
 <script type="module">
@@ -763,7 +848,10 @@ function renderBudget() {
           <div class="b-vendor-cat">${cat}${b.contact?' · '+esc(b.contact):''}</div>
           <span class="tag" style="margin-top:4px;display:inline-block">${statusLabel[status]||'🔴 Neplătit'}</span>
         </div>
+        <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+        <button class="edit-btn" onclick="openBudgetEdit(${b.id})">✏️ Edit</button>
         <button class="del" onclick="delBudget(${b.id})">✕</button>
+      </div>
       </div>
       <div class="b-vendor-amounts">
         <div class="b-amount-box">
@@ -856,6 +944,7 @@ function renderGuests() {
           <option value="confirmat"${g.status==='confirmat'?' selected':''}>✅ Confirmat</option>
           <option value="anulat"${g.status==='anulat'?' selected':''}>❌ Anulat</option>
         </select>
+        <button class="edit-btn" onclick="openGuestEdit(${g.id})">✏️</button>
         <button class="del" onclick="delGuest(${g.id})">✕</button>
       </div>
       <div class="g-card-chips">
@@ -1015,6 +1104,68 @@ window.calcUpdate = () => {
 
   // Actualizează bugetul cu nr persoane din calculator
   renderBudget();
+};
+
+// ── EDIT BUDGET ───────────────────────────────────────────────
+window.openBudgetEdit = (id) => {
+  const b = S.budget.find(x=>x.id===id); if(!b) return;
+  document.getElementById('edit-b-id').value = id;
+  document.getElementById('edit-b-name').value = b.name || '';
+  document.getElementById('edit-b-cat').value = b.cat || 'Foto/Video';
+  document.getElementById('edit-b-pret').value = b.pretTotal || b.amount || '';
+  document.getElementById('edit-b-avans').value = b.avans || '';
+  document.getElementById('edit-b-status').value = b.statusPlata || 'neinceput';
+  document.getElementById('edit-b-contact').value = b.contact || '';
+  document.getElementById('modal-budget').classList.remove('hidden');
+};
+window.closeBudgetModalBtn = () => document.getElementById('modal-budget').classList.add('hidden');
+window.closeBudgetModal = (e) => { if(e.target.id==='modal-budget') closeBudgetModalBtn(); };
+window.saveBudgetEdit = () => {
+  const id = parseInt(document.getElementById('edit-b-id').value);
+  const b = S.budget.find(x=>x.id===id); if(!b) return;
+  const pret = parseFloat(document.getElementById('edit-b-pret').value) || 0;
+  const avans = parseFloat(document.getElementById('edit-b-avans').value) || 0;
+  b.name = document.getElementById('edit-b-name').value.trim();
+  b.cat = document.getElementById('edit-b-cat').value;
+  b.pretTotal = pret;
+  b.amount = pret;
+  b.avans = avans;
+  b.rest = pret - avans;
+  b.statusPlata = document.getElementById('edit-b-status').value;
+  b.contact = document.getElementById('edit-b-contact').value.trim();
+  closeBudgetModalBtn();
+  renderBudget(); saveToFirebase();
+};
+
+// ── EDIT GUESTS ───────────────────────────────────────────────
+window.openGuestEdit = (id) => {
+  const g = S.guests.find(x=>x.id===id); if(!g) return;
+  document.getElementById('edit-g-id').value = id;
+  document.getElementById('edit-g-name').value = g.name || '';
+  document.getElementById('edit-g-side').value = g.side || 'Mireasă';
+  document.getElementById('edit-g-status').value = g.status || 'asteptat';
+  document.getElementById('edit-g-phone').value = g.phone || '';
+  document.getElementById('edit-g-menu').value = g.menu || 'carne';
+  document.getElementById('edit-g-copil').checked = !!g.copil;
+  document.getElementById('edit-g-transfer').checked = !!g.transfer;
+  document.getElementById('edit-g-cazare').checked = !!g.cazare;
+  document.getElementById('modal-guest').classList.remove('hidden');
+};
+window.closeGuestModalBtn = () => document.getElementById('modal-guest').classList.add('hidden');
+window.closeGuestModal = (e) => { if(e.target.id==='modal-guest') closeGuestModalBtn(); };
+window.saveGuestEdit = () => {
+  const id = parseInt(document.getElementById('edit-g-id').value);
+  const g = S.guests.find(x=>x.id===id); if(!g) return;
+  g.name = document.getElementById('edit-g-name').value.trim();
+  g.side = document.getElementById('edit-g-side').value;
+  g.status = document.getElementById('edit-g-status').value;
+  g.phone = document.getElementById('edit-g-phone').value.trim();
+  g.menu = document.getElementById('edit-g-menu').value;
+  g.copil = document.getElementById('edit-g-copil').checked;
+  g.transfer = document.getElementById('edit-g-transfer').checked;
+  g.cazare = document.getElementById('edit-g-cazare').checked;
+  closeGuestModalBtn();
+  renderGuests(); saveToFirebase();
 };
 
 function renderAll() { loadSetup(); updateHeader(); renderTasks(); renderBudget(); renderGuests(); renderVendors(); renderProgram(); renderNotes(); }
