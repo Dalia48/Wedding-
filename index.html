@@ -464,7 +464,7 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, browserLocalPersistence, setPersistence, signOut as fbSignOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
 // ── FIREBASE CONFIG ──────────────────────────────────────────
@@ -482,6 +482,13 @@ const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getDatabase(app);
 const provider = new GoogleAuthProvider();
+provider.setCustomParameters({ prompt: 'select_account' });
+
+// Păstrează sesiunea permanent (nu expiră)
+setPersistence(auth, browserLocalPersistence).catch(() => {});
+
+// Preia rezultatul după redirect
+getRedirectResult(auth).catch(() => {});
 
 
 // ── DEFAULT DATA ──────────────────────────────────────────────
@@ -513,12 +520,17 @@ let isLoading = false;
 
 // ── AUTH ──────────────────────────────────────────────────────
 window.signIn = async () => {
+  const el = document.getElementById('auth-error');
+  el.classList.add('hidden');
   try {
     await signInWithPopup(auth, provider);
   } catch(e) {
-    const el = document.getElementById('auth-error');
-    el.textContent = 'Eroare: ' + e.message;
-    el.classList.remove('hidden');
+    if (e.code === 'auth/popup-blocked' || e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') {
+      await signInWithRedirect(auth, provider);
+    } else {
+      el.textContent = 'Eroare: ' + e.message;
+      el.classList.remove('hidden');
+    }
   }
 };
 
