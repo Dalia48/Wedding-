@@ -292,17 +292,17 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
 
 <div id="tabs" class="hidden">
   <button class="active" onclick="showTab('dashboard',this)"><span class="ti">🏠</span>Acasă</button>
-  <button onclick="showTab('setup',this)"><span class="ti">⚙️</span>Info</button>
-  <button onclick="showTab('tasks',this)"><span class="ti">✅</span>Sarcini</button>
-  <button onclick="showTab('budget',this)"><span class="ti">💰</span>Buget</button>
   <button onclick="showTab('guests',this)"><span class="ti">👥</span>Invitați</button>
-  <button onclick="showTab('vendors',this)"><span class="ti">🏷️</span>Furnizori</button>
-  <button onclick="showTab('program',this)"><span class="ti">📅</span>Program</button>
-  <button onclick="showTab('notes',this)"><span class="ti">📝</span>Note</button>
-  <button onclick="showTab('calc',this)"><span class="ti">🧮</span>Calculator</button>
   <button onclick="showTab('mese',this)"><span class="ti">🪑</span>Mese</button>
   <button onclick="showTab('cadouri',this)"><span class="ti">🎁</span>Cadouri</button>
+  <button onclick="showTab('budget',this)"><span class="ti">💰</span>Buget</button>
+  <button onclick="showTab('calc',this)"><span class="ti">🧮</span>Calculator</button>
+  <button onclick="showTab('vendors',this)"><span class="ti">🏷️</span>Furnizori</button>
   <button onclick="showTab('jurnal',this)"><span class="ti">📞</span>Jurnal</button>
+  <button onclick="showTab('program',this)"><span class="ti">📅</span>Program</button>
+  <button onclick="showTab('tasks',this)"><span class="ti">✅</span>Sarcini</button>
+  <button onclick="showTab('notes',this)"><span class="ti">📝</span>Note</button>
+  <button onclick="showTab('setup',this)"><span class="ti">⚙️</span>Info</button>
 </div>
 
 <div id="content" class="hidden">
@@ -759,7 +759,13 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
   <div class="sec-title">🎁 Cadouri primite</div>
   <div class="card" style="border-left-color:var(--gold)">
     <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);margin-bottom:10px">+ Înregistrează cadou</div>
-    <div class="field"><input type="text" id="cad-de-la" placeholder="De la (ex: Familia Ionescu)"></div>
+    <div class="field">
+      <label>De la</label>
+      <select id="cad-de-la-sel" onchange="onCadouSelectChange()" style="margin-bottom:6px">
+        <option value="">-- Alege din invitați confirmați --</option>
+      </select>
+      <input type="text" id="cad-de-la" placeholder="Sau scrie manual...">
+    </div>
     <div class="row" style="margin-bottom:8px">
       <input type="number" id="cad-suma" placeholder="Sumă (€) — 0 pt. cadou fizic">
       <select id="cad-tip">
@@ -781,8 +787,11 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
     <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
       <span style="color:var(--muted)">Nr. cadouri fizice:</span><span id="cad-nr-fizice" style="color:var(--gold);font-weight:600">0</span>
     </div>
-    <div style="display:flex;justify-content:space-between;font-size:13px">
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
       <span style="color:var(--muted)">Mulțumiri de trimis:</span><span id="cad-multumiri" style="color:var(--rose);font-weight:600">0</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px">
+      <span style="color:var(--muted)">Confirmați fără cadou:</span><span id="cad-fara" style="color:var(--muted);font-weight:600">0</span>
     </div>
   </div>
   <div id="cadouri-list"></div>
@@ -1692,7 +1701,9 @@ function renderMese() {
 
 // ══ CADOURI ══════════════════════════════════════════════════
 window.addCadou = () => {
-  const de_la = document.getElementById('cad-de-la').value.trim(); if(!de_la) return;
+  const sel = document.getElementById('cad-de-la-sel').value;
+  const manual = document.getElementById('cad-de-la').value.trim();
+  const de_la = sel || manual; if(!de_la) return;
   S.cadouri.push({
     id:Date.now(),
     de_la,
@@ -1702,6 +1713,7 @@ window.addCadou = () => {
     multumit: document.getElementById('cad-multumit').checked,
     data: new Date().toLocaleDateString('ro-RO')
   });
+  document.getElementById('cad-de-la-sel').value='';
   document.getElementById('cad-de-la').value='';
   document.getElementById('cad-suma').value='';
   document.getElementById('cad-descriere').value='';
@@ -1714,15 +1726,37 @@ window.toggleMultumire = (id) => {
 };
 window.delCadou = (id) => { S.cadouri=S.cadouri.filter(x=>x.id!==id); renderCadouri(); saveToFirebase(); };
 
+function updateCadouGuests() {
+  const sel = document.getElementById('cad-de-la-sel');
+  if (!sel) return;
+  const confirmed = S.guests.filter(g=>g.status==='confirmat');
+  const cadouriExistente = S.cadouri.map(c=>c.de_la);
+  const current = sel.value;
+  sel.innerHTML = '<option value="">-- Alege din invitați confirmați --</option>' +
+    confirmed.map(g=>`<option value="${esc(g.name)}" ${current===g.name?'selected':''}>${esc(g.name)}${(g.nr||1)>1?' ('+g.nr+' pers.)':''}${cadouriExistente.includes(g.name)?' ✓':''}</option>`).join('');
+}
+
+window.onCadouSelectChange = () => {
+  const sel = document.getElementById('cad-de-la-sel');
+  const inp = document.getElementById('cad-de-la');
+  if (sel && inp) {
+    if (sel.value) inp.value = '';
+    inp.placeholder = sel.value ? 'Selectat din listă' : 'Sau scrie manual...';
+  }
+};
+
 function renderCadouri() {
+  updateCadouGuests();
   const totalBani = S.cadouri.filter(c=>c.tip==='bani').reduce((s,c)=>s+c.suma,0);
   const nrFizice = S.cadouri.filter(c=>c.tip!=='bani').length;
   const multumiri = S.cadouri.filter(c=>!c.multumit).length;
+  const confFaraCadou = S.guests.filter(g=>g.status==='confirmat' && !S.cadouri.find(c=>c.de_la===g.name)).length;
   const el=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
   const setH=(id,v)=>{const e=document.getElementById(id);if(e)e.innerHTML=v;};
   setH('cad-total-bani','€'+totalBani.toLocaleString('ro-RO'));
   el('cad-nr-fizice',nrFizice);
   el('cad-multumiri',multumiri);
+  el('cad-fara',confFaraCadou);
 
   const tipIcon={bani:'💵',cadou:'🎁',voucher:'🎫'};
   document.getElementById('cadouri-list').innerHTML = S.cadouri.length ? S.cadouri.map(c=>`
