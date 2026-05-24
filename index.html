@@ -369,6 +369,12 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
     <button class="btn" onclick="addGuest()">+ Adaugă invitat</button>
   </div>
 
+  <!-- SEARCH -->
+  <div style="position:relative;margin-bottom:10px">
+    <input type="text" id="g-search" placeholder="🔍 Caută invitat..." oninput="renderGuests()" style="padding-left:14px;background:var(--white);border-color:var(--blush)">
+    <button onclick="document.getElementById('g-search').value='';renderGuests()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;line-height:1" id="g-search-clear">✕</button>
+  </div>
+
   <!-- FILTER -->
   <div style="display:flex;gap:6px;margin-bottom:5px;overflow-x:auto;scrollbar-width:none">
     <button class="filter-btn active" onclick="filterGuests('toti',this)">Toți</button>
@@ -1046,6 +1052,13 @@ function renderGuests() {
   else if (guestFilter==='mire')      filtered = gs.filter(g=>g.side==='Mire');
   else if (guestFilter==='comun')     filtered = gs.filter(g=>g.side==='Comun');
   else if (guestFilter==='staff')     filtered = gs.filter(g=>g.side==='Staff');
+
+  // Search
+  const searchEl = document.getElementById('g-search');
+  const q = searchEl ? searchEl.value.trim().toLowerCase() : '';
+  if (q) filtered = filtered.filter(g=>(g.name||'').toLowerCase().includes(q)||(g.phone||'').includes(q));
+  const clearBtn = document.getElementById('g-search-clear');
+  if (clearBtn) clearBtn.style.opacity = q ? '1' : '0';
 
   const menuLabel  = {carne:'🥩 Carne', peste:'🐟 Pește', vege:'🥗 Vege'};
   const statusBg   = {confirmat:'#d9f0d9', asteptat:'#fff3cd', anulat:'#fde8e8'};
