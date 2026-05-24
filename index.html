@@ -157,6 +157,37 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
 .sfat-card{background:var(--white);border-radius:12px;padding:11px 14px;margin-bottom:8px;box-shadow:0 1px 7px rgba(61,43,43,.08);border-left:3px solid var(--gold);font-size:13px;color:var(--muted);line-height:1.6;}
 .sfat-card.warning{border-left-color:var(--rose);}.sfat-card.ok{border-left-color:var(--sage);}
 
+/* DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.dash-card{background:var(--white);border-radius:14px;padding:14px;box-shadow:0 2px 14px rgba(61,43,43,.09);display:flex;flex-direction:column;align-items:center;text-align:center;}
+.dash-card .big{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;line-height:1;}
+.dash-card .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px;}
+.dash-card .sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.dash-full{background:var(--white);border-radius:14px;padding:14px 16px;box-shadow:0 2px 14px rgba(61,43,43,.09);margin-bottom:10px;}
+.dash-full-title{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--deep);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.dash-task-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--light);font-size:14px;}
+.dash-task-item:last-child{border-bottom:none;}
+.dash-task-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.deadline-badge{font-size:10px;padding:2px 7px;border-radius:20px;white-space:nowrap;}
+.deadline-urgent{background:#fde8e8;color:#8a3030;}
+.deadline-soon{background:#fff3cd;color:#856404;}
+.deadline-ok{background:#d9f0d9;color:#3a7a3a;}
+.deadline-none{background:var(--light);color:var(--muted);}
+/* DEADLINE in tasks */
+.task-deadline{font-size:11px;color:var(--muted);margin-top:2px;}
+
+.masa-card{background:var(--white);border-radius:13px;padding:13px 14px;margin-bottom:9px;box-shadow:0 2px 14px rgba(61,43,43,.09);border-left:3px solid var(--blush);}
+.masa-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;margin-bottom:6px;}
+.masa-loc{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;margin:2px;background:var(--light);color:var(--muted);}
+.masa-loc.ocupat{background:var(--blush);color:var(--deep);}
+.cadou-card{background:var(--white);border-radius:13px;padding:12px 14px;margin-bottom:8px;box-shadow:0 1px 8px rgba(61,43,43,.08);border-left:3px solid var(--gold);}
+.jurnal-card{background:var(--white);border-radius:13px;padding:13px 14px;margin-bottom:9px;box-shadow:0 2px 14px rgba(61,43,43,.09);border-left:3px solid var(--blush);}
+.jurnal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.jurnal-furnizor{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--deep);}
+.jurnal-meta{font-size:11px;color:var(--gold);}
+.jurnal-nota{font-size:13px;color:var(--muted);line-height:1.6;margin-top:6px;}
+.tip-badge{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--light);color:var(--muted);}
+
 .nc{position:relative;}
 
 /* EDIT MODAL */
@@ -177,6 +208,37 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
 .bilant-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:14px;color:var(--deep);}
 .sfat-card{background:var(--white);border-radius:12px;padding:11px 14px;margin-bottom:8px;box-shadow:0 1px 7px rgba(61,43,43,.08);border-left:3px solid var(--gold);font-size:13px;color:var(--muted);line-height:1.6;}
 .sfat-card.warning{border-left-color:var(--rose);}.sfat-card.ok{border-left-color:var(--sage);}
+
+/* DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.dash-card{background:var(--white);border-radius:14px;padding:14px;box-shadow:0 2px 14px rgba(61,43,43,.09);display:flex;flex-direction:column;align-items:center;text-align:center;}
+.dash-card .big{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;line-height:1;}
+.dash-card .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px;}
+.dash-card .sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.dash-full{background:var(--white);border-radius:14px;padding:14px 16px;box-shadow:0 2px 14px rgba(61,43,43,.09);margin-bottom:10px;}
+.dash-full-title{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--deep);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.dash-task-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--light);font-size:14px;}
+.dash-task-item:last-child{border-bottom:none;}
+.dash-task-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.deadline-badge{font-size:10px;padding:2px 7px;border-radius:20px;white-space:nowrap;}
+.deadline-urgent{background:#fde8e8;color:#8a3030;}
+.deadline-soon{background:#fff3cd;color:#856404;}
+.deadline-ok{background:#d9f0d9;color:#3a7a3a;}
+.deadline-none{background:var(--light);color:var(--muted);}
+/* DEADLINE in tasks */
+.task-deadline{font-size:11px;color:var(--muted);margin-top:2px;}
+
+.masa-card{background:var(--white);border-radius:13px;padding:13px 14px;margin-bottom:9px;box-shadow:0 2px 14px rgba(61,43,43,.09);border-left:3px solid var(--blush);}
+.masa-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;margin-bottom:6px;}
+.masa-loc{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;margin:2px;background:var(--light);color:var(--muted);}
+.masa-loc.ocupat{background:var(--blush);color:var(--deep);}
+.cadou-card{background:var(--white);border-radius:13px;padding:12px 14px;margin-bottom:8px;box-shadow:0 1px 8px rgba(61,43,43,.08);border-left:3px solid var(--gold);}
+.jurnal-card{background:var(--white);border-radius:13px;padding:13px 14px;margin-bottom:9px;box-shadow:0 2px 14px rgba(61,43,43,.09);border-left:3px solid var(--blush);}
+.jurnal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.jurnal-furnizor{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--deep);}
+.jurnal-meta{font-size:11px;color:var(--gold);}
+.jurnal-nota{font-size:13px;color:var(--muted);line-height:1.6;margin-top:6px;}
+.tip-badge{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--light);color:var(--muted);}
 
 .nc{position:relative;}
 
@@ -229,7 +291,8 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
 </div>
 
 <div id="tabs" class="hidden">
-  <button class="active" onclick="showTab('setup',this)"><span class="ti">⚙️</span>Info</button>
+  <button class="active" onclick="showTab('dashboard',this)"><span class="ti">🏠</span>Acasă</button>
+  <button onclick="showTab('setup',this)"><span class="ti">⚙️</span>Info</button>
   <button onclick="showTab('tasks',this)"><span class="ti">✅</span>Sarcini</button>
   <button onclick="showTab('budget',this)"><span class="ti">💰</span>Buget</button>
   <button onclick="showTab('guests',this)"><span class="ti">👥</span>Invitați</button>
@@ -237,11 +300,75 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
   <button onclick="showTab('program',this)"><span class="ti">📅</span>Program</button>
   <button onclick="showTab('notes',this)"><span class="ti">📝</span>Note</button>
   <button onclick="showTab('calc',this)"><span class="ti">🧮</span>Calculator</button>
+  <button onclick="showTab('mese',this)"><span class="ti">🪑</span>Mese</button>
+  <button onclick="showTab('cadouri',this)"><span class="ti">🎁</span>Cadouri</button>
+  <button onclick="showTab('jurnal',this)"><span class="ti">📞</span>Jurnal</button>
 </div>
 
 <div id="content" class="hidden">
 
-<div id="sec-setup" class="section active">
+<div id="sec-dashboard" class="section active">
+  <div class="sec-title">🏠 Tablou de bord</div>
+
+  <!-- COUNTDOWN ROW -->
+  <div class="dash-grid" style="margin-bottom:10px">
+    <div class="dash-card" style="border-left:3px solid var(--rose)">
+      <div class="big" id="d-zile" style="color:var(--rose)">—</div>
+      <div class="lbl">Zile rămase</div>
+      <div class="sub" id="d-data">—</div>
+    </div>
+    <div class="dash-card" style="border-left:3px solid var(--gold)">
+      <div class="big" id="d-saptamani" style="color:var(--gold)">—</div>
+      <div class="lbl">Săptămâni</div>
+      <div class="sub" id="d-luni">— luni</div>
+    </div>
+  </div>
+
+  <!-- INVITATI + BUGET -->
+  <div class="dash-grid">
+    <div class="dash-card" style="border-left:3px solid var(--sage)">
+      <div class="big" id="d-inv-conf" style="color:var(--sage)">0</div>
+      <div class="lbl">Confirmați</div>
+      <div class="sub" id="d-inv-total">din 0 invitați</div>
+    </div>
+    <div class="dash-card" style="border-left:3px solid var(--blush)">
+      <div class="big" id="d-buget-pct" style="color:var(--rose)">0%</div>
+      <div class="lbl">Buget alocat</div>
+      <div class="sub" id="d-buget-sub">din —</div>
+    </div>
+  </div>
+
+  <!-- SARCINI PROGRESS -->
+  <div class="dash-full">
+    <div class="dash-full-title">✅ Progres sarcini</div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+      <span id="d-task-done" style="color:var(--muted)">0/0 îndeplinite</span>
+      <span id="d-task-pct" style="color:var(--rose);font-weight:600">0%</span>
+    </div>
+    <div class="prog-wrap"><div class="prog-bar" id="d-task-bar" style="width:0%"></div></div>
+  </div>
+
+  <!-- SARCINI URGENTE -->
+  <div class="dash-full">
+    <div class="dash-full-title">⚠️ Sarcini urgente / apropiate</div>
+    <div id="d-urgent-tasks"><div style="font-size:13px;color:var(--muted);font-style:italic">Nu ai sarcini cu deadline setat.</div></div>
+  </div>
+
+  <!-- FURNIZORI NEACHITATI -->
+  <div class="dash-full">
+    <div class="dash-full-title">💰 Furnizori cu plăți restante</div>
+    <div id="d-unpaid-vendors"><div style="font-size:13px;color:var(--muted);font-style:italic">Toți furnizorii sunt achitați! 🎉</div></div>
+  </div>
+
+  <!-- NEXT PROGRAM -->
+  <div class="dash-full">
+    <div class="dash-full-title">📅 Programul zilei</div>
+    <div id="d-program-preview"><div style="font-size:13px;color:var(--muted);font-style:italic">Niciun moment adăugat încă.</div></div>
+  </div>
+
+</div>
+
+<div id="sec-setup" class="section">
   <div class="sec-title">⚙️ Configurare</div>
   <div class="card" style="border-left-color:var(--gold)">
     <div class="field"><label>Mireasa</label><input type="text" id="s-bride" placeholder="ex: Ana" oninput="saveSetup()"></div>
@@ -270,10 +397,11 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
   <div class="prog-label"><span id="ci-done">0/0</span><span class="prog-pct" id="ci-pct">0%</span></div>
   <div class="prog-wrap" style="margin-bottom:13px"><div class="prog-bar" id="ci-bar" style="width:0%"></div></div>
   <div class="field"><input type="text" id="ci-text" placeholder="Sarcină nouă..."></div>
-  <div class="row" style="margin-bottom:10px">
+  <div class="row" style="margin-bottom:8px">
     <select id="ci-cat"><option>General</option><option>Decor</option><option>Catering</option><option>Muzică</option><option>Foto/Video</option><option>Ținute</option><option>Legal</option><option>Altele</option></select>
-    <button class="btn small" onclick="addTask()">+ Adaugă</button>
+    <input type="date" id="ci-deadline" placeholder="Deadline (opțional)" style="flex:1">
   </div>
+  <button class="btn small" onclick="addTask()" style="width:100%;margin-bottom:10px">+ Adaugă sarcină</button>
   <div id="tasks-list"></div>
 </div>
 
@@ -600,6 +728,92 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
 
 </div>
 
+
+<!-- PLAN MESE -->
+<div id="sec-mese" class="section">
+  <div class="sec-title">🪑 Plan Mese</div>
+  <div class="card" style="border-left-color:var(--gold)">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);margin-bottom:10px">+ Adaugă masă</div>
+    <div class="row" style="margin-bottom:8px">
+      <input type="text" id="masa-nume" placeholder="ex: Masa 1, Familia Ionescu">
+      <input type="number" id="masa-locuri" placeholder="Nr. locuri" min="1">
+    </div>
+    <button class="btn" onclick="addMasa()">+ Adaugă masă</button>
+  </div>
+  <div class="card" style="border-left-color:var(--sage)">
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+      <span style="color:var(--muted)">Total locuri:</span><span id="mese-total-locuri" style="color:var(--deep);font-weight:600">0</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+      <span style="color:var(--muted)">Locuri ocupate:</span><span id="mese-ocupate" style="color:var(--rose);font-weight:600">0</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px">
+      <span style="color:var(--muted)">Locuri libere:</span><span id="mese-libere" style="color:var(--sage);font-weight:600">0</span>
+    </div>
+  </div>
+  <div id="mese-list"></div>
+</div>
+
+<!-- CADOURI -->
+<div id="sec-cadouri" class="section">
+  <div class="sec-title">🎁 Cadouri primite</div>
+  <div class="card" style="border-left-color:var(--gold)">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);margin-bottom:10px">+ Înregistrează cadou</div>
+    <div class="field"><input type="text" id="cad-de-la" placeholder="De la (ex: Familia Ionescu)"></div>
+    <div class="row" style="margin-bottom:8px">
+      <input type="number" id="cad-suma" placeholder="Sumă (€) — 0 pt. cadou fizic">
+      <select id="cad-tip">
+        <option value="bani">💵 Bani</option>
+        <option value="cadou">🎁 Cadou fizic</option>
+        <option value="voucher">🎫 Voucher</option>
+      </select>
+    </div>
+    <div class="field" style="margin-bottom:10px"><input type="text" id="cad-descriere" placeholder="Descriere cadou fizic (opțional)"></div>
+    <div class="field" style="margin-bottom:10px">
+      <label class="check-label"><input type="checkbox" id="cad-multumit"> ✉️ Mulțumire trimisă</label>
+    </div>
+    <button class="btn" onclick="addCadou()">+ Adaugă cadou</button>
+  </div>
+  <div class="card" style="border-left-color:var(--sage);margin-bottom:4px">
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+      <span style="color:var(--muted)">Total cadouri bani:</span><span id="cad-total-bani" style="color:var(--sage);font-weight:600;font-family:'Cormorant Garamond',serif;font-size:16px">€0</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+      <span style="color:var(--muted)">Nr. cadouri fizice:</span><span id="cad-nr-fizice" style="color:var(--gold);font-weight:600">0</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px">
+      <span style="color:var(--muted)">Mulțumiri de trimis:</span><span id="cad-multumiri" style="color:var(--rose);font-weight:600">0</span>
+    </div>
+  </div>
+  <div id="cadouri-list"></div>
+</div>
+
+<!-- JURNAL FURNIZORI -->
+<div id="sec-jurnal" class="section">
+  <div class="sec-title">📞 Jurnal Furnizori</div>
+  <div class="card" style="border-left-color:var(--rose)">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);margin-bottom:10px">+ Adaugă notă</div>
+    <div class="row" style="margin-bottom:8px">
+      <select id="jurnal-furnizor">
+        <option value="">-- Alege furnizor --</option>
+      </select>
+      <input type="date" id="jurnal-data">
+    </div>
+    <div class="field"><textarea id="jurnal-nota" placeholder="Ce s-a discutat, ce s-a promis, ce urmează..." style="min-height:70px"></textarea></div>
+    <div class="row" style="margin-bottom:10px">
+      <select id="jurnal-tip">
+        <option value="telefon">📞 Telefon</option>
+        <option value="intalnire">🤝 Întâlnire</option>
+        <option value="email">📧 Email</option>
+        <option value="whatsapp">💬 WhatsApp</option>
+        <option value="altele">📌 Altele</option>
+      </select>
+    </div>
+    <button class="btn" onclick="addJurnal()">+ Salvează notă</button>
+  </div>
+  <div id="jurnal-list"></div>
+</div>
+
 </div><!-- /content -->
 
 <!-- EDIT BUDGET MODAL -->
@@ -715,7 +929,10 @@ let S = {
   tasks:DEFAULT_TASKS.map(t=>({...t})),
   budget:[],guests:[],vendors:[],program:[],notes:[],
   calc:{persoane:'',confirmare:'85',copii:'0',cadou:'',meniu:'',bauturi:'',prajituri:'',altePers:'',locatie:'',foto:'',muzica:'',decor:'',tinute:'',inele:'',makeup:'',transport:'',tort:'',invitatii:''},
-  extraChelt:[]
+  extraChelt:[],
+  mese:[],
+  cadouri:[],
+  jurnal:[]
 };
 
 let saveTimer = null;
@@ -775,7 +992,7 @@ function listenToData() {
     if (data) {
       if (data.setup) S.setup = data.setup;
       if (data.calc) S.calc = data.calc;
-      ['tasks','budget','guests','vendors','program','notes'].forEach(k => {
+      ['tasks','budget','guests','vendors','program','notes','mese','cadouri','jurnal'].forEach(k => {
         if (data[k] !== undefined && data[k] !== null) {
           S[k] = toArray(data[k]);
         }
@@ -799,6 +1016,7 @@ function saveToFirebase() {
     try {
       await set(ref(db, 'nunta'), S);
       setStatus('✅ Salvat · ' + now());
+      if(typeof renderDashboard==='function') renderDashboard();
     } catch(e) {
       setStatus('❌ Eroare salvare: ' + e.message);
     }
@@ -871,8 +1089,15 @@ const CAT_COLOR={General:'#b89a6e',Decor:'#9b7ec8',Catering:'#c17b3a','Muzică':
 
 window.addTask = () => {
   const t=document.getElementById('ci-text').value.trim(); if(!t) return;
-  S.tasks.push({id:Date.now(),text:t,cat:document.getElementById('ci-cat').value,done:false});
+  S.tasks.push({
+    id:Date.now(),
+    text:t,
+    cat:document.getElementById('ci-cat').value,
+    deadline:document.getElementById('ci-deadline').value||'',
+    done:false
+  });
   document.getElementById('ci-text').value='';
+  document.getElementById('ci-deadline').value='';
   renderTasks(); saveToFirebase();
 };
 window.toggleTask = (id) => {
@@ -1409,7 +1634,259 @@ window.exportGuests = (filtru) => {
   a.click(); URL.revokeObjectURL(a.href);
 };
 
-function renderAll() { loadSetup(); updateHeader(); renderTasks(); renderBudget(); renderGuests(); renderVendors(); renderProgram(); renderNotes(); loadCalc(); calcUpdate(); }
+// ══ PLAN MESE ═══════════════════════════════════════════════
+window.addMasa = () => {
+  const nume = document.getElementById('masa-nume').value.trim();
+  const locuri = parseInt(document.getElementById('masa-locuri').value) || 8;
+  if (!nume) return;
+  S.mese.push({id:Date.now(), nume, locuri, ocupanti:[]});
+  document.getElementById('masa-nume').value='';
+  document.getElementById('masa-locuri').value='';
+  renderMese(); saveToFirebase();
+};
+window.delMasa = (id) => { S.mese=S.mese.filter(x=>x.id!==id); renderMese(); saveToFirebase(); };
+window.addOcupant = (masaId) => {
+  const inp = document.getElementById('ocp-'+masaId);
+  const val = inp?.value.trim(); if(!val) return;
+  const masa = S.mese.find(m=>m.id===masaId); if(!masa) return;
+  if (!masa.ocupanti) masa.ocupanti=[];
+  masa.ocupanti.push(val);
+  inp.value='';
+  renderMese(); saveToFirebase();
+};
+window.delOcupant = (masaId, idx) => {
+  const masa = S.mese.find(m=>m.id===masaId); if(!masa) return;
+  masa.ocupanti.splice(idx,1);
+  renderMese(); saveToFirebase();
+};
+
+function renderMese() {
+  const totalLocuri = S.mese.reduce((s,m)=>s+m.locuri,0);
+  const ocupate = S.mese.reduce((s,m)=>s+(m.ocupanti?.length||0),0);
+  const el=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  el('mese-total-locuri',totalLocuri);
+  el('mese-ocupate',ocupate);
+  el('mese-libere',totalLocuri-ocupate);
+
+  document.getElementById('mese-list').innerHTML = S.mese.length ? S.mese.map(m=>{
+    const ocp = m.ocupanti||[];
+    const liber = m.locuri - ocp.length;
+    return `<div class="masa-card" style="border-left-color:${liber===0?'var(--rose)':liber<=2?'var(--gold)':'var(--sage)'}">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div class="masa-title" style="flex:1">${esc(m.nume)}</div>
+        <span style="font-size:12px;color:var(--muted)">${ocp.length}/${m.locuri} locuri</span>
+        <button class="del" onclick="delMasa(${m.id})">✕</button>
+      </div>
+      <div style="margin-bottom:8px">
+        ${ocp.map((o,i)=>`<span class="masa-loc ocupat">${esc(o)} <button onclick="delOcupant(${m.id},${i})" style="background:none;border:none;cursor:pointer;font-size:10px;color:var(--rose);padding:0 0 0 3px">✕</button></span>`).join('')}
+        ${liber>0?Array(Math.min(liber,3)).fill(0).map(()=>'<span class="masa-loc">liber</span>').join(''):''}
+        ${liber>3?`<span class="masa-loc">+${liber-3} libere</span>`:''}
+      </div>
+      ${liber>0?`<div class="row" style="gap:6px">
+        <input type="text" id="ocp-${m.id}" placeholder="Adaugă persoană..." style="font-size:14px;padding:8px 10px">
+        <button class="btn small" onclick="addOcupant(${m.id})">+</button>
+      </div>`:`<div style="font-size:12px;color:var(--rose);text-align:center">Masă completă</div>`}
+    </div>`;
+  }).join('') : '<div class="empty">Nicio masă adăugată.</div>';
+}
+
+// ══ CADOURI ══════════════════════════════════════════════════
+window.addCadou = () => {
+  const de_la = document.getElementById('cad-de-la').value.trim(); if(!de_la) return;
+  S.cadouri.push({
+    id:Date.now(),
+    de_la,
+    suma: parseFloat(document.getElementById('cad-suma').value)||0,
+    tip: document.getElementById('cad-tip').value,
+    descriere: document.getElementById('cad-descriere').value.trim(),
+    multumit: document.getElementById('cad-multumit').checked,
+    data: new Date().toLocaleDateString('ro-RO')
+  });
+  document.getElementById('cad-de-la').value='';
+  document.getElementById('cad-suma').value='';
+  document.getElementById('cad-descriere').value='';
+  document.getElementById('cad-multumit').checked=false;
+  renderCadouri(); saveToFirebase();
+};
+window.toggleMultumire = (id) => {
+  const c=S.cadouri.find(x=>x.id===id); if(c) c.multumit=!c.multumit;
+  renderCadouri(); saveToFirebase();
+};
+window.delCadou = (id) => { S.cadouri=S.cadouri.filter(x=>x.id!==id); renderCadouri(); saveToFirebase(); };
+
+function renderCadouri() {
+  const totalBani = S.cadouri.filter(c=>c.tip==='bani').reduce((s,c)=>s+c.suma,0);
+  const nrFizice = S.cadouri.filter(c=>c.tip!=='bani').length;
+  const multumiri = S.cadouri.filter(c=>!c.multumit).length;
+  const el=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  const setH=(id,v)=>{const e=document.getElementById(id);if(e)e.innerHTML=v;};
+  setH('cad-total-bani','€'+totalBani.toLocaleString('ro-RO'));
+  el('cad-nr-fizice',nrFizice);
+  el('cad-multumiri',multumiri);
+
+  const tipIcon={bani:'💵',cadou:'🎁',voucher:'🎫'};
+  document.getElementById('cadouri-list').innerHTML = S.cadouri.length ? S.cadouri.map(c=>`
+    <div class="cadou-card" style="border-left-color:${c.multumit?'var(--sage)':'var(--gold)'}">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:20px">${tipIcon[c.tip]||'🎁'}</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600">${esc(c.de_la)}</div>
+          <div style="font-size:12px;color:var(--muted)">${c.data||''}${c.descriere?' · '+esc(c.descriere):''}</div>
+        </div>
+        ${c.suma>0?`<div style="font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--sage);font-weight:700">€${c.suma.toLocaleString('ro-RO')}</div>`:''}
+        <button class="del" onclick="delCadou(${c.id})">✕</button>
+      </div>
+      <div style="margin-top:8px;display:flex;align-items:center;gap:8px">
+        <label class="check-label" style="font-size:12px">
+          <input type="checkbox" ${c.multumit?'checked':''} onchange="toggleMultumire(${c.id})"> 
+          ✉️ ${c.multumit?'Mulțumire trimisă':'Trimite mulțumire'}
+        </label>
+      </div>
+    </div>`).join('') : '<div class="empty">Niciun cadou înregistrat.</div>';
+}
+
+// ══ JURNAL FURNIZORI ═════════════════════════════════════════
+function updateJurnalFurnizori() {
+  const sel = document.getElementById('jurnal-furnizor');
+  if (!sel) return;
+  const current = sel.value;
+  sel.innerHTML = '<option value="">-- Alege furnizor --</option>' +
+    S.budget.map(b=>`<option value="${esc(b.name)}" ${current===b.name?'selected':''}>${esc(b.name)}</option>`).join('');
+}
+
+window.addJurnal = () => {
+  const furnizor = document.getElementById('jurnal-furnizor').value;
+  const nota = document.getElementById('jurnal-nota').value.trim();
+  if (!furnizor || !nota) return;
+  S.jurnal.unshift({
+    id:Date.now(),
+    furnizor,
+    nota,
+    data: document.getElementById('jurnal-data').value || new Date().toLocaleDateString('ro-RO'),
+    tip: document.getElementById('jurnal-tip').value
+  });
+  document.getElementById('jurnal-nota').value='';
+  renderJurnal(); saveToFirebase();
+};
+window.delJurnal = (id) => { S.jurnal=S.jurnal.filter(x=>x.id!==id); renderJurnal(); saveToFirebase(); };
+
+function renderJurnal() {
+  updateJurnalFurnizori();
+  const tipIcon={telefon:'📞',intalnire:'🤝',email:'📧',whatsapp:'💬',altele:'📌'};
+  const tipLabel={telefon:'Telefon',intalnire:'Întâlnire',email:'Email',whatsapp:'WhatsApp',altele:'Altele'};
+  document.getElementById('jurnal-list').innerHTML = S.jurnal.length ? S.jurnal.map(j=>`
+    <div class="jurnal-card">
+      <div class="jurnal-header">
+        <div>
+          <div class="jurnal-furnizor">${esc(j.furnizor)}</div>
+          <div class="jurnal-meta">${tipIcon[j.tip]||'📌'} ${tipLabel[j.tip]||''} · ${j.data}</div>
+        </div>
+        <button class="del" onclick="delJurnal(${j.id})">✕</button>
+      </div>
+      <div class="jurnal-nota">${esc(j.nota)}</div>
+    </div>`).join('') : '<div class="empty">Niciun jurnal adăugat.</div>';
+}
+
+function renderDashboard() {
+  const {bride,groom,date,budget} = S.setup || {};
+
+  // Countdown
+  if (date) {
+    const dt = new Date(date);
+    const today = new Date(); today.setHours(0,0,0,0);
+    const diff = Math.ceil((dt - today) / 86400000);
+    const sapt = Math.floor(diff / 7);
+    const luni = Math.floor(diff / 30);
+    const el = document.getElementById('d-zile');
+    if (el) el.textContent = diff > 0 ? diff : '🎊';
+    const es = document.getElementById('d-saptamani');
+    if (es) es.textContent = diff > 0 ? sapt : '—';
+    const ed = document.getElementById('d-data');
+    if (ed) ed.textContent = dt.toLocaleDateString('ro-RO',{day:'numeric',month:'long',year:'numeric'});
+    const el2 = document.getElementById('d-luni');
+    if (el2) el2.textContent = luni + ' luni';
+  }
+
+  // Invitați
+  const totalInv = S.guests.reduce((s,g)=>s+(g.nr||1),0);
+  const confInv = S.guests.filter(g=>g.status==='confirmat').reduce((s,g)=>s+(g.nr||1),0);
+  const dic = document.getElementById('d-inv-conf'); if(dic) dic.textContent = confInv;
+  const dit = document.getElementById('d-inv-total'); if(dit) dit.textContent = `din ${totalInv} persoane`;
+
+  // Buget
+  const bugetTotal = parseFloat(budget)||0;
+  const cheltuit = S.budget.reduce((s,x)=>s+(x.pretTotal||x.amount||0),0);
+  const pct = bugetTotal ? Math.min(100,Math.round(cheltuit/bugetTotal*100)) : 0;
+  const dbp = document.getElementById('d-buget-pct'); if(dbp) dbp.textContent = pct+'%';
+  const dbs = document.getElementById('d-buget-sub'); if(dbs) dbs.textContent = bugetTotal ? `din €${bugetTotal.toLocaleString('ro-RO')}` : 'buget nesetat';
+
+  // Sarcini progress
+  const tasks = S.tasks;
+  const done = tasks.filter(t=>t.done).length;
+  const pctT = tasks.length ? Math.round(done/tasks.length*100) : 0;
+  const dtd = document.getElementById('d-task-done'); if(dtd) dtd.textContent = `${done}/${tasks.length} îndeplinite`;
+  const dtp = document.getElementById('d-task-pct'); if(dtp) dtp.textContent = pctT+'%';
+  const dtb = document.getElementById('d-task-bar'); if(dtb) dtb.style.width = pctT+'%';
+
+  // Sarcini urgente
+  const urgente = tasks
+    .filter(t=>!t.done && t.deadline)
+    .map(t=>({...t, dl:getDeadlineInfo(t.deadline)}))
+    .filter(t=>t.dl)
+    .sort((a,b)=>a.dl.diff-b.dl.diff)
+    .slice(0,5);
+  const dut = document.getElementById('d-urgent-tasks');
+  if (dut) {
+    if (!urgente.length) {
+      dut.innerHTML = '<div style="font-size:13px;color:var(--muted);font-style:italic">Nu ai sarcini cu deadline setat.</div>';
+    } else {
+      dut.innerHTML = urgente.map(t=>`
+        <div class="dash-task-item">
+          <div class="dash-task-dot" style="background:${t.dl.cls==='deadline-urgent'?'var(--rose)':t.dl.cls==='deadline-soon'?'var(--gold)':'var(--sage)'}"></div>
+          <span style="flex:1;font-size:14px">${esc(t.text)}</span>
+          <span class="deadline-badge ${t.dl.cls}">${t.dl.label}</span>
+        </div>`).join('');
+    }
+  }
+
+  // Furnizori neachitați
+  const neplata = S.budget.filter(b=>b.statusPlata!=='platit' && (b.pretTotal||b.amount||0)>0);
+  const duv = document.getElementById('d-unpaid-vendors');
+  if (duv) {
+    if (!neplata.length) {
+      duv.innerHTML = '<div style="font-size:13px;color:var(--sage)">Toți furnizorii sunt achitați! 🎉</div>';
+    } else {
+      const restTotal = neplata.reduce((s,b)=>s+(b.rest||((b.pretTotal||b.amount||0)-(b.avans||0))),0);
+      duv.innerHTML = neplata.map(b=>`
+        <div class="dash-task-item">
+          <div class="dash-task-dot" style="background:${b.statusPlata==='avans'?'var(--gold)':'var(--rose)'}"></div>
+          <span style="flex:1;font-size:14px">${esc(b.name)}</span>
+          <span style="font-family:'Cormorant Garamond',serif;color:var(--rose);font-size:14px;font-weight:600">€${Math.round(b.rest||(b.pretTotal||0)-(b.avans||0)).toLocaleString('ro-RO')}</span>
+        </div>`).join('') +
+        `<div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid var(--light);font-size:13px;font-weight:600;margin-top:4px">
+          <span>Total rest de plătit</span><span style="color:var(--rose)">€${Math.round(restTotal).toLocaleString('ro-RO')}</span>
+        </div>`;
+    }
+  }
+
+  // Program preview
+  const prog = S.program ? [...S.program].sort((a,b)=>a.time.localeCompare(b.time)) : [];
+  const dpp = document.getElementById('d-program-preview');
+  if (dpp) {
+    if (!prog.length) {
+      dpp.innerHTML = '<div style="font-size:13px;color:var(--muted);font-style:italic">Niciun moment adăugat încă.</div>';
+    } else {
+      dpp.innerHTML = prog.slice(0,5).map(p=>`
+        <div class="dash-task-item">
+          <span style="font-family:'Cormorant Garamond',serif;color:var(--rose);font-size:14px;width:44px;flex-shrink:0">${p.time}</span>
+          <span style="flex:1;font-size:14px">${esc(p.event)}</span>
+        </div>`).join('') +
+        (prog.length>5?`<div style="font-size:12px;color:var(--muted);margin-top:6px;text-align:center">+ ${prog.length-5} momente</div>`:'');
+    }
+  }
+}
+
+function renderAll() { loadSetup(); updateHeader(); renderTasks(); renderBudget(); renderGuests(); renderVendors(); renderProgram(); renderNotes(); loadCalc(); calcUpdate(); renderDashboard(); renderMese(); renderCadouri(); renderJurnal(); }
 
 // Fetch BNR la start
 fetchBNR();
