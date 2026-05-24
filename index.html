@@ -421,106 +421,176 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
 </div>
 
 <div id="sec-calc" class="section">
-  <div class="sec-title">🧮 Calculator Nuntă</div>
+  <div class="sec-title">🧮 Planificator Buget</div>
 
-  <!-- INPUT PRINCIPAL -->
+  <!-- PERSOANE -->
   <div class="card" style="border-left-color:var(--gold)">
-    <div style="font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--deep);margin-bottom:12px">📊 Date de bază</div>
-    <div class="row" style="margin-bottom:8px">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);margin-bottom:10px">👥 Persoane</div>
+    <div class="row">
       <div class="field" style="margin:0">
-        <label>Nr. persoane invitate</label>
+        <label>Nr. invitați estimați</label>
         <input type="number" id="calc-persoane" placeholder="ex: 150" oninput="calcUpdate()">
+      </div>
+      <div class="field" style="margin:0">
+        <label>% confirmare</label>
+        <input type="number" id="calc-confirmare" placeholder="85" value="85" oninput="calcUpdate()">
+      </div>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <div class="field" style="margin:0">
+        <label>Nr. copii (inclus în total)</label>
+        <input type="number" id="calc-copii" placeholder="ex: 10" value="0" oninput="calcUpdate()">
       </div>
       <div class="field" style="margin:0">
         <label>Cadou estimat / persoană (€)</label>
         <input type="number" id="calc-cadou" placeholder="ex: 100" oninput="calcUpdate()">
       </div>
     </div>
+    <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--light);display:flex;justify-content:space-between;font-size:13px">
+      <span style="color:var(--muted)">Persoane care vin:</span>
+      <span id="cr-total-pers" style="color:var(--rose);font-weight:600">—</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:4px">
+      <span style="color:var(--muted)">Cadouri estimate:</span>
+      <span id="cr-cadouri" style="color:var(--sage);font-weight:600">—</span>
+    </div>
+  </div>
+
+  <!-- COSTURI PER PERSOANĂ -->
+  <div class="card" style="border-left-color:var(--rose)">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);margin-bottom:10px">🍽️ Costuri per persoană (€)</div>
     <div class="row" style="margin-bottom:8px">
       <div class="field" style="margin:0">
-        <label>Preț meniu / persoană (€)</label>
+        <label>Meniu mâncare / pers</label>
         <input type="number" id="calc-meniu" placeholder="ex: 70" oninput="calcUpdate()">
       </div>
       <div class="field" style="margin:0">
-        <label>Buget total disponibil (€)</label>
-        <input type="number" id="calc-buget" placeholder="ex: 12000" oninput="calcUpdate()">
+        <label>Meniu băuturi / pers</label>
+        <input type="number" id="calc-bauturi" placeholder="ex: 30" oninput="calcUpdate()">
       </div>
     </div>
     <div class="row">
       <div class="field" style="margin:0">
-        <label>% confirmare estimată</label>
-        <input type="number" id="calc-confirmare" placeholder="ex: 85" value="85" oninput="calcUpdate()">
+        <label>Prăjituri / deserturi / pers</label>
+        <input type="number" id="calc-prajituri" placeholder="ex: 15" oninput="calcUpdate()">
       </div>
       <div class="field" style="margin:0">
-        <label>Nr. copii estimați</label>
-        <input type="number" id="calc-copii" placeholder="ex: 10" value="0" oninput="calcUpdate()">
+        <label>Alte costuri / pers</label>
+        <input type="number" id="calc-altele-pers" placeholder="ex: 10" oninput="calcUpdate()">
+      </div>
+    </div>
+    <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--light);display:flex;justify-content:space-between;font-size:13px">
+      <span style="color:var(--muted)">Total catering / persoană:</span>
+      <span id="cc-per-pers" style="color:var(--rose);font-weight:600">—</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:4px">
+      <span style="color:var(--muted)">Total catering (toți):</span>
+      <span id="cc-catering-total" style="color:var(--rose);font-weight:600">—</span>
+    </div>
+  </div>
+
+  <!-- CHELTUIELI FIXE -->
+  <div class="card" style="border-left-color:var(--sage)">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);margin-bottom:10px">📋 Cheltuieli fixe (€)</div>
+    <div class="row" style="margin-bottom:8px">
+      <div class="field" style="margin:0">
+        <label>Locație / sală</label>
+        <input type="number" id="c-locatie" placeholder="ex: 2000" oninput="calcUpdate()">
+      </div>
+      <div class="field" style="margin:0">
+        <label>Foto + Video</label>
+        <input type="number" id="c-foto" placeholder="ex: 1500" oninput="calcUpdate()">
+      </div>
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <div class="field" style="margin:0">
+        <label>Muzică / DJ / Formație</label>
+        <input type="number" id="c-muzica" placeholder="ex: 1000" oninput="calcUpdate()">
+      </div>
+      <div class="field" style="margin:0">
+        <label>Flori / Decor</label>
+        <input type="number" id="c-decor" placeholder="ex: 800" oninput="calcUpdate()">
+      </div>
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <div class="field" style="margin:0">
+        <label>Rochie + Costum</label>
+        <input type="number" id="c-tinute" placeholder="ex: 1200" oninput="calcUpdate()">
+      </div>
+      <div class="field" style="margin:0">
+        <label>Inele</label>
+        <input type="number" id="c-inele" placeholder="ex: 600" oninput="calcUpdate()">
+      </div>
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <div class="field" style="margin:0">
+        <label>Makeup + Hair</label>
+        <input type="number" id="c-makeup" placeholder="ex: 300" oninput="calcUpdate()">
+      </div>
+      <div class="field" style="margin:0">
+        <label>Transport / Limuzină</label>
+        <input type="number" id="c-transport" placeholder="ex: 400" oninput="calcUpdate()">
+      </div>
+    </div>
+    <div class="row">
+      <div class="field" style="margin:0">
+        <label>Tort</label>
+        <input type="number" id="c-tort" placeholder="ex: 300" oninput="calcUpdate()">
+      </div>
+      <div class="field" style="margin:0">
+        <label>Invitații + Papetărie</label>
+        <input type="number" id="c-invitatii" placeholder="ex: 200" oninput="calcUpdate()">
       </div>
     </div>
   </div>
 
-  <!-- REZULTATE CADOURI -->
-  <div class="calc-section-title">🎁 Estimare cadouri</div>
-  <div class="calc-grid">
-    <div class="calc-box">
-      <div class="calc-val" id="cr-total-pers" style="color:var(--rose)">—</div>
-      <div class="calc-lbl">Persoane care vin (estimat)</div>
-    </div>
-    <div class="calc-box">
-      <div class="calc-val" id="cr-cadouri" style="color:var(--sage)">—</div>
-      <div class="calc-lbl">Total cadouri estimate</div>
-    </div>
-    <div class="calc-box">
-      <div class="calc-val" id="cr-minim" style="color:var(--gold)">—</div>
-      <div class="calc-lbl">Scenariu pesimist (-20%)</div>
-    </div>
-    <div class="calc-box">
-      <div class="calc-val" id="cr-maxim" style="color:var(--sage)">—</div>
-      <div class="calc-lbl">Scenariu optimist (+20%)</div>
+  <!-- CHELTUIELI EXTRA -->
+  <div class="card" style="border-left-color:var(--gold)">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);margin-bottom:10px">➕ Cheltuieli suplimentare</div>
+    <div id="extra-cheltuieli-list"></div>
+    <div class="row" style="margin-top:4px">
+      <input type="text" id="extra-nume" placeholder="Nume cheltuială">
+      <input type="number" id="extra-suma" placeholder="Sumă (€)">
+      <button class="btn small" onclick="addExtraChelt()" style="flex:0.5">+</button>
     </div>
   </div>
 
-  <!-- REZULTATE COSTURI -->
-  <div class="calc-section-title">💸 Estimare costuri</div>
-  <div class="calc-grid">
-    <div class="calc-box">
-      <div class="calc-val" id="cc-meniu" style="color:var(--rose)">—</div>
-      <div class="calc-lbl">Cost total meniu</div>
-    </div>
-    <div class="calc-box">
-      <div class="calc-val" id="cc-altele" style="color:var(--gold)">—</div>
-      <div class="calc-lbl">Buget rămas pentru altele</div>
-    </div>
-    <div class="calc-box">
-      <div class="calc-val" id="cc-per-pers-total" style="color:var(--deep)">—</div>
-      <div class="calc-lbl">Cost total / persoană</div>
-    </div>
-    <div class="calc-box">
-      <div class="calc-val" id="cc-copii" style="color:var(--blush)">—</div>
-      <div class="calc-lbl">Cost meniu copii (50%)</div>
-    </div>
-  </div>
+  <!-- BILANȚ -->
+  <div class="calc-section-title">⚖️ Bilanț total</div>
+  <div class="calc-bilant">
 
-  <!-- BILANT FINAL -->
-  <div class="calc-section-title">⚖️ Bilanț final estimat</div>
-  <div class="calc-bilant" id="calc-bilant">
-    <div class="bilant-row">
-      <span>Total cadouri estimate</span>
-      <span id="bil-cadouri" style="color:var(--sage)">—</span>
-    </div>
-    <div class="bilant-row">
-      <span>Total cheltuieli (din buget)</span>
-      <span id="bil-chelt" style="color:var(--rose)">—</span>
-    </div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--deep);margin-bottom:8px">💸 Cheltuieli</div>
+    <div class="bilant-row"><span>🍽️ Catering total</span><span id="bil-catering" style="color:var(--rose)">—</span></div>
+    <div class="bilant-row"><span>📋 Furnizori & fixe</span><span id="bil-fixe" style="color:var(--rose)">—</span></div>
+    <div class="bilant-row"><span>➕ Cheltuieli extra</span><span id="bil-extra" style="color:var(--rose)">—</span></div>
     <div class="bilant-row" style="border-top:1px solid var(--blush);padding-top:8px;margin-top:4px">
-      <span><strong>Diferență estimată</strong></span>
-      <span id="bil-diff" style="font-weight:700;font-size:18px">—</span>
+      <strong>Total cheltuieli</strong>
+      <strong id="bil-chelt" style="color:var(--rose);font-size:18px">—</strong>
+    </div>
+    <div class="bilant-row" style="margin-top:4px"><span style="color:var(--muted);font-size:12px">Cost per persoană</span><span id="bil-per-pers" style="color:var(--muted);font-size:12px">—</span></div>
+
+    <div style="font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--deep);margin:14px 0 8px">🎁 Venituri estimate</div>
+    <div class="bilant-row"><span>Cadouri (scenariu normal)</span><span id="bil-cadouri" style="color:var(--sage)">—</span></div>
+    <div class="bilant-row"><span>Scenariu pesimist (-20%)</span><span id="cr-minim" style="color:var(--gold)">—</span></div>
+    <div class="bilant-row"><span>Scenariu optimist (+20%)</span><span id="cr-maxim" style="color:var(--sage)">—</span></div>
+
+    <div class="bilant-row" style="border-top:1px solid var(--blush);padding-top:8px;margin-top:8px">
+      <strong>Diferență estimată</strong>
+      <strong id="bil-diff" style="font-size:20px">—</strong>
     </div>
     <div id="bil-mesaj" style="font-size:13px;color:var(--muted);margin-top:8px;font-style:italic;text-align:center"></div>
   </div>
 
   <!-- SFATURI -->
-  <div class="calc-section-title">💡 Sfaturi pe baza datelor tale</div>
+  <div class="calc-section-title">💡 Observații</div>
   <div id="calc-sfaturi"></div>
+
+  <!-- păstrăm ID-uri vechi pentru compatibilitate cu renderBudget -->
+  <span id="cr-cadouri" style="display:none"></span>
+  <span id="cc-meniu" style="display:none"></span>
+  <span id="cc-altele" style="display:none"></span>
+  <span id="cc-per-pers-total" style="display:none"></span>
+  <span id="cc-copii" style="display:none"></span>
 
 </div>
 
@@ -637,7 +707,9 @@ const DEFAULT_TASKS = [
 let S = {
   setup:{bride:'',groom:'',date:'',venue:'',budget:''},
   tasks:DEFAULT_TASKS.map(t=>({...t})),
-  budget:[],guests:[],vendors:[],program:[],notes:[]
+  budget:[],guests:[],vendors:[],program:[],notes:[],
+  calc:{persoane:'',confirmare:'85',copii:'0',cadou:'',meniu:'',bauturi:'',prajituri:'',altePers:'',locatie:'',foto:'',muzica:'',decor:'',tinute:'',inele:'',makeup:'',transport:'',tort:'',invitatii:''},
+  extraChelt:[]
 };
 
 let saveTimer = null;
@@ -696,12 +768,15 @@ function listenToData() {
     const data = snapshot.val();
     if (data) {
       if (data.setup) S.setup = data.setup;
-      // Toate array-urile trebuie convertite
+      if (data.calc) S.calc = data.calc;
       ['tasks','budget','guests','vendors','program','notes'].forEach(k => {
         if (data[k] !== undefined && data[k] !== null) {
           S[k] = toArray(data[k]);
         }
       });
+      if (data.extraChelt !== undefined && data.extraChelt !== null) {
+        S.extraChelt = toArray(data.extraChelt);
+      }
     }
     renderAll();
     setStatus('✅ Sincronizat · ' + now());
@@ -1056,102 +1131,161 @@ function renderNotes() {
 
 // ── RENDER ALL ────────────────────────────────────────────────
 // ── CALCULATOR ────────────────────────────────────────────────
+// Extra cheltuieli sunt stocate în S.extraChelt
+
+window.addExtraChelt = () => {
+  const nume = document.getElementById('extra-nume').value.trim();
+  const suma = parseFloat(document.getElementById('extra-suma').value) || 0;
+  if (!nume || !suma) return;
+  S.extraChelt.push({id: Date.now(), nume, suma});
+  document.getElementById('extra-nume').value = '';
+  document.getElementById('extra-suma').value = '';
+  saveCalc();
+  calcUpdate();
+};
+window.delExtraChelt = (id) => {
+  S.extraChelt = S.extraChelt.filter(x=>x.id!==id);
+  saveCalc();
+  calcUpdate();
+};
+
+function saveCalc() {
+  const e = (id) => document.getElementById(id)?.value || '';
+  S.calc = {
+    persoane: e('calc-persoane'), confirmare: e('calc-confirmare'),
+    copii: e('calc-copii'), cadou: e('calc-cadou'),
+    meniu: e('calc-meniu'), bauturi: e('calc-bauturi'),
+    prajituri: e('calc-prajituri'), altePers: e('calc-altele-pers'),
+    locatie: e('c-locatie'), foto: e('c-foto'), muzica: e('c-muzica'),
+    decor: e('c-decor'), tinute: e('c-tinute'), inele: e('c-inele'),
+    makeup: e('c-makeup'), transport: e('c-transport'),
+    tort: e('c-tort'), invitatii: e('c-invitatii'),
+  };
+  saveToFirebase();
+}
+
+function loadCalc() {
+  if (!S.calc) return;
+  const c = S.calc;
+  const ids = {
+    'calc-persoane':c.persoane,'calc-confirmare':c.confirmare||'85',
+    'calc-copii':c.copii||'0','calc-cadou':c.cadou,
+    'calc-meniu':c.meniu,'calc-bauturi':c.bauturi,
+    'calc-prajituri':c.prajituri,'calc-altele-pers':c.altePers,
+    'c-locatie':c.locatie,'c-foto':c.foto,'c-muzica':c.muzica,
+    'c-decor':c.decor,'c-tinute':c.tinute,'c-inele':c.inele,
+    'c-makeup':c.makeup,'c-transport':c.transport,
+    'c-tort':c.tort,'c-invitatii':c.invitatii,
+  };
+  Object.entries(ids).forEach(([id,val]) => {
+    const el = document.getElementById(id);
+    if (el && val) el.value = val;
+  });
+}
+
 window.calcUpdate = () => {
-  const persoane   = parseFloat(document.getElementById('calc-persoane').value)  || 0;
-  const cadou      = parseFloat(document.getElementById('calc-cadou').value)     || 0;
-  const meniu      = parseFloat(document.getElementById('calc-meniu').value)     || 0;
-  // Buget din calculator sau din setup
-  const bugetCalc  = parseFloat(document.getElementById('calc-buget').value)     || 0;
-  const bugetSetup = parseFloat(S.setup?.budget) || 0;
-  const buget      = bugetCalc || bugetSetup;
-  const pctConf    = parseFloat(document.getElementById('calc-confirmare').value)|| 85;
-  const copii      = parseFloat(document.getElementById('calc-copii').value)     || 0;
+  const e = (id) => parseFloat(document.getElementById(id)?.value) || 0;
+  const s = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+  const eur = (n) => n ? '€'+Math.round(n).toLocaleString('ro-RO') : '—';
 
-  if (!persoane) return;
+  const persoane   = e('calc-persoane');
+  const pctConf    = e('calc-confirmare') || 85;
+  const copii      = e('calc-copii');
+  const cadou      = e('calc-cadou');
 
-  // Dacă bugetul din setup există și calc-buget e gol, auto-completează
-  if (!bugetCalc && bugetSetup) {
-    document.getElementById('calc-buget').placeholder = `€${bugetSetup.toLocaleString('ro-RO')} (din Info)`;
+  // Costuri per persoană
+  const meniu      = e('calc-meniu');
+  const bauturi    = e('calc-bauturi');
+  const prajituri  = e('calc-prajituri');
+  const altePers   = e('calc-altele-pers');
+  const totalPers  = meniu + bauturi + prajituri + altePers;
+  const totalPersCopii = totalPers * 0.5;
+
+  // Cheltuieli fixe
+  const fixe = ['c-locatie','c-foto','c-muzica','c-decor','c-tinute','c-inele','c-makeup','c-transport','c-tort','c-invitatii'].reduce((s,id)=>s+e(id), 0);
+
+  // Extra
+  const totalExtra = S.extraChelt.reduce((s,x)=>s+x.suma, 0);
+
+  // Render extra list
+  const extraList = document.getElementById('extra-cheltuieli-list');
+  if (extraList) {
+    extraList.innerHTML = S.extraChelt.length ? S.extraChelt.map(x=>`
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--light)">
+        <span style="flex:1;font-size:14px">${esc(x.nume)}</span>
+        <span style="font-family:'Cormorant Garamond',serif;color:var(--rose);font-weight:600">€${x.suma.toLocaleString('ro-RO')}</span>
+        <button class="del" onclick="delExtraChelt(${x.id})">✕</button>
+      </div>`).join('') : '';
   }
 
-  // Persoane care vin
-  const vin        = Math.round(persoane * pctConf / 100);
-  const vinAdulti  = Math.max(0, vin - copii);
+  if (!persoane) { renderBudget(); return; }
+
+  const vin       = Math.round(persoane * pctConf / 100);
+  const vinAdulti = Math.max(0, vin - copii);
+
+  // Catering
+  const cateringAdulti = vinAdulti * totalPers;
+  const cateringCopii  = copii * totalPersCopii;
+  const cateringTotal  = cateringAdulti + cateringCopii;
+
+  // Total cheltuieli
+  const totalChelt = cateringTotal + fixe + totalExtra;
+  const perPers = vin > 0 ? totalChelt / vin : 0;
 
   // Cadouri
-  const totalCadouri  = vin * cadou;
-  const cadouriMin    = Math.round(totalCadouri * 0.80);
-  const cadouriMax    = Math.round(totalCadouri * 1.20);
+  const totalCadouri = vin * cadou;
+  const cadouriMin   = Math.round(totalCadouri * 0.80);
+  const cadouriMax   = Math.round(totalCadouri * 1.20);
+  const diff         = totalCadouri - totalChelt;
 
-  // Costuri
-  const costMeniuAdulti = vinAdulti * meniu;
-  const costMeniuCopii  = copii * meniu * 0.5;
-  const costMeniuTotal  = costMeniuAdulti + costMeniuCopii;
-  const bugetAltele     = buget - costMeniuTotal;
-  const costPerPers     = vin > 0 ? Math.round(buget / vin) : 0;
+  // Render
+  s('cr-total-pers', vin + ' persoane');
+  s('cr-cadouri', eur(totalCadouri) + (bnrRate && totalCadouri ? ' ('+Math.round(totalCadouri*bnrRate).toLocaleString('ro-RO')+' RON)' : ''));
+  s('cc-per-pers', totalPers ? eur(totalPers) : '—');
+  s('cc-catering-total', eur(cateringTotal));
+  s('bil-catering', eur(cateringTotal));
+  s('bil-fixe', eur(fixe));
+  s('bil-extra', eur(totalExtra));
+  s('bil-chelt', eur(totalChelt));
+  s('bil-per-pers', perPers ? eur(perPers) + '/pers' : '—');
+  s('bil-cadouri', eur(totalCadouri));
+  s('cr-minim', eur(cadouriMin));
+  s('cr-maxim', eur(cadouriMax));
 
-  // Bilanț
-  const totalChelt  = buget || costMeniuTotal;
-  const diff        = totalCadouri - totalChelt;
-
-  // Render valori
-  const set = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
-
-  set('cr-total-pers',  vin + ' persoane');
-  set('cr-cadouri',     '€'+Math.round(totalCadouri).toLocaleString('ro-RO')+(bnrRate?' ('+Math.round(totalCadouri*bnrRate).toLocaleString('ro-RO')+' RON)':''));
-  set('cr-minim', '€'+Math.round(cadouriMin).toLocaleString('ro-RO'));
-  set('cr-maxim', '€'+Math.round(cadouriMax).toLocaleString('ro-RO'));
-  set('cc-meniu', '€'+Math.round(costMeniuTotal).toLocaleString('ro-RO'));
-  set('cc-altele', buget ? '€'+Math.round(Math.max(0,bugetAltele)).toLocaleString('ro-RO') : '—');
-  set('cc-per-pers-total', costPerPers ? '€'+Math.round(costPerPers).toLocaleString('ro-RO') : '—');
-  set('cc-copii', copii > 0 ? '€'+Math.round(costMeniuCopii).toLocaleString('ro-RO') : '€0');
-
-  // Bilanț
-  set('bil-cadouri', '€'+Math.round(totalCadouri).toLocaleString('ro-RO'));
-  set('bil-chelt', '€'+Math.round(totalChelt).toLocaleString('ro-RO'));
   const diffEl = document.getElementById('bil-diff');
   if (diffEl) {
     diffEl.textContent = (diff >= 0 ? '+€' : '-€') + Math.round(Math.abs(diff)).toLocaleString('ro-RO');
     diffEl.style.color = diff >= 0 ? 'var(--sage)' : 'var(--rose)';
   }
+
   const mesajEl = document.getElementById('bil-mesaj');
   if (mesajEl) {
-    if (!cadou || !buget) mesajEl.textContent = 'Completează cadoul estimat și bugetul pentru bilanț complet.';
-    else if (diff > 0) mesajEl.textContent = '🎉 Cadourile acoperă cheltuielile! Surplus estimat de €' + Math.round(diff).toLocaleString('ro-RO') + '.';
-    else mesajEl.textContent = '⚠️ Cheltuielile depășesc cadourile cu €' + Math.round(Math.abs(diff)).toLocaleString('ro-RO') + '. Ajustează bugetul.';
+    if (!cadou) mesajEl.textContent = 'Adaugă cadoul estimat per persoană pentru bilanț complet.';
+    else if (diff > 0) mesajEl.textContent = '🎉 Cadourile acoperă cheltuielile! Surplus estimat €' + Math.round(diff).toLocaleString('ro-RO') + '.';
+    else mesajEl.textContent = '⚠️ Cheltuielile depășesc cadourile cu €' + Math.round(Math.abs(diff)).toLocaleString('ro-RO') + '. Diferența trebuie acoperită din economii.';
   }
 
-  // Sfaturi inteligente
+  // Sfaturi
   const sfaturi = [];
-
-  if (meniu && buget) {
-    const pctMeniu = Math.round(costMeniuTotal / buget * 100);
-    if (pctMeniu > 60) sfaturi.push({cls:'warning', text:`🍽️ Meniul reprezintă <strong>${pctMeniu}%</strong> din buget. Recomandăm maxim 50-55% pentru a avea buget suficient pentru foto, muzică și decor.`});
-    else sfaturi.push({cls:'ok', text:`🍽️ Meniul reprezintă <strong>${pctMeniu}%</strong> din buget — proporție bună!`});
+  if (cateringTotal && totalChelt) {
+    const pct = Math.round(cateringTotal/totalChelt*100);
+    if (pct > 65) sfaturi.push({cls:'warning', text:`🍽️ Cateringul reprezintă <strong>${pct}%</strong> din total. E mult — încearcă să negociezi prețul meniului.`});
+    else sfaturi.push({cls:'ok', text:`🍽️ Cateringul reprezintă <strong>${pct}%</strong> din total — proporție echilibrată.`});
   }
-
-  if (buget && bugetAltele > 0) {
-    const sugFoto   = Math.round(bugetAltele * 0.25);
-    const sugMuzica = Math.round(bugetAltele * 0.20);
-    const sugFlori  = Math.round(bugetAltele * 0.15);
-    const sugRochie = Math.round(bugetAltele * 0.10);
-    sfaturi.push({cls:'', text:`💡 Din bugetul rămas după meniu (<strong>€${Math.round(bugetAltele).toLocaleString('ro-RO')}</strong>) recomandăm:<br>📷 Foto/Video: ~€${Math.round(sugFoto).toLocaleString('ro-RO')} (25%)<br>🎵 Muzică/DJ: ~€${Math.round(sugMuzica).toLocaleString('ro-RO')} (20%)<br>💐 Flori/Decor: ~€${Math.round(sugFlori).toLocaleString('ro-RO')} (15%)<br>👗 Rochie/Costum: ~€${Math.round(sugRochie).toLocaleString('ro-RO')} (10%)`});
+  if (cadou && totalCadouri && totalChelt) {
+    const acop = Math.round(totalCadouri/totalChelt*100);
+    if (acop >= 100) sfaturi.push({cls:'ok', text:`🎁 Cadourile acoperă <strong>${acop}%</strong> din cheltuieli. Felicitări!`});
+    else sfaturi.push({cls:'warning', text:`🎁 Cadourile acoperă doar <strong>${acop}%</strong> din cheltuieli. Diferența: <strong>€${Math.round(totalChelt-totalCadouri).toLocaleString('ro-RO')}</strong>.`});
   }
-
-  if (cadou && totalCadouri > 0 && buget > 0) {
-    const acoperire = Math.round(totalCadouri / buget * 100);
-    if (acoperire >= 100) sfaturi.push({cls:'ok', text:`🎁 Cadourile estimate acoperă <strong>${acoperire}%</strong> din bugetul total. Felicitări!`});
-    else sfaturi.push({cls:'warning', text:`🎁 Cadourile acoperă doar <strong>${acoperire}%</strong> din buget. Diferența de <strong>€${Math.round(buget-totalCadouri).toLocaleString('ro-RO')}</strong> trebuie acoperită din economii.`});
-  }
-
-  if (pctConf < 80) sfaturi.push({cls:'warning', text:`👥 Rata de confirmare de ${pctConf}% e sub medie. De obicei 80-90% din invitați confirmă prezența.`});
-  if (copii > 0) sfaturi.push({cls:'', text:`👶 Ai ${copii} copii estimați. Meniul pentru copii e calculat la 50% din prețul adult = <strong>€${Math.round(costMeniuCopii).toLocaleString('ro-RO')}</strong>.`});
-  if (vin > 0 && !meniu) sfaturi.push({cls:'warning', text:`⚠️ Adaugă prețul meniului per persoană pentru a vedea estimările complete.`});
+  if (copii > 0) sfaturi.push({cls:'', text:`👶 ${copii} copii × 50% din meniu = <strong>€${Math.round(cateringCopii).toLocaleString('ro-RO')}</strong> catering copii.`});
+  if (bnrRate && totalChelt) sfaturi.push({cls:'', text:`💱 Total cheltuieli în RON: <strong>${Math.round(totalChelt*bnrRate).toLocaleString('ro-RO')} RON</strong> (curs ${bnrRate.toFixed(2)}).`});
 
   const sfaturiEl = document.getElementById('calc-sfaturi');
   if (sfaturiEl) sfaturiEl.innerHTML = sfaturi.map(s=>`<div class="sfat-card ${s.cls}">${s.text}</div>`).join('');
 
-  // Actualizează bugetul cu nr persoane din calculator
+  // Salvează în Firebase
+  saveCalc();
+  // Actualizează tab buget
   renderBudget();
 };
 
@@ -1262,7 +1396,7 @@ window.exportGuests = (filtru) => {
   a.click(); URL.revokeObjectURL(a.href);
 };
 
-function renderAll() { loadSetup(); updateHeader(); renderTasks(); renderBudget(); renderGuests(); renderVendors(); renderProgram(); renderNotes(); }
+function renderAll() { loadSetup(); updateHeader(); renderTasks(); renderBudget(); renderGuests(); renderVendors(); renderProgram(); renderNotes(); loadCalc(); calcUpdate(); }
 
 // Fetch BNR la start
 fetchBNR();
