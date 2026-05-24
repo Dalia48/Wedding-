@@ -992,6 +992,7 @@ function renderGuests() {
           <option value="confirmat"${st==='confirmat'?' selected':''}>✅</option>
           <option value="anulat"${st==='anulat'?' selected':''}>❌</option>
         </select>
+        <button class="edit-btn" onclick="openGuestEdit(${g.id})">✏️</button>
         <button class="del" onclick="delGuest(${g.id})">✕</button>
       </div>
       <div class="g-card-chips">
