@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Nuntă 💍">
+<meta name="theme-color" content="#3d2b2b">
+<link rel="manifest" href="manifest.json">
+<title>Agenda Nuntă</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#faf6f1;--blush:#e8c4b0;--rose:#c17b6a;--deep:#3d2b2b;
+  --gold:#b89a6e;--sage:#7a9e7a;--light:#f0e8df;--white:#fff;--muted:#9a8070;
+  --safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
+  --shadow-sm:0 1px 8px rgba(61,43,43,.08);
+  --shadow-md:0 3px 18px rgba(61,43,43,.12);
+  --radius:14px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--deep);display:flex;flex-direction:column;max-width:540px;margin:0 auto;}
+.hidden{display:none!important;}
+
+/* AUTH */
+#auth-screen{position:fixed;inset:0;background:var(--deep);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;}
+#auth-screen .logo{font-size:56px;margin-bottom:14px;}
+#auth-screen h2{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--blush);margin-bottom:8px;}
+#auth-screen p{font-size:14px;color:var(--gold);opacity:.8;margin-bottom:28px;line-height:1.6;}
+#auth-error{font-size:13px;color:#f9a;margin-top:12px;}
+
+/* HEADER */
+#header{
+  background:linear-gradient(160deg,#2a1a1a 0%,var(--deep) 60%,#4a2a20 100%);
+  padding:calc(var(--safe-top)+16px) 18px 14px;
+  flex-shrink:0;text-align:center;
+  position:relative;overflow:hidden;
+}
+#header::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b89a6e' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+#header .sub{font-size:10px;color:var(--gold);letter-spacing:.25em;text-transform:uppercase;margin-bottom:5px;opacity:.9;}
+#header h1{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--blush);line-height:1.2;font-style:italic;}
+#header .venue{font-size:12px;color:var(--gold);opacity:.8;margin-top:4px;}
+#header .wdate{font-size:12px;color:var(--blush);opacity:.65;margin-top:2px;}
+#countdown{display:none;justify-content:center;gap:28px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(184,154,110,.2);}
+#countdown .cu{text-align:center;}
+#countdown .cn{display:block;font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--gold);line-height:1;font-weight:700;}
+#countdown .cl{font-size:9px;color:var(--blush);opacity:.6;letter-spacing:.18em;text-transform:uppercase;margin-top:2px;}
+#bnr-rate{font-size:10px;color:var(--gold);opacity:.6;margin-top:6px;letter-spacing:.05em;}
+
+/* SYNC BAR */
+#sync-bar{background:rgba(42,26,26,.98);padding:5px 14px 6px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid rgba(184,154,110,.15);}
+#sync-status{font-size:11px;color:var(--gold);opacity:.85;}
+#sync-btn{background:none;border:1px solid rgba(184,154,110,.4);border-radius:20px;padding:3px 12px;font-size:11px;color:var(--gold);cursor:pointer;transition:all .2s;}
+#sync-btn:active{background:var(--gold);color:var(--deep);}
+
+/* TABS */
+#tabs{display:flex;overflow-x:auto;background:var(--cream);border-bottom:1.5px solid var(--blush);flex-shrink:0;scrollbar-width:none;padding:0 4px;}
+#tabs::-webkit-scrollbar{display:none;}
+#tabs button{flex:0 0 auto;background:none;border:none;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;padding:8px 13px;cursor:pointer;font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.04em;color:var(--muted);white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:56px;transition:color .2s;}
+#tabs button .ti{font-size:18px;}
+#tabs button.active{color:var(--rose);border-bottom-color:var(--rose);font-weight:500;}
+#tabs button:hover:not(.active){color:var(--rose);opacity:.7;}
+
+/* CONTENT */
+#content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:15px 13px calc(var(--safe-bottom)+18px);}
+.section{display:none;animation:fadeIn .25s;}
+.section.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* COMMON */
+.sec-title{font-family:'Cormorant Garamond',serif;font-size:21px;color:var(--rose);margin-bottom:13px;padding-bottom:7px;border-bottom:1px solid var(--blush);display:flex;align-items:center;gap:6px;}
+.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-md);padding:14px 16px;margin-bottom:10px;border-left:3px solid var(--blush);transition:box-shadow .2s;}
+.card:hover{box-shadow:0 4px 24px rgba(61,43,43,.14);}
+.field{margin-bottom:10px;}
+.field label{display:block;font-size:10px;color:var(--gold);letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px;}
+input[type=text],input[type=number],input[type=date],input[type=time],select,textarea{width:100%;background:var(--light);border:1.5px solid var(--blush);border-radius:10px;padding:12px 14px;font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);outline:none;-webkit-appearance:none;appearance:none;transition:border-color .2s,box-shadow .2s;}
+input:focus,select:focus,textarea:focus{border-color:var(--rose);box-shadow:0 0 0 3px rgba(193,123,106,.12);}
+textarea{min-height:78px;resize:vertical;font-size:15px;}
+.row{display:flex;gap:8px;}.row>*{flex:1;}
+.btn{background:linear-gradient(135deg,var(--rose),#a8624f);color:#fff;border:none;border-radius:11px;padding:13px 20px;font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;cursor:pointer;width:100%;letter-spacing:.04em;transition:all .2s;box-shadow:0 2px 10px rgba(193,123,106,.3);}
+.btn:active{background:var(--deep);transform:scale(.98);}
+.btn.ghost{background:transparent;color:var(--rose);border:1.5px solid var(--rose);}
+.btn.small{padding:9px 14px;font-size:14px;width:auto;}
+.btn.google{background:#4285f4;display:flex;align-items:center;justify-content:center;gap:8px;}
+.del{background:none;border:none;color:var(--blush);font-size:18px;cursor:pointer;padding:4px 6px;line-height:1;flex-shrink:0;}
+.del:active{color:var(--rose);}
+.prog-wrap{background:var(--light);border-radius:20px;height:7px;overflow:hidden;margin:4px 0;}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--blush),var(--rose));border-radius:20px;transition:width .5s;}
+.prog-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:3px;}
+.prog-pct{color:var(--rose);font-weight:600;}
+.tag{display:inline-block;font-size:11px;background:var(--light);color:var(--gold);border-radius:20px;padding:2px 9px;font-weight:500;white-space:nowrap;}
+.empty{text-align:center;color:var(--blush);padding:26px 0;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;}
+.badge{font-size:11px;border-radius:20px;padding:2px 9px;display:inline-block;}
+.badge.confirmat{background:#d9f0d9;color:#3a7a3a;}.badge.asteptat{background:#fff3cd;color:#856404;}.badge.anulat{background:#fde8e8;color:#8a3030;}
+.badge.rezervat{background:#d9f0d9;color:#3a7a3a;}.badge.negociere{background:#fff3cd;color:#856404;}.badge.cautat{background:#fde8e8;color:#8a3030;}
+.ci{display:flex;align-items:center;gap:10px;background:var(--white);border-radius:12px;padding:12px 13px;margin-bottom:7px;box-shadow:0 1px 7px rgba(61,43,43,.08);border-left:3px solid var(--blush);transition:opacity .2s,border-color .2s;}
+.ci.done{opacity:.5;border-left-color:var(--sage);}.ci.done .ci-text{text-decoration:line-through;}
+.ci input[type=checkbox]{accent-color:var(--rose);width:22px;height:22px;flex-shrink:0;cursor:pointer;}
+.ci-text{flex:1;font-family:'Cormorant Garamond',serif;font-size:16px;}
+.b-summary{background:var(--deep);border-radius:15px;padding:15px 17px;margin-bottom:13px;}
+.b-stats{display:flex;justify-content:space-between;gap:8px;}.b-stat{text-align:center;flex:1;}
+.b-val{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:700;}
+.b-lbl{font-size:9px;color:rgba(250,246,241,.5);letter-spacing:.1em;text-transform:uppercase;}
+.b-prog-wrap{background:rgba(255,255,255,.12);border-radius:20px;height:7px;margin-top:12px;overflow:hidden;}
+.b-prog-bar{height:100%;background:linear-gradient(90deg,var(--sage),var(--rose));border-radius:20px;transition:width .5s;}
+.gi{display:flex;align-items:center;gap:10px;background:var(--white);border-radius:12px;padding:11px 13px;margin-bottom:7px;box-shadow:0 1px 7px rgba(61,43,43,.08);}
+.g-avatar{width:40px;height:40px;border-radius:50%;background:var(--blush);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:19px;color:var(--deep);flex-shrink:0;}
+.gi-info{flex:1;min-width:0;}.gi-name{font-family:'Cormorant Garamond',serif;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}.gi-side{font-size:11px;color:var(--gold);}
+.stats-row{display:flex;gap:7px;margin-bottom:12px;}
+.stat-box{flex:1;background:var(--white);border-radius:12px;padding:9px 4px;text-align:center;box-shadow:0 1px 7px rgba(61,43,43,.08);}
+.stat-val{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;}.stat-lbl{font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
+.vc{display:flex;gap:10px;align-items:center;}.vc-icon{font-size:27px;flex-shrink:0;}.vc-info{flex:1;min-width:0;}
+.vc-name{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;}.vc-sub{font-size:12px;color:var(--gold);}
+.vc-right{text-align:right;flex-shrink:0;}.vc-price{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--rose);font-weight:700;}
+.tl{display:flex;gap:10px;margin-bottom:8px;}
+.tl-time{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--rose);width:48px;flex-shrink:0;text-align:right;padding-top:4px;}
+.tl-mid{display:flex;flex-direction:column;align-items:center;flex-shrink:0;}
+.tl-dot{width:12px;height:12px;border-radius:50%;background:var(--rose);border:2px solid var(--cream);box-shadow:0 0 0 2px var(--blush);margin-top:4px;}
+.tl-line{width:2px;flex:1;background:var(--blush);min-height:18px;margin-top:2px;}
+.tl-box{flex:1;background:var(--white);border-radius:10px;padding:10px 12px;box-shadow:0 1px 7px rgba(61,43,43,.08);display:flex;gap:8px;align-items:flex-start;}
+.tl-event{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;}.tl-note{font-size:12px;color:var(--gold);margin-top:2px;}
+.check-label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--deep);cursor:pointer;flex:1;white-space:nowrap;}
+.check-label input[type=checkbox]{accent-color:var(--rose);width:18px;height:18px;cursor:pointer;flex-shrink:0;}
+.filter-btn{flex:0 0 auto;background:var(--light);border:1.5px solid var(--blush);border-radius:20px;padding:5px 12px;font-size:12px;font-family:'Jost',sans-serif;color:var(--muted);cursor:pointer;white-space:nowrap;}
+.filter-btn.active{background:var(--rose);border-color:var(--rose);color:#fff;}
+.g-card{background:var(--white);border-radius:13px;padding:12px 14px;margin-bottom:8px;box-shadow:0 1px 7px rgba(61,43,43,.08);border-left:3px solid var(--blush);}
+.g-card.confirmat{border-left-color:var(--sage);}
+.g-card.anulat{border-left-color:var(--muted);opacity:.6;}
+.g-card-top{display:flex;align-items:center;gap:10px;}
+.g-card-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;}
+.chip{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--light);color:var(--muted);}
+.chip.rose{background:#fde8e8;color:var(--rose);}
+.chip.sage{background:#d9f0d9;color:#3a7a3a;}
+.chip.gold{background:#fff3cd;color:#856404;}
+.b-vendor-card{background:var(--white);border-radius:13px;padding:13px 14px;margin-bottom:9px;box-shadow:0 2px 14px rgba(61,43,43,.09);}
+.b-vendor-top{display:flex;align-items:flex-start;gap:10px;}
+.b-vendor-name{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;flex:1;}
+.b-vendor-cat{font-size:11px;color:var(--gold);margin-top:2px;}
+.b-vendor-amounts{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--light);}
+.b-amount-box{flex:1;text-align:center;}
+.b-amount-val{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:700;}
+.b-amount-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
+.status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.dot-neinceput{background:#e07070;}.dot-avans{background:#f0b429;}.dot-platit{background:var(--sage);}
+.calc-section-title{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--rose);margin:16px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--blush);}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;}
+.calc-box{background:var(--white);border-radius:12px;padding:12px;text-align:center;box-shadow:0 1px 7px rgba(61,43,43,.08);}
+.calc-val{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;line-height:1.2;}
+.calc-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:4px;line-height:1.3;}
+.calc-bilant{background:var(--white);border-radius:13px;padding:14px 16px;box-shadow:0 2px 14px rgba(61,43,43,.09);margin-bottom:4px;}
+.bilant-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:14px;color:var(--deep);}
+.sfat-card{background:var(--white);border-radius:12px;padding:11px 14px;margin-bottom:8px;box-shadow:0 1px 7px rgba(61,43,43,.08);border-left:3px solid var(--gold);font-size:13px;color:var(--muted);line-height:1.6;}
+.sfat-card.warning{border-left-color:var(--rose);}.sfat-card.ok{border-left-color:var(--sage);}
+
+/* DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.dash-card{background:var(--white);border-radius:14px;padding:14px;box-shadow:0 2px 14px rgba(61,43,43,.09);display:flex;flex-direction:column;align-items:center;text-align:center;}
+.dash-card .big{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;line-height:1;}
+.dash-card .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px;}
+.dash-card .sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.dash-full{background:var(--white);border-radius:14px;padding:14px 16px;box-shadow:0 2px 14px rgba(61,43,43,.09);margin-bottom:10px;}
+.dash-full-title{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--deep);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.dash-task-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--light);font-size:14px;}
+.dash-task-item:last-child{border-bottom:none;}
+.dash-task-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.deadline-badge{font-size:10px;padding:2px 7px;border-radius:20px;white-space:nowrap;}
+.deadline-urgent{background:#fde8e8;color:#8a3030;}
+.deadline-soon{background:#fff3cd;color:#856404;}
+.deadline-ok{background:#d9f0d9;color:#3a7a3a;}
+.deadline-none{background:var(--light);color:var(--muted);}
+/* DEADLINE in tasks */
+.task-deadline{font-size:11px;color:var(--muted);margin-top:2px;}
+
+.masa-card{background:var(--white);border-radius:13px;padding:13px 14px;margin-bottom:9px;box-shadow:0 2px 14px rgba(61,43,43,.09);border-left:3px solid var(--blush);}
+.masa-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;margin-bottom:6px;}
+.masa-loc{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;margin:2px;background:var(--light);color:var(--muted);}
+.masa-loc.ocupat{background:var(--blush);color:var(--deep);}
+.cadou-card{background:var(--white);border-radius:13px;padding:12px 14px;margin-bottom:8px;box-shadow:0 1px 8px rgba(61,43,43,.08);border-left:3px solid var(--gold);}
+.jurnal-card{background:var(--white);border-radius:13px;padding:13px 14px;margin-bottom:9px;box-shadow:0 2px 14px rgba(61,43,43,.09);border-left:3px solid var(--blush);}
+.jurnal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.jurnal-furnizor{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--deep);}
+.jurnal-meta{font-size:11px;color:var(--gold);}
+.jurnal-nota{font-size:13px;color:var(--muted);line-height:1.6;margin-top:6px;}
+.tip-badge{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--light);color:var(--muted);}
+
+.nc{position:relative;}
+
+/* EDIT MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(61,43,43,.55);z-index:500;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px);}
+.modal-overlay.hidden{display:none;}
+.modal-box{background:var(--cream);border-radius:20px 20px 0 0;padding:20px 18px calc(var(--safe-bottom)+24px);width:100%;max-width:540px;max-height:85vh;overflow-y:auto;box-shadow:0 -4px 30px rgba(61,43,43,.2);}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--rose);margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+.modal-close{background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer;padding:0 4px;line-height:1;}
+.modal-close:active{color:var(--rose);}
+.edit-btn{background:none;border:1px solid var(--blush);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--gold);cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.edit-btn:active{background:var(--gold);color:var(--white);}
+.calc-section-title{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--rose);margin:16px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--blush);}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;}
+.calc-box{background:var(--white);border-radius:12px;padding:12px;text-align:center;box-shadow:0 1px 7px rgba(61,43,43,.08);}
+.calc-val{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;line-height:1.2;}
+.calc-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:4px;line-height:1.3;}
+.calc-bilant{background:var(--white);border-radius:13px;padding:14px 16px;box-shadow:0 2px 14px rgba(61,43,43,.09);margin-bottom:4px;}
+.bilant-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:14px;color:var(--deep);}
+.sfat-card{background:var(--white);border-radius:12px;padding:11px 14px;margin-bottom:8px;box-shadow:0 1px 7px rgba(61,43,43,.08);border-left:3px solid var(--gold);font-size:13px;color:var(--muted);line-height:1.6;}
+.sfat-card.warning{border-left-color:var(--rose);}.sfat-card.ok{border-left-color:var(--sage);}
+
+/* DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.dash-card{background:var(--white);border-radius:14px;padding:14px;box-shadow:0 2px 14px rgba(61,43,43,.09);display:flex;flex-direction:column;align-items:center;text-align:center;}
+.dash-card .big{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;line-height:1;}
+.dash-card .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px;}
+.dash-card .sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.dash-full{background:var(--white);border-radius:14px;padding:14px 16px;box-shadow:0 2px 14px rgba(61,43,43,.09);margin-bottom:10px;}
+.dash-full-title{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--deep);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.dash-task-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--light);font-size:14px;}
+.dash-task-item:last-child{border-bottom:none;}
+.dash-task-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.deadline-badge{font-size:10px;padding:2px 7px;border-radius:20px;white-space:nowrap;}
+.deadline-urgent{background:#fde8e8;color:#8a3030;}
+.deadline-soon{background:#fff3cd;color:#856404;}
+.deadline-ok{background:#d9f0d9;color:#3a7a3a;}
+.deadline-none{background:var(--light);color:var(--muted);}
+/* DEADLINE in tasks */
+.task-deadline{font-size:11px;color:var(--muted);margin-top:2px;}
+
+.masa-card{background:var(--white);border-radius:13px;padding:13px 14px;margin-bottom:9px;box-shadow:0 2px 14px rgba(61,43,43,.09);border-left:3px solid var(--blush);}
+.masa-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;margin-bottom:6px;}
+.masa-loc{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;margin:2px;background:var(--light);color:var(--muted);}
+.masa-loc.ocupat{background:var(--blush);color:var(--deep);}
+.cadou-card{background:var(--white);border-radius:13px;padding:12px 14px;margin-bottom:8px;box-shadow:0 1px 8px rgba(61,43,43,.08);border-left:3px solid var(--gold);}
+.jurnal-card{background:var(--white);border-radius:13px;padding:13px 14px;margin-bottom:9px;box-shadow:0 2px 14px rgba(61,43,43,.09);border-left:3px solid var(--blush);}
+.jurnal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.jurnal-furnizor{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--deep);}
+.jurnal-meta{font-size:11px;color:var(--gold);}
+.jurnal-nota{font-size:13px;color:var(--muted);line-height:1.6;margin-top:6px;}
+.tip-badge{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--light);color:var(--muted);}
+
+.nc{position:relative;}
+
+/* EDIT MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(61,43,43,.55);z-index:500;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px);}
+.modal-overlay.hidden{display:none;}
+.modal-box{background:var(--cream);border-radius:20px 20px 0 0;padding:20px 18px calc(var(--safe-bottom)+24px);width:100%;max-width:540px;max-height:85vh;overflow-y:auto;box-shadow:0 -4px 30px rgba(61,43,43,.2);}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--rose);margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+.modal-close{background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer;padding:0 4px;line-height:1;}
+.modal-close:active{color:var(--rose);}
+.edit-btn{background:none;border:1px solid var(--blush);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--gold);cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.edit-btn:active{background:var(--gold);color:var(--white);}.nc-text{font-family:'Cormorant Garamond',serif;font-size:15px;padding-right:24px;white-space:pre-wrap;}.nc-date{font-size:11px;color:var(--gold);margin-top:6px;}.nc .del{position:absolute;top:8px;right:8px;}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth-screen">
+  <div class="logo">💍</div>
+  <h2>Dalia &amp; Razvan</h2>
+  <p>Autentifică-te cu Google<br>pentru a accesa agenda nunții.</p>
+  <button class="btn google" onclick="signIn()" style="max-width:280px;font-size:15px;padding:14px 20px;">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908C16.658 14.013 17.64 11.706 17.64 9.2z" fill="#fff"/>
+      <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#fff"/>
+      <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#fff"/>
+      <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#fff"/>
+    </svg>
+    Autentificare cu Google
+  </button>
+  <div id="auth-error" class="hidden"></div>
+</div>
+
+<!-- APP -->
+<div id="header" class="hidden">
+  <div class="sub">💍 Planificator Nuntă</div>
+  <h1 id="h-names">Agenda Noastră</h1>
+  <div class="venue hidden" id="h-venue"></div>
+  <div class="wdate hidden" id="h-date"></div>
+  <div id="countdown">
+    <div class="cu"><span class="cn" id="cd-z">—</span><span class="cl">zile</span></div>
+    <div class="cu"><span class="cn" id="cd-h">—</span><span class="cl">ore</span></div>
+  </div>
+  <div id="bnr-rate"></div>
+</div>
+
+<div id="sync-bar" class="hidden">
+  <span id="sync-status">⏳ Se conectează...</span>
+  <button id="sync-btn" onclick="signOut()">🚪 Ieșire</button>
+</div>
+
+<div id="tabs" class="hidden">
+  <button class="active" onclick="showTab('dashboard',this)"><span class="ti">🏠</span>Acasă</button>
+  <button onclick="showTab('guests',this)"><span class="ti">👥</span>Invitați</button>
+  <button onclick="showTab('mese',this)"><span class="ti">🪑</span>Mese</button>
+  <button onclick="showTab('cadouri',this)"><span class="ti">🎁</span>Cadouri</button>
+  <button onclick="showTab('budget',this)"><span class="ti">💰</span>Buget</button>
+  <button onclick="showTab('calc',this)"><span class="ti">🧮</span>Calculator</button>
+  <button onclick="showTab('vendors',this)"><span class="ti">🏷️</span>Furnizori</button>
+  <button onclick="showTab('jurnal',this)"><span class="ti">📞</span>Jurnal</button>
+  <button onclick="showTab('program',this)"><span class="ti">📅</span>Program</button>
+  <button onclick="showTab('tasks',this)"><span class="ti">✅</span>Sarcini</button>
+  <button onclick="showTab('notes',this)"><span class="ti">📝</span>Note</button>
+  <button onclick="showTab('setup',this)"><span class="ti">⚙️</span>Info</button>
+</div>
+
+<div id="content" class="hidden">
+
+<div id="sec-dashboard" class="section active">
+  <div class="sec-title">🏠 Tablou de bord</div>
+
+  <!-- COUNTDOWN ROW -->
+  <div class="dash-grid" style="margin-bottom:10px">
+    <div class="dash-card" style="border-left:3px solid var(--rose)">
+      <div class="big" id="d-zile" style="color:var(--rose)">—</div>
+      <div class="lbl">Zile rămase</div>
+      <div class="sub" id="d-data">—</div>
+    </div>
+    <div class="dash-card" style="border-left:3px solid var(--gold)">
+      <div class="big" id="d-saptamani" style="color:var(--gold)">—</div>
+      <div class="lbl">Săptămâni</div>
+      <div class="sub" id="d-luni">— luni</div>
+    </div>
+  </div>
+
+  <!-- INVITATI + BUGET -->
+  <div class="dash-grid">
+    <div class="dash-card" style="border-left:3px solid var(--sage)">
+      <div class="big" id="d-inv-conf" style="color:var(--sage)">0</div>
+      <div class="lbl">Confirmați</div>
+      <div class="sub" id="d-inv-total">din 0 invitați</div>
+    </div>
+    <div class="dash-card" style="border-left:3px solid var(--blush)">
+      <div class="big" id="d-buget-pct" style="color:var(--rose)">0%</div>
+      <div class="lbl">Buget alocat</div>
+      <div class="sub" id="d-buget-sub">din —</div>
+    </div>
+  </div>
+
+  <!-- SARCINI PROGRESS -->
+  <div class="dash-full">
+    <div class="dash-full-title">✅ Progres sarcini</div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+      <span id="d-task-done" style="color:var(--muted)">0/0 îndeplinite</span>
+      <span id="d-task-pct" style="color:var(--rose);font-weight:600">0%</span>
+    </div>
+    <div class="prog-wrap"><div class="prog-bar" id="d-task-bar" style="width:0%"></div></div>
+  </div>
+
+  <!-- SARCINI URGENTE -->
+  <div class="dash-full">
+    <div class="dash-full-title">⚠️ Sarcini urgente / apropiate</div>
+    <div id="d-urgent-tasks"><div style="font-size:13px;color:var(--muted);font-style:italic">Nu ai sarcini cu deadline setat.</div></div>
+  </div>
+
+  <!-- FURNIZORI NEACHITATI -->
+  <div class="dash-full">
+    <div class="dash-full-title">💰 Furnizori cu plăți restante</div>
+    <div id="d-unpaid-vendors"><div style="font-size:13px;color:var(--muted);font-style:italic">Toți furnizorii sunt achitați! 🎉</div></div>
+  </div>
+
+  <!-- NEXT PROGRAM -->
+  <div class="dash-full">
+    <div class="dash-full-title">📅 Programul zilei</div>
+    <div id="d-program-preview"><div style="font-size:13px;color:var(--muted);font-style:italic">Niciun moment adăugat încă.</div></div>
+  </div>
+
+</div>
+
+<div id="sec-setup" class="section">
+  <div class="sec-title">⚙️ Configurare</div>
+  <div class="card" style="border-left-color:var(--gold)">
+    <div class="field"><label>Mireasa</label><input type="text" id="s-bride" placeholder="ex: Ana" oninput="saveSetup()"></div>
+    <div class="field"><label>Mirele</label><input type="text" id="s-groom" placeholder="ex: Mihai" oninput="saveSetup()"></div>
+    <div class="field"><label>Data nunții</label><input type="date" id="s-date" onchange="saveSetup()"></div>
+    <div class="field"><label>Locația</label><input type="text" id="s-venue" placeholder="ex: Restaurantul Florilor" oninput="saveSetup()"></div>
+    <div class="field" style="margin-bottom:0">
+      <label>Buget total (€ EUR)</label>
+      <input type="number" id="s-budget" placeholder="ex: 15000" oninput="saveSetup()">
+    </div>
+  </div>
+  <div class="card" style="border-left-color:var(--sage)">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:17px;margin-bottom:6px">Progres sarcini</div>
+    <div class="prog-label"><span id="sp-done">0/0</span><span class="prog-pct" id="sp-pct">0%</span></div>
+    <div class="prog-wrap"><div class="prog-bar" id="sp-bar" style="width:0%"></div></div>
+  </div>
+  <div class="card" style="border-left-color:var(--muted)">
+    <div style="font-size:13px;color:var(--muted);margin-bottom:4px">👤 Logat ca:</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:16px" id="user-name">—</div>
+    <div style="font-size:12px;color:var(--gold)" id="user-email"></div>
+  </div>
+</div>
+
+<div id="sec-tasks" class="section">
+  <div class="sec-title">✅ Sarcini</div>
+  <div class="prog-label"><span id="ci-done">0/0</span><span class="prog-pct" id="ci-pct">0%</span></div>
+  <div class="prog-wrap" style="margin-bottom:13px"><div class="prog-bar" id="ci-bar" style="width:0%"></div></div>
+  <div class="field"><input type="text" id="ci-text" placeholder="Sarcină nouă..."></div>
+  <div class="row" style="margin-bottom:8px">
+    <select id="ci-cat"><option>General</option><option>Decor</option><option>Catering</option><option>Muzică</option><option>Foto/Video</option><option>Ținute</option><option>Legal</option><option>Altele</option></select>
+    <input type="date" id="ci-deadline" placeholder="Deadline (opțional)" style="flex:1">
+  </div>
+  <button class="btn small" onclick="addTask()" style="width:100%;margin-bottom:10px">+ Adaugă sarcină</button>
+  <div id="tasks-list"></div>
+</div>
+
+<div id="sec-budget" class="section">
+  <div class="sec-title">💰 Buget</div>
+
+  <!-- SUMMARY -->
+  <div class="b-summary">
+    <div class="b-stats">
+      <div class="b-stat"><div class="b-val" id="b-total" style="color:var(--gold)">—</div><div class="b-lbl">Buget total</div></div>
+      <div class="b-stat"><div class="b-val" id="b-chelt" style="color:var(--blush)">0</div><div class="b-lbl">Contractat</div></div>
+      <div class="b-stat"><div class="b-val" id="b-ramas" style="color:var(--sage)">—</div><div class="b-lbl">Disponibil</div></div>
+    </div>
+    <div class="b-prog-wrap"><div class="b-prog-bar" id="b-bar" style="width:0%"></div></div>
+    <div style="display:flex;justify-content:space-between;margin-top:10px">
+      <div class="b-stat"><div class="b-val" id="b-avans-total" style="color:var(--rose);font-size:14px">0</div><div class="b-lbl">Avansuri plătite</div></div>
+      <div class="b-stat"><div class="b-val" id="b-rest-total" style="color:var(--gold);font-size:14px">0</div><div class="b-lbl">Rest de plătit</div></div>
+      <div class="b-stat"><div class="b-val" id="b-per-pers" style="color:var(--blush);font-size:14px">—</div><div class="b-lbl">Per persoană</div></div>
+    </div>
+  </div>
+
+  <!-- ADD FORM -->
+  <div class="card" style="border-left-color:var(--rose);margin-bottom:13px">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--rose);margin-bottom:10px">+ Furnizor / Cheltuială</div>
+    <div class="field"><input type="text" id="b-name" placeholder="Furnizor (ex: Fotograf Alexandru)"></div>
+    <div class="row" style="margin-bottom:8px">
+      <select id="b-cat">
+        <option>Foto/Video</option><option>Muzică/DJ</option><option>Catering</option>
+        <option>Florărie</option><option>Decor</option><option>Rochie/Costum</option>
+        <option>Locație</option><option>Transport</option><option>Tort</option>
+        <option>Inele</option><option>Makeup/Hair</option><option>Altele</option>
+      </select>
+      <input type="number" id="b-pret-total" placeholder="Preț total (€)">
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <input type="number" id="b-avans" placeholder="Avans plătit (€)">
+      <select id="b-status-plata">
+        <option value="neinceput">🔴 Neplătit</option>
+        <option value="avans">🟡 Avans dat</option>
+        <option value="platit">🟢 Achitat</option>
+      </select>
+    </div>
+    <div class="field" style="margin-bottom:10px"><input type="text" id="b-contact" placeholder="Contact furnizor (tel/email)"></div>
+    <button class="btn" onclick="addBudget()">+ Adaugă</button>
+  </div>
+
+  <div id="budget-list"></div>
+</div>
+
+<div id="sec-guests" class="section">
+  <div class="sec-title">👥 Invitați</div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-val" id="g-total" style="color:var(--rose)">0</div><div class="stat-lbl">Total</div></div>
+    <div class="stat-box"><div class="stat-val" id="g-conf" style="color:var(--sage)">0</div><div class="stat-lbl">Confirmați</div></div>
+    <div class="stat-box"><div class="stat-val" id="g-wait" style="color:var(--gold)">0</div><div class="stat-lbl">Așteptați</div></div>
+    <div class="stat-box"><div class="stat-val" id="g-cancel" style="color:var(--muted)">0</div><div class="stat-lbl">Anulați</div></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-val" id="g-mireasa" style="color:var(--rose)">0</div><div class="stat-lbl">Mireasă</div></div>
+    <div class="stat-box"><div class="stat-val" id="g-mire" style="color:var(--gold)">0</div><div class="stat-lbl">Mire</div></div>
+    <div class="stat-box"><div class="stat-val" id="g-comun" style="color:var(--sage)">0</div><div class="stat-lbl">Comun</div></div>
+    <div class="stat-box"><div class="stat-val" id="g-staff" style="color:var(--muted)">0</div><div class="stat-lbl">Staff</div></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-val" id="g-copii" style="color:var(--blush)">0</div><div class="stat-lbl">Copii</div></div>
+    <div class="stat-box"><div class="stat-val" id="g-transfer" style="color:var(--gold)">0</div><div class="stat-lbl">Transfer</div></div>
+    <div class="stat-box"><div class="stat-val" id="g-cazare" style="color:var(--sage)">0</div><div class="stat-lbl">Cazare</div></div>
+    <div class="stat-box"><div class="stat-val" id="g-vege" style="color:var(--sage)">0</div><div class="stat-lbl">Vege</div></div>
+  </div>
+
+  <!-- ADD FORM -->
+  <div class="card" style="border-left-color:var(--rose);margin-bottom:13px">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--rose);margin-bottom:10px">+ Invitat nou</div>
+    <div class="row" style="margin-bottom:8px">
+      <input type="text" id="g-name" placeholder="Nume (ex: Familia Ionescu)" style="flex:2">
+      <input type="number" id="g-nr" placeholder="Pers." min="1" value="1" style="flex:0.7">
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <select id="g-side"><option>Mireasă</option><option>Mire</option><option>Comun</option><option>Staff</option></select>
+      <select id="g-status"><option value="asteptat">⏳ Așteptat</option><option value="confirmat">✅ Confirmat</option><option value="anulat">❌ Anulat</option></select>
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <input type="text" id="g-phone" placeholder="📱 Telefon">
+      <select id="g-menu"><option value="carne">🥩 Carne</option><option value="peste">🐟 Pește</option><option value="vege">🥗 Vegetarian</option></select>
+    </div>
+    <div class="row" style="margin-bottom:10px">
+      <label class="check-label"><input type="checkbox" id="g-copil"> 👶 Copil</label>
+      <label class="check-label"><input type="checkbox" id="g-nec-transfer"> 🚌 Transfer</label>
+      <label class="check-label"><input type="checkbox" id="g-nec-cazare"> 🏨 Cazare</label>
+    </div>
+    <button class="btn" onclick="addGuest()">+ Adaugă invitat</button>
+  </div>
+
+  <!-- SEARCH -->
+  <div style="position:relative;margin-bottom:10px">
+    <input type="text" id="g-search" placeholder="🔍 Caută invitat..." oninput="renderGuests()" style="padding-left:14px;background:var(--white);border-color:var(--blush)">
+    <button onclick="document.getElementById('g-search').value='';renderGuests()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;line-height:1" id="g-search-clear">✕</button>
+  </div>
+
+  <!-- FILTER -->
+  <div style="display:flex;gap:6px;margin-bottom:5px;overflow-x:auto;scrollbar-width:none">
+    <button class="filter-btn active" onclick="filterGuests('toti',this)">Toți</button>
+    <button class="filter-btn" onclick="filterGuests('mireasa',this)">💐 Mireasă</button>
+    <button class="filter-btn" onclick="filterGuests('mire',this)">🤵 Mire</button>
+    <button class="filter-btn" onclick="filterGuests('comun',this)">👫 Comun</button>
+    <button class="filter-btn" onclick="filterGuests('staff',this)">🎯 Staff</button>
+  </div>
+  <div style="display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none">
+    <button class="filter-btn" onclick="filterGuests('confirmat',this)">✅ Confirmați</button>
+    <button class="filter-btn" onclick="filterGuests('asteptat',this)">⏳ Așteptați</button>
+    <button class="filter-btn" onclick="filterGuests('anulat',this)">❌ Anulați</button>
+    <button class="filter-btn" onclick="filterGuests('transfer',this)">🚌 Transfer</button>
+    <button class="filter-btn" onclick="filterGuests('cazare',this)">🏨 Cazare</button>
+  </div>
+  <!-- EXPORT -->
+  <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+    <button class="btn small ghost" onclick="exportGuests('toti')" style="flex:1">📄 Toți</button>
+    <button class="btn small ghost" onclick="exportGuests('mireasa')" style="flex:1">📄 Mireasă</button>
+    <button class="btn small ghost" onclick="exportGuests('mire')" style="flex:1">📄 Mire</button>
+    <button class="btn small ghost" onclick="exportGuests('comun')" style="flex:1">📄 Comun</button>
+    <button class="btn small ghost" onclick="exportGuests('staff')" style="flex:1">📄 Staff</button>
+  </div>
+
+  <div id="guests-list"></div>
+</div>
+
+<div id="sec-vendors" class="section">
+  <div class="sec-title">🏷️ Furnizori</div>
+  <div class="field"><input type="text" id="v-name" placeholder="Furnizor (ex: DJ Alex)"></div>
+  <div class="row"><input type="text" id="v-cat" placeholder="Categorie"><input type="number" id="v-price" placeholder="Preț (€)"></div>
+  <div class="row" style="margin:8px 0 10px"><input type="text" id="v-contact" placeholder="Telefon / contact"><select id="v-status"><option value="cautat">🔍 Căutat</option><option value="negociere">⏳ Negociere</option><option value="rezervat">✅ Rezervat</option></select></div>
+  <button class="btn" style="margin-bottom:13px" onclick="addVendor()">+ Adaugă furnizor</button>
+  <div id="vendors-list"></div>
+</div>
+
+<div id="sec-program" class="section">
+  <div class="sec-title">📅 Program zi</div>
+  <div class="row"><input type="time" id="p-time"><input type="text" id="p-event" placeholder="Eveniment"></div>
+  <div class="field" style="margin:8px 0 10px"><input type="text" id="p-note" placeholder="Notă opțională"></div>
+  <button class="btn" style="margin-bottom:13px" onclick="addProgram()">+ Adaugă moment</button>
+  <div id="program-list"></div>
+</div>
+
+<div id="sec-notes" class="section">
+  <div class="sec-title">📝 Note & Idei</div>
+  <div class="field"><textarea id="note-text" placeholder="Scrie o idee, un gând..."></textarea></div>
+  <button class="btn" style="margin-bottom:13px" onclick="addNote()">+ Salvează nota</button>
+  <div id="notes-list"></div>
+</div>
+
+<div id="sec-calc" class="section">
+  <div class="sec-title">🧮 Planificator Buget</div>
+
+  <!-- PERSOANE -->
+  <div class="card" style="border-left-color:var(--gold)">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);margin-bottom:10px">👥 Persoane</div>
+    <div class="row">
+      <div class="field" style="margin:0">
+        <label>Nr. invitați estimați</label>
+        <input type="number" id="calc-persoane" placeholder="ex: 150" oninput="calcUpdate()">
+      </div>
+      <div class="field" style="margin:0">
+        <label>% confirmare</label>
+        <input type="number" id="calc-confirmare" placeholder="85" value="85" oninput="calcUpdate()">
+      </div>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <div class="field" style="margin:0">
+        <label>Nr. copii (inclus în total)</label>
+        <input type="number" id="calc-copii" placeholder="ex: 10" value="0" oninput="calcUpdate()">
+      </div>
+      <div class="field" style="margin:0">
+        <label>Cadou estimat / persoană (€)</label>
+        <input type="number" id="calc-cadou" placeholder="ex: 100" oninput="calcUpdate()">
+      </div>
+    </div>
+    <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--light);display:flex;justify-content:space-between;font-size:13px">
+      <span style="color:var(--muted)">Persoane care vin:</span>
+      <span id="cr-total-pers" style="color:var(--rose);font-weight:600">—</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:4px">
+      <span style="color:var(--muted)">Cadouri estimate:</span>
+      <span id="cr-cadouri" style="color:var(--sage);font-weight:600">—</span>
+    </div>
+  </div>
+
+  <!-- COSTURI PER PERSOANĂ -->
+  <div class="card" style="border-left-color:var(--rose)">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);margin-bottom:10px">🍽️ Costuri per persoană (€)</div>
+    <div class="row" style="margin-bottom:8px">
+      <div class="field" style="margin:0">
+        <label>Meniu mâncare / pers</label>
+        <input type="number" id="calc-meniu" placeholder="ex: 70" oninput="calcUpdate()">
+      </div>
+      <div class="field" style="margin:0">
+        <label>Meniu băuturi / pers</label>
+        <input type="number" id="calc-bauturi" placeholder="ex: 30" oninput="calcUpdate()">
+      </div>
+    </div>
+    <div class="row">
+      <div class="field" style="margin:0">
+        <label>Prăjituri / deserturi / pers</label>
+        <input type="number" id="calc-prajituri" placeholder="ex: 15" oninput="calcUpdate()">
+      </div>
+      <div class="field" style="margin:0">
+        <label>Alte costuri / pers</label>
+        <input type="number" id="calc-altele-pers" placeholder="ex: 10" oninput="calcUpdate()">
+      </div>
+    </div>
+    <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--light);display:flex;justify-content:space-between;font-size:13px">
+      <span style="color:var(--muted)">Total catering / persoană:</span>
+      <span id="cc-per-pers" style="color:var(--rose);font-weight:600">—</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:4px">
+      <span style="color:var(--muted)">Total catering (toți):</span>
+      <span id="cc-catering-total" style="color:var(--rose);font-weight:600">—</span>
+    </div>
+  </div>
+
+  <!-- CHELTUIELI FIXE -->
+  <div class="card" style="border-left-color:var(--sage)">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);margin-bottom:10px">📋 Cheltuieli fixe (€)</div>
+    <div class="row" style="margin-bottom:8px">
+      <div class="field" style="margin:0">
+        <label>Locație / sală</label>
+        <input type="number" id="c-locatie" placeholder="ex: 2000" oninput="calcUpdate()">
+      </div>
+      <div class="field" style="margin:0">
+        <label>Foto + Video</label>
+        <input type="number" id="c-foto" placeholder="ex: 1500" oninput="calcUpdate()">
+      </div>
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <div class="field" style="margin:0">
+        <label>Muzică / DJ / Formație</label>
+        <input type="number" id="c-muzica" placeholder="ex: 1000" oninput="calcUpdate()">
+      </div>
+      <div class="field" style="margin:0">
+        <label>Flori / Decor</label>
+        <input type="number" id="c-decor" placeholder="ex: 800" oninput="calcUpdate()">
+      </div>
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <div class="field" style="margin:0">
+        <label>Rochie + Costum</label>
+        <input type="number" id="c-tinute" placeholder="ex: 1200" oninput="calcUpdate()">
+      </div>
+      <div class="field" style="margin:0">
+        <label>Inele</label>
+        <input type="number" id="c-inele" placeholder="ex: 600" oninput="calcUpdate()">
+      </div>
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <div class="field" style="margin:0">
+        <label>Makeup + Hair</label>
+        <input type="number" id="c-makeup" placeholder="ex: 300" oninput="calcUpdate()">
+      </div>
+      <div class="field" style="margin:0">
+        <label>Transport / Limuzină</label>
+        <input type="number" id="c-transport" placeholder="ex: 400" oninput="calcUpdate()">
+      </div>
+    </div>
+    <div class="row">
+      <div class="field" style="margin:0">
+        <label>Tort</label>
+        <input type="number" id="c-tort" placeholder="ex: 300" oninput="calcUpdate()">
+      </div>
+      <div class="field" style="margin:0">
+        <label>Invitații + Papetărie</label>
+        <input type="number" id="c-invitatii" placeholder="ex: 200" oninput="calcUpdate()">
+      </div>
+    </div>
+  </div>
+
+  <!-- CHELTUIELI EXTRA -->
+  <div class="card" style="border-left-color:var(--gold)">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);margin-bottom:10px">➕ Cheltuieli suplimentare</div>
+    <div id="extra-cheltuieli-list"></div>
+    <div class="row" style="margin-top:4px">
+      <input type="text" id="extra-nume" placeholder="Nume cheltuială">
+      <input type="number" id="extra-suma" placeholder="Sumă (€)">
+      <button class="btn small" onclick="addExtraChelt()" style="flex:0.5">+</button>
+    </div>
+  </div>
+
+  <!-- BILANȚ -->
+  <div class="calc-section-title">⚖️ Bilanț total</div>
+  <div class="calc-bilant">
+
+    <div style="font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--deep);margin-bottom:8px">💸 Cheltuieli</div>
+    <div class="bilant-row"><span>🍽️ Catering total</span><span id="bil-catering" style="color:var(--rose)">—</span></div>
+    <div class="bilant-row"><span>📋 Furnizori & fixe</span><span id="bil-fixe" style="color:var(--rose)">—</span></div>
+    <div class="bilant-row"><span>➕ Cheltuieli extra</span><span id="bil-extra" style="color:var(--rose)">—</span></div>
+    <div class="bilant-row" style="border-top:1px solid var(--blush);padding-top:8px;margin-top:4px">
+      <strong>Total cheltuieli</strong>
+      <strong id="bil-chelt" style="color:var(--rose);font-size:18px">—</strong>
+    </div>
+    <div class="bilant-row" style="margin-top:4px"><span style="color:var(--muted);font-size:12px">Cost per persoană</span><span id="bil-per-pers" style="color:var(--muted);font-size:12px">—</span></div>
+
+    <div style="font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--deep);margin:14px 0 8px">🎁 Venituri estimate</div>
+    <div class="bilant-row"><span>Cadouri (scenariu normal)</span><span id="bil-cadouri" style="color:var(--sage)">—</span></div>
+    <div class="bilant-row"><span>Scenariu pesimist (-20%)</span><span id="cr-minim" style="color:var(--gold)">—</span></div>
+    <div class="bilant-row"><span>Scenariu optimist (+20%)</span><span id="cr-maxim" style="color:var(--sage)">—</span></div>
+
+    <div class="bilant-row" style="border-top:1px solid var(--blush);padding-top:8px;margin-top:8px">
+      <strong>Diferență estimată</strong>
+      <strong id="bil-diff" style="font-size:20px">—</strong>
+    </div>
+    <div id="bil-mesaj" style="font-size:13px;color:var(--muted);margin-top:8px;font-style:italic;text-align:center"></div>
+  </div>
+
+  <!-- SFATURI -->
+  <div class="calc-section-title">💡 Observații</div>
+  <div id="calc-sfaturi"></div>
+
+  <!-- păstrăm ID-uri vechi pentru compatibilitate cu renderBudget -->
+  <span id="cr-cadouri" style="display:none"></span>
+  <span id="cc-meniu" style="display:none"></span>
+  <span id="cc-altele" style="display:none"></span>
+  <span id="cc-per-pers-total" style="display:none"></span>
+  <span id="cc-copii" style="display:none"></span>
+
+</div>
+
+
+<!-- PLAN MESE -->
+<div id="sec-mese" class="section">
+  <div class="sec-title">🪑 Plan Mese</div>
+  <div class="card" style="border-left-color:var(--gold)">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);margin-bottom:10px">+ Adaugă masă</div>
+    <div class="row" style="margin-bottom:8px">
+      <input type="text" id="masa-nume" placeholder="ex: Masa 1, Familia Ionescu">
+      <input type="number" id="masa-locuri" placeholder="Nr. locuri" min="1">
+    </div>
+    <button class="btn" onclick="addMasa()">+ Adaugă masă</button>
+  </div>
+  <div class="card" style="border-left-color:var(--sage)">
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+      <span style="color:var(--muted)">Total locuri:</span><span id="mese-total-locuri" style="color:var(--deep);font-weight:600">0</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+      <span style="color:var(--muted)">Locuri ocupate:</span><span id="mese-ocupate" style="color:var(--rose);font-weight:600">0</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px">
+      <span style="color:var(--muted)">Locuri libere:</span><span id="mese-libere" style="color:var(--sage);font-weight:600">0</span>
+    </div>
+  </div>
+  <div id="mese-list"></div>
+</div>
+
+<!-- CADOURI -->
+<div id="sec-cadouri" class="section">
+  <div class="sec-title">🎁 Cadouri primite</div>
+  <div class="card" style="border-left-color:var(--gold)">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);margin-bottom:10px">+ Înregistrează cadou</div>
+    <div class="field">
+      <label>De la</label>
+      <select id="cad-de-la-sel" onchange="onCadouSelectChange()" style="margin-bottom:6px">
+        <option value="">-- Alege din invitați confirmați --</option>
+      </select>
+      <input type="text" id="cad-de-la" placeholder="Sau scrie manual...">
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <input type="number" id="cad-suma" placeholder="Sumă (€) — 0 pt. cadou fizic">
+      <select id="cad-tip">
+        <option value="bani">💵 Bani</option>
+        <option value="cadou">🎁 Cadou fizic</option>
+        <option value="voucher">🎫 Voucher</option>
+      </select>
+    </div>
+    <div class="field" style="margin-bottom:10px"><input type="text" id="cad-descriere" placeholder="Descriere cadou fizic (opțional)"></div>
+    <div class="field" style="margin-bottom:10px">
+      <label class="check-label"><input type="checkbox" id="cad-multumit"> ✉️ Mulțumire trimisă</label>
+    </div>
+    <button class="btn" onclick="addCadou()">+ Adaugă cadou</button>
+  </div>
+  <div class="card" style="border-left-color:var(--sage);margin-bottom:4px">
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+      <span style="color:var(--muted)">Total cadouri bani:</span><span id="cad-total-bani" style="color:var(--sage);font-weight:600;font-family:'Cormorant Garamond',serif;font-size:16px">€0</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+      <span style="color:var(--muted)">Nr. cadouri fizice:</span><span id="cad-nr-fizice" style="color:var(--gold);font-weight:600">0</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+      <span style="color:var(--muted)">Mulțumiri de trimis:</span><span id="cad-multumiri" style="color:var(--rose);font-weight:600">0</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px">
+      <span style="color:var(--muted)">Confirmați fără cadou:</span><span id="cad-fara" style="color:var(--muted);font-weight:600">0</span>
+    </div>
+  </div>
+  <div id="cadouri-list"></div>
+</div>
+
+<!-- JURNAL FURNIZORI -->
+<div id="sec-jurnal" class="section">
+  <div class="sec-title">📞 Jurnal Furnizori</div>
+  <div class="card" style="border-left-color:var(--rose)">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);margin-bottom:10px">+ Adaugă notă</div>
+    <div class="row" style="margin-bottom:8px">
+      <select id="jurnal-furnizor">
+        <option value="">-- Alege furnizor --</option>
+      </select>
+      <input type="date" id="jurnal-data">
+    </div>
+    <div class="field"><textarea id="jurnal-nota" placeholder="Ce s-a discutat, ce s-a promis, ce urmează..." style="min-height:70px"></textarea></div>
+    <div class="row" style="margin-bottom:10px">
+      <select id="jurnal-tip">
+        <option value="telefon">📞 Telefon</option>
+        <option value="intalnire">🤝 Întâlnire</option>
+        <option value="email">📧 Email</option>
+        <option value="whatsapp">💬 WhatsApp</option>
+        <option value="altele">📌 Altele</option>
+      </select>
+    </div>
+    <button class="btn" onclick="addJurnal()">+ Salvează notă</button>
+  </div>
+  <div id="jurnal-list"></div>
+</div>
+
+</div><!-- /content -->
+
+<!-- EDIT BUDGET MODAL -->
+<div id="modal-budget" class="modal-overlay hidden" onclick="closeBudgetModal(event)">
+  <div class="modal-box">
+    <div class="modal-title">
+      ✏️ Editează furnizor
+      <button class="modal-close" onclick="closeBudgetModalBtn()">✕</button>
+    </div>
+    <input type="hidden" id="edit-b-id">
+    <div class="field"><label>Nume furnizor</label><input type="text" id="edit-b-name" placeholder="ex: Fotograf Alexandru"></div>
+    <div class="row" style="margin-bottom:8px">
+      <select id="edit-b-cat">
+        <option>Foto/Video</option><option>Muzică/DJ</option><option>Catering</option>
+        <option>Florărie</option><option>Decor</option><option>Rochie/Costum</option>
+        <option>Locație</option><option>Transport</option><option>Tort</option>
+        <option>Inele</option><option>Makeup/Hair</option><option>Altele</option>
+      </select>
+      <input type="number" id="edit-b-pret" placeholder="Preț total (€)">
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <input type="number" id="edit-b-avans" placeholder="Avans plătit (€)">
+      <select id="edit-b-status">
+        <option value="neinceput">🔴 Neplătit</option>
+        <option value="avans">🟡 Avans dat</option>
+        <option value="platit">🟢 Achitat</option>
+      </select>
+    </div>
+    <div class="field" style="margin-bottom:14px"><label>Contact</label><input type="text" id="edit-b-contact" placeholder="tel/email"></div>
+    <button class="btn" onclick="saveBudgetEdit()">💾 Salvează modificările</button>
+  </div>
+</div>
+
+<!-- EDIT GUEST MODAL -->
+<div id="modal-guest" class="modal-overlay hidden" onclick="closeGuestModal(event)">
+  <div class="modal-box">
+    <div class="modal-title">
+      ✏️ Editează invitat
+      <button class="modal-close" onclick="closeGuestModalBtn()">✕</button>
+    </div>
+    <input type="hidden" id="edit-g-id">
+    <div class="row" style="margin-bottom:8px">
+      <div class="field" style="margin:0;flex:2"><label>Nume</label><input type="text" id="edit-g-name" placeholder="ex: Familia Ionescu"></div>
+      <div class="field" style="margin:0;flex:0.7"><label>Nr. pers.</label><input type="number" id="edit-g-nr" placeholder="1" min="1"></div>
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <select id="edit-g-side"><option>Mireasă</option><option>Mire</option><option>Comun</option></select>
+      <select id="edit-g-status">
+        <option value="asteptat">⏳ Așteptat</option>
+        <option value="confirmat">✅ Confirmat</option>
+        <option value="anulat">❌ Anulat</option>
+      </select>
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <input type="text" id="edit-g-phone" placeholder="📱 Telefon">
+      <select id="edit-g-menu">
+        <option value="carne">🥩 Carne</option>
+        <option value="peste">🐟 Pește</option>
+        <option value="vege">🥗 Vegetarian</option>
+      </select>
+    </div>
+    <div class="row" style="margin-bottom:14px">
+      <label class="check-label"><input type="checkbox" id="edit-g-copil"> 👶 Copil</label>
+      <label class="check-label"><input type="checkbox" id="edit-g-transfer"> 🚌 Transfer</label>
+      <label class="check-label"><input type="checkbox" id="edit-g-cazare"> 🏨 Cazare</label>
+    </div>
+    <button class="btn" onclick="saveGuestEdit()">💾 Salvează modificările</button>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+// ── FIREBASE CONFIG ──────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyDntSyzZCwJVZcEs-vmF5rSMY3hmrXIvuk",
+  authDomain: "nunta-app-4d21f.firebaseapp.com",
+  databaseURL: "https://nunta-app-4d21f-default-rtdb.firebaseio.com",
+  projectId: "nunta-app-4d21f",
+  storageBucket: "nunta-app-4d21f.firebasestorage.app",
+  messagingSenderId: "1085680574398",
+  appId: "1:1085680574398:web:bfa01c928adfd0b3b5e3ef"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getDatabase(app);
+const provider = new GoogleAuthProvider();
+
+// ── DEFAULT DATA ──────────────────────────────────────────────
+const DEFAULT_TASKS = [
+  {id:1,text:'Stabilește data și locația',cat:'General',done:false},
+  {id:2,text:'Fixează bugetul total',cat:'General',done:false},
+  {id:3,text:'Alege rochia de mireasă',cat:'Ținute',done:false},
+  {id:4,text:'Alege costumul mirelui',cat:'Ținute',done:false},
+  {id:5,text:'Rezervă fotograful',cat:'Foto/Video',done:false},
+  {id:6,text:'Rezervă videograful',cat:'Foto/Video',done:false},
+  {id:7,text:'Rezervă DJ / Formație',cat:'Muzică',done:false},
+  {id:8,text:'Degustare meniu catering',cat:'Catering',done:false},
+  {id:9,text:'Comandă tortul',cat:'Catering',done:false},
+  {id:10,text:'Aranjamente florale',cat:'Decor',done:false},
+  {id:11,text:'Trimite invitațiile',cat:'General',done:false},
+  {id:12,text:'Comandă inelele',cat:'Ținute',done:false},
+  {id:13,text:'Programare stare civilă',cat:'Legal',done:false},
+  {id:14,text:'Planifică luna de miere',cat:'Altele',done:false},
+];
+
+let S = {
+  setup:{bride:'',groom:'',date:'',venue:'',budget:''},
+  tasks:DEFAULT_TASKS.map(t=>({...t})),
+  budget:[],guests:[],vendors:[],program:[],notes:[],
+  calc:{persoane:'',confirmare:'85',copii:'0',cadou:'',meniu:'',bauturi:'',prajituri:'',altePers:'',locatie:'',foto:'',muzica:'',decor:'',tinute:'',inele:'',makeup:'',transport:'',tort:'',invitatii:''},
+  extraChelt:[],
+  mese:[],
+  cadouri:[],
+  jurnal:[]
+};
+
+let saveTimer = null;
+let isLoading = false;
+
+// ── AUTH ──────────────────────────────────────────────────────
+window.signIn = async () => {
+  try {
+    await signInWithPopup(auth, provider);
+  } catch(e) {
+    const el = document.getElementById('auth-error');
+    el.textContent = 'Eroare: ' + e.message;
+    el.classList.remove('hidden');
+  }
+};
+
+window.signOut = async () => {
+  await fbSignOut(auth);
+};
+
+onAuthStateChanged(auth, user => {
+  if (user) {
+    document.getElementById('auth-screen').classList.add('hidden');
+    document.getElementById('header').classList.remove('hidden');
+    document.getElementById('sync-bar').classList.remove('hidden');
+    document.getElementById('tabs').classList.remove('hidden');
+    document.getElementById('content').classList.remove('hidden');
+    document.getElementById('user-name').textContent = user.displayName || '—';
+    document.getElementById('user-email').textContent = user.email || '';
+    setStatus('⏳ Se încarcă...');
+    listenToData();
+  } else {
+    document.getElementById('auth-screen').classList.remove('hidden');
+    document.getElementById('header').classList.add('hidden');
+    document.getElementById('sync-bar').classList.add('hidden');
+    document.getElementById('tabs').classList.add('hidden');
+    document.getElementById('content').classList.add('hidden');
+  }
+});
+
+// ── FIREBASE REALTIME DB ──────────────────────────────────────
+let isSyncing = false;
+
+// Convertește obiectele Firebase (cu chei numerice) înapoi în array-uri JS
+function toArray(val) {
+  if (!val) return [];
+  if (Array.isArray(val)) return val;
+  // Firebase stochează array-urile ca {0: ..., 1: ...} — le convertim
+  return Object.values(val);
+}
+
+function listenToData() {
+  const dataRef = ref(db, 'nunta');
+  onValue(dataRef, (snapshot) => {
+    if (isSyncing) return; // ignorăm update-ul cauzat de propria salvare
+    const data = snapshot.val();
+    if (data) {
+      if (data.setup) S.setup = data.setup;
+      if (data.calc) S.calc = data.calc;
+      ['tasks','budget','guests','vendors','program','notes','mese','cadouri','jurnal'].forEach(k => {
+        if (data[k] !== undefined && data[k] !== null) {
+          S[k] = toArray(data[k]);
+        }
+      });
+      if (data.extraChelt !== undefined && data.extraChelt !== null) {
+        S.extraChelt = toArray(data.extraChelt);
+      }
+    }
+    renderAll();
+    setStatus('✅ Sincronizat · ' + now());
+  }, (error) => {
+    setStatus('❌ ' + error.message);
+  });
+}
+
+function saveToFirebase() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    setStatus('💾 Se salvează...');
+    isSyncing = true;
+    try {
+      await set(ref(db, 'nunta'), S);
+      setStatus('✅ Salvat · ' + now());
+      if(typeof renderDashboard==='function') renderDashboard();
+    } catch(e) {
+      setStatus('❌ Eroare salvare: ' + e.message);
+    }
+    // Eliberăm lock-ul după 2s (timp suficient pentru Firebase să confirme)
+    setTimeout(() => { isSyncing = false; }, 2000);
+  }, 800);
+}
+
+// ── TABS ──────────────────────────────────────────────────────
+window.showTab = (id, btn) => {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  btn.classList.add('active');
+  btn.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+};
+
+// ── SETUP ─────────────────────────────────────────────────────
+window.saveSetup = () => {
+  S.setup.bride  = document.getElementById('s-bride').value;
+  S.setup.groom  = document.getElementById('s-groom').value;
+  S.setup.date   = document.getElementById('s-date').value;
+  S.setup.venue  = document.getElementById('s-venue').value;
+  S.setup.budget = document.getElementById('s-budget').value;
+  updateHeader();
+  saveToFirebase();
+};
+
+function loadSetup() {
+  document.getElementById('s-bride').value  = S.setup.bride  || '';
+  document.getElementById('s-groom').value  = S.setup.groom  || '';
+  document.getElementById('s-date').value   = S.setup.date   || '';
+  document.getElementById('s-venue').value  = S.setup.venue  || '';
+  document.getElementById('s-budget').value = S.setup.budget || '';
+}
+
+function updateHeader() {
+  const {bride,groom,date,venue} = S.setup;
+  document.getElementById('h-names').textContent = (bride||groom) ? `${bride||'—'} & ${groom||'—'}` : 'Agenda Noastră';
+  const vEl = document.getElementById('h-venue');
+  if (venue) { vEl.textContent='📍 '+venue; vEl.classList.remove('hidden'); } else vEl.classList.add('hidden');
+  const dEl = document.getElementById('h-date');
+  if (date) {
+    const dt = new Date(date);
+    dEl.textContent = dt.toLocaleDateString('ro-RO',{day:'numeric',month:'long',year:'numeric'});
+    dEl.classList.remove('hidden');
+    const diff = dt - new Date();
+    const cd = document.getElementById('countdown');
+    if (diff > 0) {
+      cd.style.display='flex';
+      document.getElementById('cd-z').textContent = Math.floor(diff/86400000);
+      document.getElementById('cd-h').textContent = Math.floor((diff%86400000)/3600000);
+    } else cd.style.display='none';
+  } else { dEl.classList.add('hidden'); document.getElementById('countdown').style.display='none'; }
+}
+
+// ── PROGRESS ──────────────────────────────────────────────────
+function renderProgress() {
+  const t=S.tasks, done=t.filter(x=>x.done).length, pct=t.length?Math.round(done/t.length*100):0;
+  ['ci','sp'].forEach(p=>{
+    const d=document.getElementById(p+'-done'), pc=document.getElementById(p+'-pct'), b=document.getElementById(p+'-bar');
+    if(d) d.textContent=`${done}/${t.length}`;
+    if(pc) pc.textContent=pct+'%';
+    if(b) b.style.width=pct+'%';
+  });
+}
+
+// ── TASKS ─────────────────────────────────────────────────────
+const CAT_COLOR={General:'#b89a6e',Decor:'#9b7ec8',Catering:'#c17b3a','Muzică':'#c17b6a','Foto/Video':'#5a8a9a','Ținute':'#b06090',Legal:'#9a8070',Altele:'#7a9e7a'};
+
+window.addTask = () => {
+  const t=document.getElementById('ci-text').value.trim(); if(!t) return;
+  S.tasks.push({
+    id:Date.now(),
+    text:t,
+    cat:document.getElementById('ci-cat').value,
+    deadline:document.getElementById('ci-deadline').value||'',
+    done:false
+  });
+  document.getElementById('ci-text').value='';
+  document.getElementById('ci-deadline').value='';
+  renderTasks(); saveToFirebase();
+};
+window.toggleTask = (id) => {
+  const t=S.tasks.find(x=>x.id===id); if(t) t.done=!t.done;
+  renderTasks(); saveToFirebase();
+};
+window.delTask = (id) => { S.tasks=S.tasks.filter(x=>x.id!==id); renderTasks(); saveToFirebase(); };
+
+function renderTasks() {
+  renderProgress();
+  document.getElementById('tasks-list').innerHTML = S.tasks.length
+    ? S.tasks.map(t=>`<div class="ci${t.done?' done':''}"><input type="checkbox"${t.done?' checked':''} onchange="toggleTask(${t.id})"><span class="ci-text">${esc(t.text)}</span><span class="tag" style="color:${CAT_COLOR[t.cat]||'#b89a6e'}">${t.cat}</span><button class="del" onclick="delTask(${t.id})">✕</button></div>`).join('')
+    : '<div class="empty">Nicio sarcină.</div>';
+}
+
+// ── BUDGET ────────────────────────────────────────────────────
+window.addBudget = () => {
+  const name = document.getElementById('b-name').value.trim();
+  const pretTotal = parseFloat(document.getElementById('b-pret-total').value) || 0;
+  if (!name || !pretTotal) return;
+  const avans = parseFloat(document.getElementById('b-avans').value) || 0;
+  S.budget.push({
+    id: Date.now(),
+    name,
+    cat: document.getElementById('b-cat').value,
+    pretTotal,
+    avans,
+    rest: pretTotal - avans,
+    statusPlata: document.getElementById('b-status-plata').value,
+    contact: document.getElementById('b-contact').value.trim(),
+  });
+  document.getElementById('b-name').value = '';
+  document.getElementById('b-pret-total').value = '';
+  document.getElementById('b-avans').value = '';
+  document.getElementById('b-contact').value = '';
+  renderBudget(); saveToFirebase();
+};
+window.delBudget = (id) => { S.budget=S.budget.filter(x=>x.id!==id); renderBudget(); saveToFirebase(); };
+
+function renderBudget() {
+  const bugetTotal = parseFloat(S.setup.budget) || 0;
+  const totalContractat = S.budget.reduce((s,x)=>s+(x.pretTotal||x.amount||0), 0);
+  const totalAvans = S.budget.reduce((s,x)=>s+(x.avans||0), 0);
+  const totalRest = S.budget.reduce((s,x)=>s+((x.pretTotal||x.amount||0)-(x.avans||0)), 0);
+  const disponibil = bugetTotal - totalContractat;
+  const pct = bugetTotal ? Math.min(100, Math.round(totalContractat/bugetTotal*100)) : 0;
+
+  // Nr persoane din Calculator (prioritate) sau suma persoanelor confirmate
+  const calcPers = parseFloat(document.getElementById('calc-persoane')?.value) || 0;
+  const calcConf = parseFloat(document.getElementById('calc-confirmare')?.value) || 85;
+  const nrConfPers = S.guests.filter(g=>g.status==='confirmat').reduce((s,g)=>s+(g.nr||1), 0);
+  const nrTotalPers = S.guests.reduce((s,g)=>s+(g.nr||1), 0);
+  const nrPers = calcPers ? Math.round(calcPers * calcConf / 100) : (nrConfPers || nrTotalPers || 1);
+  const perPers = totalContractat && nrPers ? totalContractat / nrPers : 0;
+
+  // Afișare valori (innerHTML pentru EUR+RON)
+  const setH = (id, html) => { const el=document.getElementById(id); if(el) el.innerHTML=html; };
+  setH('b-total', bugetTotal ? fmtSimple(bugetTotal) : '—');
+  setH('b-chelt', fmtSimple(totalContractat));
+  setH('b-ramas', bugetTotal ? fmtSimple(disponibil) : '—');
+  document.getElementById('b-bar').style.width = pct+'%';
+  setH('b-avans-total', fmtSimple(totalAvans));
+  setH('b-rest-total', fmtSimple(totalRest));
+  setH('b-per-pers', perPers ? fmtSimple(perPers) : '—');
+
+  const statusLabel = {neinceput:'🔴 Neplătit', avans:'🟡 Avans dat', platit:'🟢 Achitat'};
+  const catIcons = {'Foto/Video':'📷','Muzică/DJ':'🎵','Catering':'🍽️','Florărie':'💐','Decor':'✨','Rochie/Costum':'👗','Locație':'🏛️','Transport':'🚗','Tort':'🎂','Inele':'💍','Makeup/Hair':'💄','Altele':'🏷️'};
+
+  document.getElementById('budget-list').innerHTML = S.budget.length ? S.budget.map(b => {
+    const total = b.pretTotal || b.amount || 0;
+    const avans = b.avans || 0;
+    const rest = total - avans;
+    const status = b.statusPlata || (avans >= total && total > 0 ? 'platit' : avans > 0 ? 'avans' : 'neinceput');
+    const cat = b.cat || 'Altele';
+    const ronStr = bnrRate ? `<div style="font-size:10px;color:var(--muted);margin-top:2px">${Math.round(total*bnrRate).toLocaleString('ro-RO')} RON</div>` : '';
+    return `<div class="b-vendor-card" style="border-left:3px solid ${status==='platit'?'var(--sage)':status==='avans'?'var(--gold)':'var(--rose)'}">
+      <div class="b-vendor-top">
+        <div style="font-size:26px;flex-shrink:0">${catIcons[cat]||'🏷️'}</div>
+        <div style="flex:1;min-width:0">
+          <div class="b-vendor-name">${esc(b.name)}</div>
+          <div class="b-vendor-cat">${cat}${b.contact?' · '+esc(b.contact):''}</div>
+          <span class="tag" style="margin-top:4px;display:inline-block">${statusLabel[status]||'🔴 Neplătit'}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+        <button class="edit-btn" onclick="openBudgetEdit(${b.id})">✏️ Edit</button>
+        <button class="del" onclick="delBudget(${b.id})">✕</button>
+      </div>
+      </div>
+      <div class="b-vendor-amounts">
+        <div class="b-amount-box">
+          <div class="b-amount-val" style="color:var(--deep)">€${total.toLocaleString('ro-RO')}</div>
+          ${ronStr}
+          <div class="b-amount-lbl">Total</div>
+        </div>
+        <div class="b-amount-box">
+          <div class="b-amount-val" style="color:var(--sage)">€${avans.toLocaleString('ro-RO')}</div>
+          <div class="b-amount-lbl">Avans plătit</div>
+        </div>
+        <div class="b-amount-box">
+          <div class="b-amount-val" style="color:var(--rose)">€${rest.toLocaleString('ro-RO')}</div>
+          <div class="b-amount-lbl">Rest de plătit</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('') : '<div class="empty">Niciun furnizor adăugat.</div>';
+}
+
+// ── GUESTS ────────────────────────────────────────────────────
+let guestFilter = 'toti';
+
+window.addGuest = () => {
+  const n = document.getElementById('g-name').value.trim(); if(!n) return;
+  const nr = parseInt(document.getElementById('g-nr').value) || 1;
+  S.guests.push({
+    id: Date.now(),
+    name: n,
+    nr: nr,
+    side: document.getElementById('g-side').value,
+    status: document.getElementById('g-status').value,
+    phone: document.getElementById('g-phone').value.trim(),
+    menu: document.getElementById('g-menu').value,
+    copil: document.getElementById('g-copil').checked,
+    transfer: document.getElementById('g-nec-transfer').checked,
+    cazare: document.getElementById('g-nec-cazare').checked,
+  });
+  // Reset form
+  document.getElementById('g-name').value='';
+  document.getElementById('g-nr').value='1';
+  document.getElementById('g-phone').value='';
+  document.getElementById('g-copil').checked=false;
+  document.getElementById('g-nec-transfer').checked=false;
+  document.getElementById('g-nec-cazare').checked=false;
+  renderGuests(); saveToFirebase();
+};
+
+window.updGuest = (id, val) => {
+  const g = S.guests.find(x=>x.id===id); if(g) g.status=val;
+  renderGuests(); saveToFirebase();
+};
+window.delGuest = (id) => { S.guests=S.guests.filter(x=>x.id!==id); renderGuests(); saveToFirebase(); };
+window.filterGuests = (f, btn) => {
+  guestFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGuests();
+};
+
+function renderGuests() {
+  const gs = S.guests;
+
+  const sum = (arr) => arr.reduce((s,g)=>s+(g.nr||1), 0);
+  const totalPers    = sum(gs);
+  const confPers     = sum(gs.filter(g=>g.status==='confirmat'));
+  const waitPers     = sum(gs.filter(g=>g.status==='asteptat'));
+  const cancelPers   = sum(gs.filter(g=>g.status==='anulat'));
+  const mireasaPers  = sum(gs.filter(g=>g.side==='Mireasă'));
+  const mirePers     = sum(gs.filter(g=>g.side==='Mire'));
+  const comunPers    = sum(gs.filter(g=>g.side==='Comun'));
+  const staffPers    = sum(gs.filter(g=>g.side==='Staff'));
+  const copiiCount   = sum(gs.filter(g=>g.copil));
+  const transferCount= sum(gs.filter(g=>g.transfer));
+  const cazareCount  = sum(gs.filter(g=>g.cazare));
+  const vegeCount    = sum(gs.filter(g=>g.menu==='vege'));
+
+  const s = (id, v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+  s('g-total', totalPers); s('g-conf', confPers); s('g-wait', waitPers); s('g-cancel', cancelPers);
+  s('g-mireasa', mireasaPers); s('g-mire', mirePers); s('g-comun', comunPers); s('g-staff', staffPers);
+  s('g-copii', copiiCount); s('g-transfer', transferCount); s('g-cazare', cazareCount); s('g-vege', vegeCount);
+
+  let filtered = gs;
+  if      (guestFilter==='confirmat') filtered = gs.filter(g=>g.status==='confirmat');
+  else if (guestFilter==='asteptat')  filtered = gs.filter(g=>g.status==='asteptat');
+  else if (guestFilter==='anulat')    filtered = gs.filter(g=>g.status==='anulat');
+  else if (guestFilter==='transfer')  filtered = gs.filter(g=>g.transfer);
+  else if (guestFilter==='cazare')    filtered = gs.filter(g=>g.cazare);
+  else if (guestFilter==='mireasa')   filtered = gs.filter(g=>g.side==='Mireasă');
+  else if (guestFilter==='mire')      filtered = gs.filter(g=>g.side==='Mire');
+  else if (guestFilter==='comun')     filtered = gs.filter(g=>g.side==='Comun');
+  else if (guestFilter==='staff')     filtered = gs.filter(g=>g.side==='Staff');
+
+  // Search
+  const searchEl = document.getElementById('g-search');
+  const q = searchEl ? searchEl.value.trim().toLowerCase() : '';
+  if (q) filtered = filtered.filter(g=>(g.name||'').toLowerCase().includes(q)||(g.phone||'').includes(q));
+  const clearBtn = document.getElementById('g-search-clear');
+  if (clearBtn) clearBtn.style.opacity = q ? '1' : '0';
+
+  const menuLabel  = {carne:'🥩 Carne', peste:'🐟 Pește', vege:'🥗 Vege'};
+  const statusBg   = {confirmat:'#d9f0d9', asteptat:'#fff3cd', anulat:'#fde8e8'};
+  const statusColor= {confirmat:'#3a7a3a', asteptat:'#856404', anulat:'#8a3030'};
+  const sideIcon   = {'Mireasă':'💐','Mire':'🤵','Comun':'👫','Staff':'🎯'};
+
+  document.getElementById('guests-list').innerHTML = filtered.length ? filtered.map(g => {
+    const nr = g.nr || 1;
+    const st = g.status || 'asteptat';
+    return `<div class="g-card ${st}">
+      <div class="g-card-top">
+        <div class="g-avatar" style="${nr>1?'background:var(--rose);color:#fff;font-size:14px;':''}">${nr>1?nr+'👥':(g.name||'?')[0].toUpperCase()}</div>
+        <div style="flex:1;min-width:0">
+          <div class="gi-name">${esc(g.name||'')}</div>
+          <div class="gi-side">${sideIcon[g.side]||''} ${g.side||''}${nr>1?' · <strong>'+nr+' pers.</strong>':''}${g.phone?' · '+esc(g.phone):''}</div>
+        </div>
+        <select onchange="updGuest(${g.id},this.value)" style="font-size:11px;border-radius:20px;padding:3px 6px;width:auto;background:${statusBg[st]};color:${statusColor[st]}">
+          <option value="asteptat"${st==='asteptat'?' selected':''}>⏳</option>
+          <option value="confirmat"${st==='confirmat'?' selected':''}>✅</option>
+          <option value="anulat"${st==='anulat'?' selected':''}>❌</option>
+        </select>
+        <button class="edit-btn" onclick="openGuestEdit(${g.id})">✏️</button>
+        <button class="del" onclick="delGuest(${g.id})">✕</button>
+      </div>
+      <div class="g-card-chips">
+        <span class="chip">${menuLabel[g.menu]||'🥩 Carne'}</span>
+        ${g.copil?'<span class="chip rose">👶 Copil</span>':''}
+        ${g.transfer?'<span class="chip gold">🚌 Transfer</span>':''}
+        ${g.cazare?'<span class="chip sage">🏨 Cazare</span>':''}
+      </div>
+    </div>`;
+  }).join('') : `<div class="empty">Niciun invitat${guestFilter!=='toti'?' în această categorie':''}.</div>`;
+}
+
+// ── VENDORS ───────────────────────────────────────────────────
+const VICONS={foto:'📷',video:'🎬',muzic:'🎵',dj:'🎧',cater:'🍽️',flor:'💐',decor:'✨',trans:'🚗',tort:'🎂',rochi:'👗',costu:'🤵',make:'💄'};
+function vIcon(s){const k=Object.keys(VICONS).find(k=>s&&s.toLowerCase().includes(k));return k?VICONS[k]:'🏷️';}
+const VS={rezervat:'✅ Rezervat',negociere:'⏳ Negociere',cautat:'🔍 Căutat'};
+
+window.addVendor = () => {
+  const n=document.getElementById('v-name').value.trim(); if(!n) return;
+  S.vendors.push({id:Date.now(),name:n,cat:document.getElementById('v-cat').value,price:parseFloat(document.getElementById('v-price').value)||0,status:document.getElementById('v-status').value,contact:document.getElementById('v-contact').value});
+  document.getElementById('v-name').value=''; document.getElementById('v-price').value=''; document.getElementById('v-contact').value='';
+  renderVendors(); saveToFirebase();
+};
+window.delVendor = (id) => { S.vendors=S.vendors.filter(x=>x.id!==id); renderVendors(); saveToFirebase(); };
+
+function renderVendors() {
+  document.getElementById('vendors-list').innerHTML = S.vendors.length
+    ? S.vendors.map(v=>`<div class="card" style="border-left-color:${v.status==='rezervat'?'var(--sage)':v.status==='negociere'?'var(--gold)':'var(--rose)'}"><div class="vc"><div class="vc-icon">${vIcon(v.cat||v.name)}</div><div class="vc-info"><div class="vc-name">${esc(v.name)}</div><div class="vc-sub">${v.cat||''}${v.contact?' • '+esc(v.contact):''}</div><span class="badge ${v.status}">${VS[v.status]}</span></div><div class="vc-right">${v.price?`<div class="vc-price">${v.price.toLocaleString('ro-RO')}<br><small>RON</small></div>`:''}<button class="del" onclick="delVendor(${v.id})">✕</button></div></div></div>`)
+    .join('') : '<div class="empty">Niciun furnizor.</div>';
+}
+
+// ── PROGRAM ───────────────────────────────────────────────────
+window.addProgram = () => {
+  const t=document.getElementById('p-time').value, e=document.getElementById('p-event').value.trim(); if(!t||!e) return;
+  S.program.push({id:Date.now(),time:t,event:e,note:document.getElementById('p-note').value});
+  S.program.sort((a,b)=>a.time.localeCompare(b.time));
+  document.getElementById('p-event').value=''; document.getElementById('p-note').value='';
+  renderProgram(); saveToFirebase();
+};
+window.delProgram = (id) => { S.program=S.program.filter(x=>x.id!==id); renderProgram(); saveToFirebase(); };
+
+function renderProgram() {
+  document.getElementById('program-list').innerHTML = S.program.length
+    ? S.program.map((p,i)=>`<div class="tl"><div class="tl-time">${p.time}</div><div class="tl-mid"><div class="tl-dot"></div>${i<S.program.length-1?'<div class="tl-line"></div>':''}</div><div class="tl-box"><div style="flex:1"><div class="tl-event">${esc(p.event)}</div>${p.note?`<div class="tl-note">${esc(p.note)}</div>`:''}</div><button class="del" onclick="delProgram(${p.id})">✕</button></div></div>`)
+    .join('') : '<div class="empty">Adaugă momente din ziua nunții.</div>';
+}
+
+// ── NOTES ─────────────────────────────────────────────────────
+window.addNote = () => {
+  const t=document.getElementById('note-text').value.trim(); if(!t) return;
+  S.notes.unshift({id:Date.now(),text:t,date:new Date().toLocaleDateString('ro-RO')});
+  document.getElementById('note-text').value=''; renderNotes(); saveToFirebase();
+};
+window.delNote = (id) => { S.notes=S.notes.filter(x=>x.id!==id); renderNotes(); saveToFirebase(); };
+
+function renderNotes() {
+  document.getElementById('notes-list').innerHTML = S.notes.length
+    ? S.notes.map(n=>`<div class="card nc" style="border-left-color:var(--gold)"><button class="del" onclick="delNote(${n.id})">✕</button><div class="nc-text">${esc(n.text)}</div><div class="nc-date">${n.date}</div></div>`)
+    .join('') : '<div class="empty">Nicio notă.</div>';
+}
+
+// ── RENDER ALL ────────────────────────────────────────────────
+// ── CALCULATOR ────────────────────────────────────────────────
+// Extra cheltuieli sunt stocate în S.extraChelt
+
+window.addExtraChelt = () => {
+  const nume = document.getElementById('extra-nume').value.trim();
+  const suma = parseFloat(document.getElementById('extra-suma').value) || 0;
+  if (!nume || !suma) return;
+  S.extraChelt.push({id: Date.now(), nume, suma});
+  document.getElementById('extra-nume').value = '';
+  document.getElementById('extra-suma').value = '';
+  saveCalc();
+  calcUpdate();
+};
+window.delExtraChelt = (id) => {
+  S.extraChelt = S.extraChelt.filter(x=>x.id!==id);
+  saveCalc();
+  calcUpdate();
+};
+
+function saveCalc() {
+  const e = (id) => document.getElementById(id)?.value || '';
+  S.calc = {
+    persoane: e('calc-persoane'), confirmare: e('calc-confirmare'),
+    copii: e('calc-copii'), cadou: e('calc-cadou'),
+    meniu: e('calc-meniu'), bauturi: e('calc-bauturi'),
+    prajituri: e('calc-prajituri'), altePers: e('calc-altele-pers'),
+    locatie: e('c-locatie'), foto: e('c-foto'), muzica: e('c-muzica'),
+    decor: e('c-decor'), tinute: e('c-tinute'), inele: e('c-inele'),
+    makeup: e('c-makeup'), transport: e('c-transport'),
+    tort: e('c-tort'), invitatii: e('c-invitatii'),
+  };
+  saveToFirebase();
+}
+
+function loadCalc() {
+  if (!S.calc) return;
+  const c = S.calc;
+  const ids = {
+    'calc-persoane':c.persoane,'calc-confirmare':c.confirmare||'85',
+    'calc-copii':c.copii||'0','calc-cadou':c.cadou,
+    'calc-meniu':c.meniu,'calc-bauturi':c.bauturi,
+    'calc-prajituri':c.prajituri,'calc-altele-pers':c.altePers,
+    'c-locatie':c.locatie,'c-foto':c.foto,'c-muzica':c.muzica,
+    'c-decor':c.decor,'c-tinute':c.tinute,'c-inele':c.inele,
+    'c-makeup':c.makeup,'c-transport':c.transport,
+    'c-tort':c.tort,'c-invitatii':c.invitatii,
+  };
+  Object.entries(ids).forEach(([id,val]) => {
+    const el = document.getElementById(id);
+    if (el && val) el.value = val;
+  });
+}
+
+window.calcUpdate = () => {
+  const e = (id) => parseFloat(document.getElementById(id)?.value) || 0;
+  const s = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+  const eur = (n) => n ? '€'+Math.round(n).toLocaleString('ro-RO') : '—';
+
+  const persoane   = e('calc-persoane');
+  const pctConf    = e('calc-confirmare') || 85;
+  const copii      = e('calc-copii');
+  const cadou      = e('calc-cadou');
+
+  // Costuri per persoană
+  const meniu      = e('calc-meniu');
+  const bauturi    = e('calc-bauturi');
+  const prajituri  = e('calc-prajituri');
+  const altePers   = e('calc-altele-pers');
+  const totalPers  = meniu + bauturi + prajituri + altePers;
+  const totalPersCopii = totalPers * 0.5;
+
+  // Cheltuieli fixe
+  const fixe = ['c-locatie','c-foto','c-muzica','c-decor','c-tinute','c-inele','c-makeup','c-transport','c-tort','c-invitatii'].reduce((s,id)=>s+e(id), 0);
+
+  // Extra
+  const totalExtra = S.extraChelt.reduce((s,x)=>s+x.suma, 0);
+
+  // Render extra list
+  const extraList = document.getElementById('extra-cheltuieli-list');
+  if (extraList) {
+    extraList.innerHTML = S.extraChelt.length ? S.extraChelt.map(x=>`
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--light)">
+        <span style="flex:1;font-size:14px">${esc(x.nume)}</span>
+        <span style="font-family:'Cormorant Garamond',serif;color:var(--rose);font-weight:600">€${x.suma.toLocaleString('ro-RO')}</span>
+        <button class="del" onclick="delExtraChelt(${x.id})">✕</button>
+      </div>`).join('') : '';
+  }
+
+  if (!persoane) { renderBudget(); return; }
+
+  const vin       = Math.round(persoane * pctConf / 100);
+  const vinAdulti = Math.max(0, vin - copii);
+
+  // Catering
+  const cateringAdulti = vinAdulti * totalPers;
+  const cateringCopii  = copii * totalPersCopii;
+  const cateringTotal  = cateringAdulti + cateringCopii;
+
+  // Total cheltuieli
+  const totalChelt = cateringTotal + fixe + totalExtra;
+  const perPers = vin > 0 ? totalChelt / vin : 0;
+
+  // Cadouri
+  const totalCadouri = vin * cadou;
+  const cadouriMin   = Math.round(totalCadouri * 0.80);
+  const cadouriMax   = Math.round(totalCadouri * 1.20);
+  const diff         = totalCadouri - totalChelt;
+
+  // Render
+  s('cr-total-pers', vin + ' persoane');
+  s('cr-cadouri', eur(totalCadouri) + (bnrRate && totalCadouri ? ' ('+Math.round(totalCadouri*bnrRate).toLocaleString('ro-RO')+' RON)' : ''));
+  s('cc-per-pers', totalPers ? eur(totalPers) : '—');
+  s('cc-catering-total', eur(cateringTotal));
+  s('bil-catering', eur(cateringTotal));
+  s('bil-fixe', eur(fixe));
+  s('bil-extra', eur(totalExtra));
+  s('bil-chelt', eur(totalChelt));
+  s('bil-per-pers', perPers ? eur(perPers) + '/pers' : '—');
+  s('bil-cadouri', eur(totalCadouri));
+  s('cr-minim', eur(cadouriMin));
+  s('cr-maxim', eur(cadouriMax));
+
+  const diffEl = document.getElementById('bil-diff');
+  if (diffEl) {
+    diffEl.textContent = (diff >= 0 ? '+€' : '-€') + Math.round(Math.abs(diff)).toLocaleString('ro-RO');
+    diffEl.style.color = diff >= 0 ? 'var(--sage)' : 'var(--rose)';
+  }
+
+  const mesajEl = document.getElementById('bil-mesaj');
+  if (mesajEl) {
+    if (!cadou) mesajEl.textContent = 'Adaugă cadoul estimat per persoană pentru bilanț complet.';
+    else if (diff > 0) mesajEl.textContent = '🎉 Cadourile acoperă cheltuielile! Surplus estimat €' + Math.round(diff).toLocaleString('ro-RO') + '.';
+    else mesajEl.textContent = '⚠️ Cheltuielile depășesc cadourile cu €' + Math.round(Math.abs(diff)).toLocaleString('ro-RO') + '. Diferența trebuie acoperită din economii.';
+  }
+
+  // Sfaturi
+  const sfaturi = [];
+  if (cateringTotal && totalChelt) {
+    const pct = Math.round(cateringTotal/totalChelt*100);
+    if (pct > 65) sfaturi.push({cls:'warning', text:`🍽️ Cateringul reprezintă <strong>${pct}%</strong> din total. E mult — încearcă să negociezi prețul meniului.`});
+    else sfaturi.push({cls:'ok', text:`🍽️ Cateringul reprezintă <strong>${pct}%</strong> din total — proporție echilibrată.`});
+  }
+  if (cadou && totalCadouri && totalChelt) {
+    const acop = Math.round(totalCadouri/totalChelt*100);
+    if (acop >= 100) sfaturi.push({cls:'ok', text:`🎁 Cadourile acoperă <strong>${acop}%</strong> din cheltuieli. Felicitări!`});
+    else sfaturi.push({cls:'warning', text:`🎁 Cadourile acoperă doar <strong>${acop}%</strong> din cheltuieli. Diferența: <strong>€${Math.round(totalChelt-totalCadouri).toLocaleString('ro-RO')}</strong>.`});
+  }
+  if (copii > 0) sfaturi.push({cls:'', text:`👶 ${copii} copii × 50% din meniu = <strong>€${Math.round(cateringCopii).toLocaleString('ro-RO')}</strong> catering copii.`});
+  if (bnrRate && totalChelt) sfaturi.push({cls:'', text:`💱 Total cheltuieli în RON: <strong>${Math.round(totalChelt*bnrRate).toLocaleString('ro-RO')} RON</strong> (curs ${bnrRate.toFixed(2)}).`});
+
+  const sfaturiEl = document.getElementById('calc-sfaturi');
+  if (sfaturiEl) sfaturiEl.innerHTML = sfaturi.map(s=>`<div class="sfat-card ${s.cls}">${s.text}</div>`).join('');
+
+  // Salvează în Firebase
+  saveCalc();
+  // Actualizează tab buget
+  renderBudget();
+};
+
+// ── EDIT BUDGET ───────────────────────────────────────────────
+window.openBudgetEdit = (id) => {
+  const b = S.budget.find(x=>x.id===id); if(!b) return;
+  document.getElementById('edit-b-id').value = id;
+  document.getElementById('edit-b-name').value = b.name || '';
+  document.getElementById('edit-b-cat').value = b.cat || 'Foto/Video';
+  document.getElementById('edit-b-pret').value = b.pretTotal || b.amount || '';
+  document.getElementById('edit-b-avans').value = b.avans || '';
+  document.getElementById('edit-b-status').value = b.statusPlata || 'neinceput';
+  document.getElementById('edit-b-contact').value = b.contact || '';
+  document.getElementById('modal-budget').classList.remove('hidden');
+};
+window.closeBudgetModalBtn = () => document.getElementById('modal-budget').classList.add('hidden');
+window.closeBudgetModal = (e) => { if(e.target.id==='modal-budget') closeBudgetModalBtn(); };
+window.saveBudgetEdit = () => {
+  const id = parseInt(document.getElementById('edit-b-id').value);
+  const b = S.budget.find(x=>x.id===id); if(!b) return;
+  const pret = parseFloat(document.getElementById('edit-b-pret').value) || 0;
+  const avans = parseFloat(document.getElementById('edit-b-avans').value) || 0;
+  b.name = document.getElementById('edit-b-name').value.trim();
+  b.cat = document.getElementById('edit-b-cat').value;
+  b.pretTotal = pret;
+  b.amount = pret;
+  b.avans = avans;
+  b.rest = pret - avans;
+  b.statusPlata = document.getElementById('edit-b-status').value;
+  b.contact = document.getElementById('edit-b-contact').value.trim();
+  closeBudgetModalBtn();
+  renderBudget(); saveToFirebase();
+};
+
+// ── EDIT GUESTS ───────────────────────────────────────────────
+window.openGuestEdit = (id) => {
+  const g = S.guests.find(x=>x.id===id); if(!g) return;
+  document.getElementById('edit-g-id').value = id;
+  document.getElementById('edit-g-name').value = g.name || '';
+  document.getElementById('edit-g-nr').value = g.nr || 1;
+  document.getElementById('edit-g-side').value = g.side || 'Mireasă';
+  document.getElementById('edit-g-status').value = g.status || 'asteptat';
+  document.getElementById('edit-g-phone').value = g.phone || '';
+  document.getElementById('edit-g-menu').value = g.menu || 'carne';
+  document.getElementById('edit-g-copil').checked = !!g.copil;
+  document.getElementById('edit-g-transfer').checked = !!g.transfer;
+  document.getElementById('edit-g-cazare').checked = !!g.cazare;
+  document.getElementById('modal-guest').classList.remove('hidden');
+};
+window.closeGuestModalBtn = () => document.getElementById('modal-guest').classList.add('hidden');
+window.closeGuestModal = (e) => { if(e.target.id==='modal-guest') closeGuestModalBtn(); };
+window.saveGuestEdit = () => {
+  const id = parseInt(document.getElementById('edit-g-id').value);
+  const g = S.guests.find(x=>x.id===id); if(!g) return;
+  g.name = document.getElementById('edit-g-name').value.trim();
+  g.nr = parseInt(document.getElementById('edit-g-nr').value) || 1;
+  g.side = document.getElementById('edit-g-side').value;
+  g.status = document.getElementById('edit-g-status').value;
+  g.phone = document.getElementById('edit-g-phone').value.trim();
+  g.menu = document.getElementById('edit-g-menu').value;
+  g.copil = document.getElementById('edit-g-copil').checked;
+  g.transfer = document.getElementById('edit-g-transfer').checked;
+  g.cazare = document.getElementById('edit-g-cazare').checked;
+  closeGuestModalBtn();
+  renderGuests(); saveToFirebase();
+};
+
+window.exportGuests = (filtru) => {
+  const gs = S.guests;
+  const map = {toti:gs, mireasa:gs.filter(g=>g.side==='Mireasă'), mire:gs.filter(g=>g.side==='Mire'), comun:gs.filter(g=>g.side==='Comun'), staff:gs.filter(g=>g.side==='Staff')};
+  const lista = map[filtru] || gs;
+  const titlu = {toti:'Listă completă', mireasa:'Invitați mireasă', mire:'Invitați mire', comun:'Invitați comuni', staff:'Staff'};
+  const statusLabel = {confirmat:'✅ Confirmat', asteptat:'⏳ Așteptat', anulat:'❌ Anulat'};
+  const menuLabel = {carne:'Carne', peste:'Pește', vege:'Vegetarian'};
+  const totalPers = lista.reduce((s,g)=>s+(g.nr||1), 0);
+  const confPers = lista.filter(g=>g.status==='confirmat').reduce((s,g)=>s+(g.nr||1), 0);
+  const bride = S.setup?.bride||'Mireasă', groom = S.setup?.groom||'Mire';
+  const date = S.setup?.date ? new Date(S.setup.date).toLocaleDateString('ro-RO',{day:'numeric',month:'long',year:'numeric'}) : '';
+  let txt = '═'.repeat(48)+'\n';
+  txt += `  ${bride} & ${groom}${date?' — '+date:''}\n`;
+  txt += `  ${titlu[filtru]||filtru}\n`;
+  txt += '═'.repeat(48)+'\n\n';
+  txt += `Total: ${totalPers} persoane (${lista.length} invitații)\n`;
+  txt += `Confirmați: ${confPers} persoane\n\n`;
+  ['confirmat','asteptat','anulat'].forEach(st => {
+    const grup = lista.filter(g=>(g.status||'asteptat')===st);
+    if (!grup.length) return;
+    const persSt = grup.reduce((s,g)=>s+(g.nr||1), 0);
+    txt += `\n${statusLabel[st]} — ${persSt} persoane\n${'─'.repeat(30)}\n`;
+    grup.forEach((g,i) => {
+      const nr = g.nr||1;
+      txt += `${i+1}. ${g.name}${nr>1?' ('+nr+' pers.)':''}\n`;
+      const d=[];
+      if(g.phone) d.push('📱 '+g.phone);
+      if(g.menu&&g.menu!=='carne') d.push('🍽️ '+menuLabel[g.menu]);
+      if(g.copil) d.push('👶 Copil');
+      if(g.transfer) d.push('🚌 Transfer');
+      if(g.cazare) d.push('🏨 Cazare');
+      if(d.length) txt += '   '+d.join(' · ')+'\n';
+    });
+  });
+  txt += '\n'+'═'.repeat(48)+'\n';
+  txt += `Exportat: ${new Date().toLocaleString('ro-RO')}\n`;
+  const blob = new Blob([txt],{type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `invitati-${filtru}-${new Date().toISOString().slice(0,10)}.txt`;
+  a.click(); URL.revokeObjectURL(a.href);
+};
+
+// ══ PLAN MESE ═══════════════════════════════════════════════
+window.addMasa = () => {
+  const nume = document.getElementById('masa-nume').value.trim();
+  const locuri = parseInt(document.getElementById('masa-locuri').value) || 8;
+  if (!nume) return;
+  S.mese.push({id:Date.now(), nume, locuri, ocupanti:[]});
+  document.getElementById('masa-nume').value='';
+  document.getElementById('masa-locuri').value='';
+  renderMese(); saveToFirebase();
+};
+window.delMasa = (id) => { S.mese=S.mese.filter(x=>x.id!==id); renderMese(); saveToFirebase(); };
+window.addOcupant = (masaId) => {
+  const inp = document.getElementById('ocp-'+masaId);
+  const val = inp?.value.trim(); if(!val) return;
+  const masa = S.mese.find(m=>m.id===masaId); if(!masa) return;
+  if (!masa.ocupanti) masa.ocupanti=[];
+  masa.ocupanti.push(val);
+  inp.value='';
+  renderMese(); saveToFirebase();
+};
+window.delOcupant = (masaId, idx) => {
+  const masa = S.mese.find(m=>m.id===masaId); if(!masa) return;
+  masa.ocupanti.splice(idx,1);
+  renderMese(); saveToFirebase();
+};
+
+function renderMese() {
+  const totalLocuri = S.mese.reduce((s,m)=>s+m.locuri,0);
+  const ocupate = S.mese.reduce((s,m)=>s+(m.ocupanti?.length||0),0);
+  const el=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  el('mese-total-locuri',totalLocuri);
+  el('mese-ocupate',ocupate);
+  el('mese-libere',totalLocuri-ocupate);
+
+  document.getElementById('mese-list').innerHTML = S.mese.length ? S.mese.map(m=>{
+    const ocp = m.ocupanti||[];
+    const liber = m.locuri - ocp.length;
+    return `<div class="masa-card" style="border-left-color:${liber===0?'var(--rose)':liber<=2?'var(--gold)':'var(--sage)'}">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div class="masa-title" style="flex:1">${esc(m.nume)}</div>
+        <span style="font-size:12px;color:var(--muted)">${ocp.length}/${m.locuri} locuri</span>
+        <button class="del" onclick="delMasa(${m.id})">✕</button>
+      </div>
+      <div style="margin-bottom:8px">
+        ${ocp.map((o,i)=>`<span class="masa-loc ocupat">${esc(o)} <button onclick="delOcupant(${m.id},${i})" style="background:none;border:none;cursor:pointer;font-size:10px;color:var(--rose);padding:0 0 0 3px">✕</button></span>`).join('')}
+        ${liber>0?Array(Math.min(liber,3)).fill(0).map(()=>'<span class="masa-loc">liber</span>').join(''):''}
+        ${liber>3?`<span class="masa-loc">+${liber-3} libere</span>`:''}
+      </div>
+      ${liber>0?`<div class="row" style="gap:6px">
+        <input type="text" id="ocp-${m.id}" placeholder="Adaugă persoană..." style="font-size:14px;padding:8px 10px">
+        <button class="btn small" onclick="addOcupant(${m.id})">+</button>
+      </div>`:`<div style="font-size:12px;color:var(--rose);text-align:center">Masă completă</div>`}
+    </div>`;
+  }).join('') : '<div class="empty">Nicio masă adăugată.</div>';
+}
+
+// ══ CADOURI ══════════════════════════════════════════════════
+window.addCadou = () => {
+  const sel = document.getElementById('cad-de-la-sel').value;
+  const manual = document.getElementById('cad-de-la').value.trim();
+  const de_la = sel || manual; if(!de_la) return;
+  S.cadouri.push({
+    id:Date.now(),
+    de_la,
+    suma: parseFloat(document.getElementById('cad-suma').value)||0,
+    tip: document.getElementById('cad-tip').value,
+    descriere: document.getElementById('cad-descriere').value.trim(),
+    multumit: document.getElementById('cad-multumit').checked,
+    data: new Date().toLocaleDateString('ro-RO')
+  });
+  document.getElementById('cad-de-la-sel').value='';
+  document.getElementById('cad-de-la').value='';
+  document.getElementById('cad-suma').value='';
+  document.getElementById('cad-descriere').value='';
+  document.getElementById('cad-multumit').checked=false;
+  renderCadouri(); saveToFirebase();
+};
+window.toggleMultumire = (id) => {
+  const c=S.cadouri.find(x=>x.id===id); if(c) c.multumit=!c.multumit;
+  renderCadouri(); saveToFirebase();
+};
+window.delCadou = (id) => { S.cadouri=S.cadouri.filter(x=>x.id!==id); renderCadouri(); saveToFirebase(); };
+
+function updateCadouGuests() {
+  const sel = document.getElementById('cad-de-la-sel');
+  if (!sel) return;
+  const confirmed = S.guests.filter(g=>g.status==='confirmat');
+  const cadouriExistente = S.cadouri.map(c=>c.de_la);
+  const current = sel.value;
+  sel.innerHTML = '<option value="">-- Alege din invitați confirmați --</option>' +
+    confirmed.map(g=>`<option value="${esc(g.name)}" ${current===g.name?'selected':''}>${esc(g.name)}${(g.nr||1)>1?' ('+g.nr+' pers.)':''}${cadouriExistente.includes(g.name)?' ✓':''}</option>`).join('');
+}
+
+window.onCadouSelectChange = () => {
+  const sel = document.getElementById('cad-de-la-sel');
+  const inp = document.getElementById('cad-de-la');
+  if (sel && inp) {
+    if (sel.value) inp.value = '';
+    inp.placeholder = sel.value ? 'Selectat din listă' : 'Sau scrie manual...';
+  }
+};
+
+function renderCadouri() {
+  updateCadouGuests();
+  const totalBani = S.cadouri.filter(c=>c.tip==='bani').reduce((s,c)=>s+c.suma,0);
+  const nrFizice = S.cadouri.filter(c=>c.tip!=='bani').length;
+  const multumiri = S.cadouri.filter(c=>!c.multumit).length;
+  const confFaraCadou = S.guests.filter(g=>g.status==='confirmat' && !S.cadouri.find(c=>c.de_la===g.name)).length;
+  const el=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  const setH=(id,v)=>{const e=document.getElementById(id);if(e)e.innerHTML=v;};
+  setH('cad-total-bani','€'+totalBani.toLocaleString('ro-RO'));
+  el('cad-nr-fizice',nrFizice);
+  el('cad-multumiri',multumiri);
+  el('cad-fara',confFaraCadou);
+
+  const tipIcon={bani:'💵',cadou:'🎁',voucher:'🎫'};
+  document.getElementById('cadouri-list').innerHTML = S.cadouri.length ? S.cadouri.map(c=>`
+    <div class="cadou-card" style="border-left-color:${c.multumit?'var(--sage)':'var(--gold)'}">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:20px">${tipIcon[c.tip]||'🎁'}</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600">${esc(c.de_la)}</div>
+          <div style="font-size:12px;color:var(--muted)">${c.data||''}${c.descriere?' · '+esc(c.descriere):''}</div>
+        </div>
+        ${c.suma>0?`<div style="font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--sage);font-weight:700">€${c.suma.toLocaleString('ro-RO')}</div>`:''}
+        <button class="del" onclick="delCadou(${c.id})">✕</button>
+      </div>
+      <div style="margin-top:8px;display:flex;align-items:center;gap:8px">
+        <label class="check-label" style="font-size:12px">
+          <input type="checkbox" ${c.multumit?'checked':''} onchange="toggleMultumire(${c.id})"> 
+          ✉️ ${c.multumit?'Mulțumire trimisă':'Trimite mulțumire'}
+        </label>
+      </div>
+    </div>`).join('') : '<div class="empty">Niciun cadou înregistrat.</div>';
+}
+
+// ══ JURNAL FURNIZORI ═════════════════════════════════════════
+function updateJurnalFurnizori() {
+  const sel = document.getElementById('jurnal-furnizor');
+  if (!sel) return;
+  const current = sel.value;
+  sel.innerHTML = '<option value="">-- Alege furnizor --</option>' +
+    S.budget.map(b=>`<option value="${esc(b.name)}" ${current===b.name?'selected':''}>${esc(b.name)}</option>`).join('');
+}
+
+window.addJurnal = () => {
+  const furnizor = document.getElementById('jurnal-furnizor').value;
+  const nota = document.getElementById('jurnal-nota').value.trim();
+  if (!furnizor || !nota) return;
+  S.jurnal.unshift({
+    id:Date.now(),
+    furnizor,
+    nota,
+    data: document.getElementById('jurnal-data').value || new Date().toLocaleDateString('ro-RO'),
+    tip: document.getElementById('jurnal-tip').value
+  });
+  document.getElementById('jurnal-nota').value='';
+  renderJurnal(); saveToFirebase();
+};
+window.delJurnal = (id) => { S.jurnal=S.jurnal.filter(x=>x.id!==id); renderJurnal(); saveToFirebase(); };
+
+function renderJurnal() {
+  updateJurnalFurnizori();
+  const tipIcon={telefon:'📞',intalnire:'🤝',email:'📧',whatsapp:'💬',altele:'📌'};
+  const tipLabel={telefon:'Telefon',intalnire:'Întâlnire',email:'Email',whatsapp:'WhatsApp',altele:'Altele'};
+  document.getElementById('jurnal-list').innerHTML = S.jurnal.length ? S.jurnal.map(j=>`
+    <div class="jurnal-card">
+      <div class="jurnal-header">
+        <div>
+          <div class="jurnal-furnizor">${esc(j.furnizor)}</div>
+          <div class="jurnal-meta">${tipIcon[j.tip]||'📌'} ${tipLabel[j.tip]||''} · ${j.data}</div>
+        </div>
+        <button class="del" onclick="delJurnal(${j.id})">✕</button>
+      </div>
+      <div class="jurnal-nota">${esc(j.nota)}</div>
+    </div>`).join('') : '<div class="empty">Niciun jurnal adăugat.</div>';
+}
+
+function renderDashboard() {
+  const {bride,groom,date,budget} = S.setup || {};
+
+  // Countdown
+  if (date) {
+    const dt = new Date(date);
+    const today = new Date(); today.setHours(0,0,0,0);
+    const diff = Math.ceil((dt - today) / 86400000);
+    const sapt = Math.floor(diff / 7);
+    const luni = Math.floor(diff / 30);
+    const el = document.getElementById('d-zile');
+    if (el) el.textContent = diff > 0 ? diff : '🎊';
+    const es = document.getElementById('d-saptamani');
+    if (es) es.textContent = diff > 0 ? sapt : '—';
+    const ed = document.getElementById('d-data');
+    if (ed) ed.textContent = dt.toLocaleDateString('ro-RO',{day:'numeric',month:'long',year:'numeric'});
+    const el2 = document.getElementById('d-luni');
+    if (el2) el2.textContent = luni + ' luni';
+  }
+
+  // Invitați
+  const totalInv = S.guests.reduce((s,g)=>s+(g.nr||1),0);
+  const confInv = S.guests.filter(g=>g.status==='confirmat').reduce((s,g)=>s+(g.nr||1),0);
+  const dic = document.getElementById('d-inv-conf'); if(dic) dic.textContent = confInv;
+  const dit = document.getElementById('d-inv-total'); if(dit) dit.textContent = `din ${totalInv} persoane`;
+
+  // Buget
+  const bugetTotal = parseFloat(budget)||0;
+  const cheltuit = S.budget.reduce((s,x)=>s+(x.pretTotal||x.amount||0),0);
+  const pct = bugetTotal ? Math.min(100,Math.round(cheltuit/bugetTotal*100)) : 0;
+  const dbp = document.getElementById('d-buget-pct'); if(dbp) dbp.textContent = pct+'%';
+  const dbs = document.getElementById('d-buget-sub'); if(dbs) dbs.textContent = bugetTotal ? `din €${bugetTotal.toLocaleString('ro-RO')}` : 'buget nesetat';
+
+  // Sarcini progress
+  const tasks = S.tasks;
+  const done = tasks.filter(t=>t.done).length;
+  const pctT = tasks.length ? Math.round(done/tasks.length*100) : 0;
+  const dtd = document.getElementById('d-task-done'); if(dtd) dtd.textContent = `${done}/${tasks.length} îndeplinite`;
+  const dtp = document.getElementById('d-task-pct'); if(dtp) dtp.textContent = pctT+'%';
+  const dtb = document.getElementById('d-task-bar'); if(dtb) dtb.style.width = pctT+'%';
+
+  // Sarcini urgente
+  const urgente = tasks
+    .filter(t=>!t.done && t.deadline)
+    .map(t=>({...t, dl:getDeadlineInfo(t.deadline)}))
+    .filter(t=>t.dl)
+    .sort((a,b)=>a.dl.diff-b.dl.diff)
+    .slice(0,5);
+  const dut = document.getElementById('d-urgent-tasks');
+  if (dut) {
+    if (!urgente.length) {
+      dut.innerHTML = '<div style="font-size:13px;color:var(--muted);font-style:italic">Nu ai sarcini cu deadline setat.</div>';
+    } else {
+      dut.innerHTML = urgente.map(t=>`
+        <div class="dash-task-item">
+          <div class="dash-task-dot" style="background:${t.dl.cls==='deadline-urgent'?'var(--rose)':t.dl.cls==='deadline-soon'?'var(--gold)':'var(--sage)'}"></div>
+          <span style="flex:1;font-size:14px">${esc(t.text)}</span>
+          <span class="deadline-badge ${t.dl.cls}">${t.dl.label}</span>
+        </div>`).join('');
+    }
+  }
+
+  // Furnizori neachitați
+  const neplata = S.budget.filter(b=>b.statusPlata!=='platit' && (b.pretTotal||b.amount||0)>0);
+  const duv = document.getElementById('d-unpaid-vendors');
+  if (duv) {
+    if (!neplata.length) {
+      duv.innerHTML = '<div style="font-size:13px;color:var(--sage)">Toți furnizorii sunt achitați! 🎉</div>';
+    } else {
+      const restTotal = neplata.reduce((s,b)=>s+(b.rest||((b.pretTotal||b.amount||0)-(b.avans||0))),0);
+      duv.innerHTML = neplata.map(b=>`
+        <div class="dash-task-item">
+          <div class="dash-task-dot" style="background:${b.statusPlata==='avans'?'var(--gold)':'var(--rose)'}"></div>
+          <span style="flex:1;font-size:14px">${esc(b.name)}</span>
+          <span style="font-family:'Cormorant Garamond',serif;color:var(--rose);font-size:14px;font-weight:600">€${Math.round(b.rest||(b.pretTotal||0)-(b.avans||0)).toLocaleString('ro-RO')}</span>
+        </div>`).join('') +
+        `<div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid var(--light);font-size:13px;font-weight:600;margin-top:4px">
+          <span>Total rest de plătit</span><span style="color:var(--rose)">€${Math.round(restTotal).toLocaleString('ro-RO')}</span>
+        </div>`;
+    }
+  }
+
+  // Program preview
+  const prog = S.program ? [...S.program].sort((a,b)=>a.time.localeCompare(b.time)) : [];
+  const dpp = document.getElementById('d-program-preview');
+  if (dpp) {
+    if (!prog.length) {
+      dpp.innerHTML = '<div style="font-size:13px;color:var(--muted);font-style:italic">Niciun moment adăugat încă.</div>';
+    } else {
+      dpp.innerHTML = prog.slice(0,5).map(p=>`
+        <div class="dash-task-item">
+          <span style="font-family:'Cormorant Garamond',serif;color:var(--rose);font-size:14px;width:44px;flex-shrink:0">${p.time}</span>
+          <span style="flex:1;font-size:14px">${esc(p.event)}</span>
+        </div>`).join('') +
+        (prog.length>5?`<div style="font-size:12px;color:var(--muted);margin-top:6px;text-align:center">+ ${prog.length-5} momente</div>`:'');
+    }
+  }
+}
+
+function renderAll() { loadSetup(); updateHeader(); renderTasks(); renderBudget(); renderGuests(); renderVendors(); renderProgram(); renderNotes(); loadCalc(); calcUpdate(); renderDashboard(); renderMese(); renderCadouri(); renderJurnal(); }
+
+// Fetch BNR la start
+fetchBNR();
+
+// ── UTILS ─────────────────────────────────────────────────────
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// Cursul BNR — actualizat la fiecare deschidere
+let bnrRate = null;
+
+async function fetchBNR() {
+  try {
+    // BNR RSS XML — folosim un proxy CORS public
+    const r = await fetch('https://api.exchangerate-api.com/v4/latest/EUR');
+    const d = await r.json();
+    const ron = d.rates && d.rates.RON;
+    if (ron) {
+      bnrRate = Math.round(ron * 100) / 100;
+      const el = document.getElementById('bnr-rate');
+      if (el) el.textContent = `1 € = ${bnrRate.toFixed(2)} RON (curs zi)`;
+    }
+  } catch {
+    // Fallback la curs aproximativ dacă API nu e disponibil
+    bnrRate = 4.97;
+    const el = document.getElementById('bnr-rate');
+    if (el) el.textContent = `1 € ≈ ${bnrRate.toFixed(2)} RON (estimat)`;
+  }
+}
+
+// Formatează suma în EUR cu conversie opțională în RON
+function fmt(n, showRON = true) {
+  if (!n && n !== 0) return '—';
+  const eur = Math.round(n);
+  const eurStr = '€' + eur.toLocaleString('ro-RO');
+  if (showRON && bnrRate) {
+    const ron = Math.round(n * bnrRate);
+    return eurStr + ' <span style="font-size:10px;color:var(--muted);font-weight:400">(' + ron.toLocaleString('ro-RO') + ' RON)</span>';
+  }
+  return eurStr;
+}
+
+// Formatare simplă fără RON (pentru câmpuri mici)
+function fmtSimple(n) {
+  if (!n && n !== 0) return '—';
+  return '€' + Math.round(n).toLocaleString('ro-RO');
+}
+
+function now(){return new Date().toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'});}
+function setStatus(msg){const el=document.getElementById('sync-status');if(el)el.textContent=msg;}
+
+</script>
+
+<script>
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+</script>
+</body>
+</html>
