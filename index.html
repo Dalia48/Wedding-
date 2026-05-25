@@ -383,7 +383,7 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
 
 </div>
 
-<div id="sec-setup" class="section">
+<div id="sec-setup" class="section" style="display:none">
   <div class="sec-title">⚙️ Configurare</div>
   <div class="card" style="border-left-color:var(--gold)">
     <div class="field"><label>Mireasa</label><input type="text" id="s-bride" placeholder="ex: Ana" oninput="saveSetup()"></div>
@@ -407,7 +407,7 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
   </div>
 </div>
 
-<div id="sec-tasks" class="section">
+<div id="sec-tasks" class="section" style="display:none">
   <div class="sec-title">✅ Sarcini</div>
   <div class="prog-label"><span id="ci-done">0/0</span><span class="prog-pct" id="ci-pct">0%</span></div>
   <div class="prog-wrap" style="margin-bottom:13px"><div class="prog-bar" id="ci-bar" style="width:0%"></div></div>
@@ -420,7 +420,7 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
   <div id="tasks-list"></div>
 </div>
 
-<div id="sec-budget" class="section">
+<div id="sec-budget" class="section" style="display:none">
   <div class="sec-title">💰 Buget</div>
 
   <!-- SUMMARY -->
@@ -466,7 +466,7 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
   <div id="budget-list"></div>
 </div>
 
-<div id="sec-guests" class="section">
+<div id="sec-guests" class="section" style="display:none">
   <div class="sec-title">👥 Invitați</div>
 
   <!-- STATS -->
@@ -549,7 +549,7 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
   <div id="guests-list"></div>
 </div>
 
-<div id="sec-vendors" class="section">
+<div id="sec-vendors" class="section" style="display:none">
   <div class="sec-title">🏷️ Furnizori</div>
   <div class="field"><input type="text" id="v-name" placeholder="Furnizor (ex: DJ Alex)"></div>
   <div class="row"><input type="text" id="v-cat" placeholder="Categorie"><input type="number" id="v-price" placeholder="Preț (€)"></div>
@@ -558,7 +558,7 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
   <div id="vendors-list"></div>
 </div>
 
-<div id="sec-program" class="section">
+<div id="sec-program" class="section" style="display:none">
   <div class="sec-title">📅 Program zi</div>
   <div class="row"><input type="time" id="p-time"><input type="text" id="p-event" placeholder="Eveniment"></div>
   <div class="field" style="margin:8px 0 10px"><input type="text" id="p-note" placeholder="Notă opțională"></div>
@@ -566,14 +566,14 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
   <div id="program-list"></div>
 </div>
 
-<div id="sec-notes" class="section">
+<div id="sec-notes" class="section" style="display:none">
   <div class="sec-title">📝 Note & Idei</div>
   <div class="field"><textarea id="note-text" placeholder="Scrie o idee, un gând..."></textarea></div>
   <button class="btn" style="margin-bottom:13px" onclick="addNote()">+ Salvează nota</button>
   <div id="notes-list"></div>
 </div>
 
-<div id="sec-calc" class="section">
+<div id="sec-calc" class="section" style="display:none">
   <div class="sec-title">🧮 Planificator Buget</div>
 
   <!-- PERSOANE -->
@@ -749,7 +749,7 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
 
 
 <!-- PLAN MESE -->
-<div id="sec-mese" class="section">
+<div id="sec-mese" class="section" style="display:none">
   <div class="sec-title">🪑 Plan Mese</div>
   <div class="card" style="border-left-color:var(--gold)">
     <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);margin-bottom:10px">+ Adaugă masă</div>
@@ -774,7 +774,7 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
 </div>
 
 <!-- CADOURI -->
-<div id="sec-cadouri" class="section">
+<div id="sec-cadouri" class="section" style="display:none">
   <div class="sec-title">🎁 Cadouri primite</div>
   <div class="card" style="border-left-color:var(--gold)">
     <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);margin-bottom:10px">+ Înregistrează cadou</div>
@@ -817,7 +817,7 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
 </div>
 
 <!-- JURNAL FURNIZORI -->
-<div id="sec-jurnal" class="section">
+<div id="sec-jurnal" class="section" style="display:none">
   <div class="sec-title">📞 Jurnal Furnizori</div>
   <div class="card" style="border-left-color:var(--rose)">
     <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);margin-bottom:10px">+ Adaugă notă</div>
@@ -1855,10 +1855,22 @@ function renderJurnal() {
 // ── FAB + TOGGLE HELPERS ─────────────────────────────────────
 let currentTab = 'dashboard';
 
-const origShowTab = window.showTab;
 window.showTab = (id, btn) => {
   currentTab = id;
-  origShowTab(id, btn);
+  // Hide ALL sections explicitly
+  document.querySelectorAll('.section').forEach(s => {
+    s.style.display = 'none';
+    s.classList.remove('active');
+  });
+  // Show only the selected one
+  const target = document.getElementById('sec-' + id);
+  if (target) {
+    target.style.display = 'block';
+    target.classList.add('active');
+  }
+  // Update tab buttons
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
   updateFab();
 };
 
