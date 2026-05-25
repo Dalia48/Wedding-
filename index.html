@@ -1066,13 +1066,7 @@ function saveToFirebase() {
 }
 
 // ── TABS ──────────────────────────────────────────────────────
-window.showTab = (id, btn) => {
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('active'));
-  document.getElementById('sec-'+id).classList.add('active');
-  btn.classList.add('active');
-  btn.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
-};
+// showTab defined below in FAB section
 
 // ── SETUP ─────────────────────────────────────────────────────
 window.saveSetup = () => {
@@ -1867,10 +1861,11 @@ window.showTab = (id, btn) => {
   if (target) {
     target.style.display = 'block';
     target.classList.add('active');
+    target.scrollTop = 0;
   }
   // Update tab buttons
   document.querySelectorAll('#tabs button').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
+  if (btn) { btn.classList.add('active'); btn.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}); }
   updateFab();
 };
 
