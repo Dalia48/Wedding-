@@ -188,6 +188,19 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
 .jurnal-nota{font-size:13px;color:var(--muted);line-height:1.6;margin-top:6px;}
 .tip-badge{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--light);color:var(--muted);}
 
+
+/* PLAN VIZUAL MESE */
+.mese-view-toggle{display:flex;gap:8px;margin-bottom:12px;}
+.view-btn{flex:1;background:var(--light);border:1.5px solid var(--blush);border-radius:20px;padding:7px;font-size:12px;font-family:'Jost',sans-serif;color:var(--muted);cursor:pointer;transition:all .2s;}
+.view-btn.active{background:var(--rose);border-color:var(--rose);color:#fff;}
+
+/* Canvas plan */
+#mese-canvas-wrap{background:var(--white);border-radius:14px;padding:14px;box-shadow:0 2px 14px rgba(61,43,43,.09);margin-bottom:12px;overflow:auto;}
+#mese-canvas{display:block;margin:0 auto;}
+
+/* Masa cerc SVG tooltip */
+.masa-tooltip{position:fixed;background:var(--deep);color:var(--cream);border-radius:10px;padding:8px 12px;font-size:12px;pointer-events:none;z-index:200;max-width:200px;box-shadow:0 4px 16px rgba(0,0,0,.3);display:none;}
+
 .nc{position:relative;}
 
 /* EDIT MODAL */
@@ -239,6 +252,19 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
 .jurnal-meta{font-size:11px;color:var(--gold);}
 .jurnal-nota{font-size:13px;color:var(--muted);line-height:1.6;margin-top:6px;}
 .tip-badge{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--light);color:var(--muted);}
+
+
+/* PLAN VIZUAL MESE */
+.mese-view-toggle{display:flex;gap:8px;margin-bottom:12px;}
+.view-btn{flex:1;background:var(--light);border:1.5px solid var(--blush);border-radius:20px;padding:7px;font-size:12px;font-family:'Jost',sans-serif;color:var(--muted);cursor:pointer;transition:all .2s;}
+.view-btn.active{background:var(--rose);border-color:var(--rose);color:#fff;}
+
+/* Canvas plan */
+#mese-canvas-wrap{background:var(--white);border-radius:14px;padding:14px;box-shadow:0 2px 14px rgba(61,43,43,.09);margin-bottom:12px;overflow:auto;}
+#mese-canvas{display:block;margin:0 auto;}
+
+/* Masa cerc SVG tooltip */
+.masa-tooltip{position:fixed;background:var(--deep);color:var(--cream);border-radius:10px;padding:8px 12px;font-size:12px;pointer-events:none;z-index:200;max-width:200px;box-shadow:0 4px 16px rgba(0,0,0,.3);display:none;}
 
 .nc{position:relative;}
 
@@ -732,26 +758,49 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
 <!-- PLAN MESE -->
 <div id="sec-mese" class="section">
   <div class="sec-title">🪑 Plan Mese</div>
+
+  <!-- ADD FORM -->
   <div class="card" style="border-left-color:var(--gold)">
-    <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);margin-bottom:10px">+ Adaugă masă</div>
     <div class="row" style="margin-bottom:8px">
       <input type="text" id="masa-nume" placeholder="ex: Masa 1, Familia Ionescu">
       <input type="number" id="masa-locuri" placeholder="Nr. locuri" min="1">
     </div>
     <button class="btn" onclick="addMasa()">+ Adaugă masă</button>
   </div>
+
+  <!-- STATS -->
   <div class="card" style="border-left-color:var(--sage)">
-    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
-      <span style="color:var(--muted)">Total locuri:</span><span id="mese-total-locuri" style="color:var(--deep);font-weight:600">0</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
-      <span style="color:var(--muted)">Locuri ocupate:</span><span id="mese-ocupate" style="color:var(--rose);font-weight:600">0</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;font-size:13px">
-      <span style="color:var(--muted)">Locuri libere:</span><span id="mese-libere" style="color:var(--sage);font-weight:600">0</span>
+    <div style="display:flex;justify-content:space-around;text-align:center">
+      <div><div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--deep)" id="mese-total-locuri">0</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Total locuri</div></div>
+      <div><div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--rose)" id="mese-ocupate">0</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Ocupate</div></div>
+      <div><div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--sage)" id="mese-libere">0</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Libere</div></div>
     </div>
   </div>
-  <div id="mese-list"></div>
+
+  <!-- VIEW TOGGLE -->
+  <div class="mese-view-toggle">
+    <button class="view-btn active" id="btn-view-viz" onclick="setMeseView('viz')">🗺️ Vizual</button>
+    <button class="view-btn" id="btn-view-lista" onclick="setMeseView('lista')">📋 Listă</button>
+  </div>
+
+  <!-- VIZUAL VIEW -->
+  <div id="mese-viz-wrap">
+    <div id="mese-canvas-wrap">
+      <canvas id="mese-canvas" width="500" height="400"></canvas>
+    </div>
+    <div class="masa-tooltip" id="masa-tooltip"></div>
+    <div style="display:flex;gap:12px;justify-content:center;font-size:11px;color:var(--muted);margin-bottom:10px">
+      <span>🟢 Locuri libere</span>
+      <span>🔴 Masă completă</span>
+      <span>🟡 Aproape plină</span>
+    </div>
+  </div>
+
+  <!-- LISTA VIEW -->
+  <div id="mese-list-wrap" style="display:none">
+    <div id="mese-list"></div>
+  </div>
+
 </div>
 
 <!-- CADOURI -->
@@ -1677,27 +1726,216 @@ function renderMese() {
   el('mese-ocupate',ocupate);
   el('mese-libere',totalLocuri-ocupate);
 
-  document.getElementById('mese-list').innerHTML = S.mese.length ? S.mese.map(m=>{
-    const ocp = m.ocupanti||[];
-    const liber = m.locuri - ocp.length;
-    return `<div class="masa-card" style="border-left-color:${liber===0?'var(--rose)':liber<=2?'var(--gold)':'var(--sage)'}">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <div class="masa-title" style="flex:1">${esc(m.nume)}</div>
-        <span style="font-size:12px;color:var(--muted)">${ocp.length}/${m.locuri} locuri</span>
-        <button class="del" onclick="delMasa(${m.id})">✕</button>
-      </div>
-      <div style="margin-bottom:8px">
-        ${ocp.map((o,i)=>`<span class="masa-loc ocupat">${esc(o)} <button onclick="delOcupant(${m.id},${i})" style="background:none;border:none;cursor:pointer;font-size:10px;color:var(--rose);padding:0 0 0 3px">✕</button></span>`).join('')}
-        ${liber>0?Array(Math.min(liber,3)).fill(0).map(()=>'<span class="masa-loc">liber</span>').join(''):''}
-        ${liber>3?`<span class="masa-loc">+${liber-3} libere</span>`:''}
-      </div>
-      ${liber>0?`<div class="row" style="gap:6px">
-        <input type="text" id="ocp-${m.id}" placeholder="Adaugă persoană..." style="font-size:14px;padding:8px 10px">
-        <button class="btn small" onclick="addOcupant(${m.id})">+</button>
-      </div>`:`<div style="font-size:12px;color:var(--rose);text-align:center">Masă completă</div>`}
-    </div>`;
-  }).join('') : '<div class="empty">Nicio masă adăugată.</div>';
+  // Render lista
+  const listEl = document.getElementById('mese-list');
+  if (listEl) {
+    listEl.innerHTML = S.mese.length ? S.mese.map(m=>{
+      const ocp = m.ocupanti||[];
+      const liber = m.locuri - ocp.length;
+      return `<div class="masa-card" style="border-left-color:${liber===0?'var(--rose)':liber<=2?'var(--gold)':'var(--sage)'}">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <div class="masa-title" style="flex:1">${esc(m.nume)}</div>
+          <span style="font-size:12px;color:var(--muted)">${ocp.length}/${m.locuri} locuri</span>
+          <button class="del" onclick="delMasa(${m.id})">✕</button>
+        </div>
+        <div style="margin-bottom:8px">
+          ${ocp.map((o,i)=>`<span class="masa-loc ocupat">${esc(o)} <button onclick="delOcupant(${m.id},${i})" style="background:none;border:none;cursor:pointer;font-size:10px;color:var(--rose);padding:0 0 0 3px">✕</button></span>`).join('')}
+          ${liber>0?Array(Math.min(liber,3)).fill(0).map(()=>'<span class="masa-loc">liber</span>').join(''):''}
+          ${liber>3?`<span class="masa-loc">+${liber-3} libere</span>`:''}
+        </div>
+        ${liber>0?`<div class="row" style="gap:6px">
+          <input type="text" id="ocp-${m.id}" placeholder="Adaugă persoană..." style="font-size:14px;padding:8px 10px">
+          <button class="btn small" onclick="addOcupant(${m.id})">+</button>
+        </div>`:`<div style="font-size:12px;color:var(--rose);text-align:center">Masă completă</div>`}
+      </div>`;
+    }).join('') : '<div class="empty">Nicio masă adăugată.</div>';
+  }
+
+  // Render canvas vizual
+  drawMeseCanvas();
 }
+
+let meseView = 'viz';
+window.setMeseView = (v) => {
+  meseView = v;
+  document.getElementById('mese-viz-wrap').style.display = v==='viz' ? 'block' : 'none';
+  document.getElementById('mese-list-wrap').style.display = v==='lista' ? 'block' : 'none';
+  document.getElementById('btn-view-viz').classList.toggle('active', v==='viz');
+  document.getElementById('btn-view-lista').classList.toggle('active', v==='lista');
+  if (v==='viz') drawMeseCanvas();
+};
+
+// Store masa positions for click detection
+let masaPositions = [];
+
+function drawMeseCanvas() {
+  const canvas = document.getElementById('mese-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const mese = S.mese;
+  if (!mese.length) {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = '#9a8070';
+    ctx.font = "italic 16px 'Cormorant Garamond', serif";
+    ctx.textAlign = 'center';
+    ctx.fillText('Adaugă mese pentru a vedea planul', canvas.width/2, canvas.height/2);
+    return;
+  }
+
+  // Responsive canvas size
+  const wrap = document.getElementById('mese-canvas-wrap');
+  const maxW = wrap ? wrap.clientWidth - 28 : 480;
+  const cols = mese.length <= 4 ? 2 : mese.length <= 9 ? 3 : 4;
+  const rows = Math.ceil(mese.length / cols);
+  const cellW = Math.min(140, maxW / cols);
+  const cellH = 140;
+  const canvasW = cols * cellW;
+  const canvasH = rows * cellH + 20;
+  canvas.width = canvasW;
+  canvas.height = canvasH;
+  canvas.style.width = canvasW + 'px';
+  canvas.style.maxWidth = '100%';
+
+  ctx.clearRect(0, 0, canvasW, canvasH);
+
+  // Background
+  ctx.fillStyle = '#faf6f1';
+  ctx.fillRect(0, 0, canvasW, canvasH);
+
+  masaPositions = [];
+  const R = cellW * 0.28; // radius masa
+  const rLoc = R * 0.22;  // radius loc
+
+  mese.forEach((m, i) => {
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    const cx = col * cellW + cellW / 2;
+    const cy = row * cellH + cellH / 2;
+    const ocp = m.ocupanti || [];
+    const liber = m.locuri - ocp.length;
+    const pct = m.locuri > 0 ? ocp.length / m.locuri : 0;
+
+    // Color based on occupancy
+    const tableColor = pct >= 1 ? '#c17b6a' : pct >= 0.8 ? '#b89a6e' : '#7a9e7a';
+    const tableBorder = pct >= 1 ? '#a8624f' : pct >= 0.8 ? '#9a8060' : '#5a8060';
+
+    // Draw table circle (masa)
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, 0, Math.PI * 2);
+    ctx.fillStyle = tableColor;
+    ctx.fill();
+    ctx.strokeStyle = tableBorder;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Table name
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${Math.min(13, cellW*0.1)}px 'Jost', sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const shortName = m.nume.length > 10 ? m.nume.substring(0,9)+'…' : m.nume;
+    ctx.fillText(shortName, cx, cy - 7);
+
+    // Occupancy text
+    ctx.font = `${Math.min(11, cellW*0.085)}px 'Jost', sans-serif`;
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.fillText(`${ocp.length}/${m.locuri}`, cx, cy + 8);
+
+    // Draw seats around table
+    const nSeats = Math.min(m.locuri, 16); // max 16 afișate
+    for (let s = 0; s < nSeats; s++) {
+      const angle = (s / nSeats) * Math.PI * 2 - Math.PI / 2;
+      const seatDist = R + rLoc + 8;
+      const sx = cx + Math.cos(angle) * seatDist;
+      const sy = cy + Math.sin(angle) * seatDist;
+      const isOccupied = s < ocp.length;
+
+      // Seat circle
+      ctx.beginPath();
+      ctx.arc(sx, sy, rLoc, 0, Math.PI * 2);
+      ctx.fillStyle = isOccupied ? '#e8c4b0' : '#f0e8df';
+      ctx.fill();
+      ctx.strokeStyle = isOccupied ? '#c17b6a' : '#d0c8bf';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Seat initial (if occupied)
+      if (isOccupied && ocp[s]) {
+        ctx.fillStyle = '#3d2b2b';
+        ctx.font = `bold ${Math.max(7, rLoc*0.9)}px 'Jost', sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(ocp[s][0].toUpperCase(), sx, sy);
+      }
+    }
+
+    // If more seats than displayed
+    if (m.locuri > 16) {
+      ctx.fillStyle = '#9a8070';
+      ctx.font = `10px 'Jost', sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`+${m.locuri-16}`, cx, cy + cellH/2 - 12);
+    }
+
+    // Store position for tooltip
+    masaPositions.push({id: m.id, cx, cy, r: R + rLoc + 14, masa: m});
+  });
+}
+
+// Canvas tooltip on hover/tap
+function initCanvasEvents() {
+  const canvas = document.getElementById('mese-canvas');
+  const tooltip = document.getElementById('masa-tooltip');
+  if (!canvas || !tooltip) return;
+
+  function showTooltip(x, y, e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const cx = (x - rect.left) * scaleX;
+    const cy = (y - rect.top) * scaleY;
+
+    let found = null;
+    for (const pos of masaPositions) {
+      const dist = Math.sqrt((cx-pos.cx)**2 + (cy-pos.cy)**2);
+      if (dist < pos.r) { found = pos; break; }
+    }
+
+    if (found) {
+      const m = found.masa;
+      const ocp = m.ocupanti || [];
+      const liber = m.locuri - ocp.length;
+      tooltip.innerHTML = `<strong>${esc(m.nume)}</strong><br>` +
+        `${ocp.length}/${m.locuri} locuri ocupate<br>` +
+        (ocp.length ? `<em style="color:var(--blush)">${ocp.slice(0,5).join(', ')}${ocp.length>5?'...':''}</em><br>` : '') +
+        (liber > 0 ? `<span style="color:#7a9e7a">${liber} locuri libere</span>` : `<span style="color:#c17b6a">Masă completă</span>`);
+      tooltip.style.display = 'block';
+      tooltip.style.left = (e.clientX + 12) + 'px';
+      tooltip.style.top = (e.clientY - 10) + 'px';
+      // Keep tooltip on screen
+      const tw = tooltip.offsetWidth;
+      if (e.clientX + tw + 20 > window.innerWidth) {
+        tooltip.style.left = (e.clientX - tw - 12) + 'px';
+      }
+    } else {
+      tooltip.style.display = 'none';
+    }
+  }
+
+  canvas.addEventListener('mousemove', e => showTooltip(e.clientX, e.clientY, e));
+  canvas.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+  canvas.addEventListener('touchstart', e => {
+    const t = e.touches[0];
+    showTooltip(t.clientX, t.clientY, t);
+  }, {passive:true});
+  canvas.addEventListener('touchend', () => {
+    setTimeout(() => { tooltip.style.display = 'none'; }, 2000);
+  });
+}
+
+// Init canvas events after DOM ready
+setTimeout(initCanvasEvents, 500);
 
 // ══ CADOURI ══════════════════════════════════════════════════
 window.addCadou = () => {
@@ -1918,6 +2156,18 @@ function renderDashboard() {
         (prog.length>5?`<div style="font-size:12px;color:var(--muted);margin-top:6px;text-align:center">+ ${prog.length-5} momente</div>`:'');
     }
   }
+}
+
+function getDeadlineInfo(deadline) {
+  if (!deadline) return null;
+  const d = new Date(deadline);
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diff = Math.ceil((d - today) / 86400000);
+  if (diff < 0) return {label:'Expirat!', cls:'deadline-urgent', diff};
+  if (diff === 0) return {label:'Azi!', cls:'deadline-urgent', diff};
+  if (diff <= 7) return {label:diff+' zile', cls:'deadline-urgent', diff};
+  if (diff <= 30) return {label:diff+' zile', cls:'deadline-soon', diff};
+  return {label:d.toLocaleDateString('ro-RO',{day:'numeric',month:'short'}), cls:'deadline-ok', diff};
 }
 
 function renderAll() { loadSetup(); updateHeader(); renderTasks(); renderBudget(); renderGuests(); renderVendors(); renderProgram(); renderNotes(); loadCalc(); calcUpdate(); renderDashboard(); renderMese(); renderCadouri(); renderJurnal(); }
