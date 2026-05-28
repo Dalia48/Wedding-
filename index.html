@@ -201,6 +201,24 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
 /* Masa cerc SVG tooltip */
 .masa-tooltip{position:fixed;background:var(--deep);color:var(--cream);border-radius:10px;padding:8px 12px;font-size:12px;pointer-events:none;z-index:200;max-width:200px;box-shadow:0 4px 16px rgba(0,0,0,.3);display:none;}
 
+.sug-section{margin-bottom:20px;}
+.sug-title{font-family:'Cormorant Garamond',serif;font-size:19px;color:var(--rose);margin-bottom:10px;padding-bottom:6px;border-bottom:1.5px solid var(--blush);display:flex;align-items:center;gap:6px;}
+.sug-card{background:var(--white);border-radius:13px;padding:14px 16px;margin-bottom:9px;box-shadow:0 2px 14px rgba(61,43,43,.09);border-left:3px solid var(--blush);}
+.sug-badge{display:inline-block;font-size:11px;color:#fff;border-radius:20px;padding:3px 12px;margin-bottom:10px;font-weight:500;letter-spacing:.04em;}
+.sug-subtitle{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);margin-bottom:8px;font-weight:600;}
+.sug-list{list-style:none;padding:0;margin:0;}
+.sug-list li{font-size:13px;color:var(--muted);padding:4px 0;border-bottom:1px solid var(--light);line-height:1.5;}
+.sug-list li:last-child{border-bottom:none;}
+.sug-list li::before{content:'→ ';color:var(--blush);}
+.sug-budget-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--light);font-size:13px;color:var(--muted);}
+.sug-budget-row:last-child{border-bottom:none;}
+.sug-pct{font-weight:600;color:var(--gold);font-size:12px;white-space:nowrap;margin-left:8px;}
+.sug-tema-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;}
+.sug-tema{border-radius:12px;padding:12px 10px;text-align:center;box-shadow:0 2px 10px rgba(61,43,43,.08);}
+.sug-tema-icon{font-size:24px;margin-bottom:4px;}
+.sug-tema-name{font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:600;color:var(--deep);margin-bottom:4px;}
+.sug-tema-desc{font-size:11px;color:var(--muted);line-height:1.4;}
+
 .nc{position:relative;}
 
 /* EDIT MODAL */
@@ -266,6 +284,24 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
 /* Masa cerc SVG tooltip */
 .masa-tooltip{position:fixed;background:var(--deep);color:var(--cream);border-radius:10px;padding:8px 12px;font-size:12px;pointer-events:none;z-index:200;max-width:200px;box-shadow:0 4px 16px rgba(0,0,0,.3);display:none;}
 
+.sug-section{margin-bottom:20px;}
+.sug-title{font-family:'Cormorant Garamond',serif;font-size:19px;color:var(--rose);margin-bottom:10px;padding-bottom:6px;border-bottom:1.5px solid var(--blush);display:flex;align-items:center;gap:6px;}
+.sug-card{background:var(--white);border-radius:13px;padding:14px 16px;margin-bottom:9px;box-shadow:0 2px 14px rgba(61,43,43,.09);border-left:3px solid var(--blush);}
+.sug-badge{display:inline-block;font-size:11px;color:#fff;border-radius:20px;padding:3px 12px;margin-bottom:10px;font-weight:500;letter-spacing:.04em;}
+.sug-subtitle{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--deep);margin-bottom:8px;font-weight:600;}
+.sug-list{list-style:none;padding:0;margin:0;}
+.sug-list li{font-size:13px;color:var(--muted);padding:4px 0;border-bottom:1px solid var(--light);line-height:1.5;}
+.sug-list li:last-child{border-bottom:none;}
+.sug-list li::before{content:'→ ';color:var(--blush);}
+.sug-budget-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--light);font-size:13px;color:var(--muted);}
+.sug-budget-row:last-child{border-bottom:none;}
+.sug-pct{font-weight:600;color:var(--gold);font-size:12px;white-space:nowrap;margin-left:8px;}
+.sug-tema-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;}
+.sug-tema{border-radius:12px;padding:12px 10px;text-align:center;box-shadow:0 2px 10px rgba(61,43,43,.08);}
+.sug-tema-icon{font-size:24px;margin-bottom:4px;}
+.sug-tema-name{font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:600;color:var(--deep);margin-bottom:4px;}
+.sug-tema-desc{font-size:11px;color:var(--muted);line-height:1.4;}
+
 .nc{position:relative;}
 
 /* EDIT MODAL */
@@ -329,6 +365,7 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
   <button onclick="showTab('tasks',this)"><span class="ti">✅</span>Sarcini</button>
   <button onclick="showTab('notes',this)"><span class="ti">📝</span>Note</button>
   <button onclick="showTab('setup',this)"><span class="ti">⚙️</span>Info</button>
+  <button onclick="showTab('sugestii',this)"><span class="ti">✨</span>Ghid</button>
 </div>
 
 <div id="content" class="hidden">
@@ -870,6 +907,380 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
     <button class="btn" onclick="addJurnal()">+ Salvează notă</button>
   </div>
   <div id="jurnal-list"></div>
+</div>
+
+
+<div id="sec-sugestii" class="section">
+  <div class="sec-title">✨ Ghidul Nunții</div>
+
+  <!-- TIMELINE -->
+  <div class="sug-section">
+    <div class="sug-title">📅 Timeline — Ce să faci și când</div>
+    <div class="sug-card" style="border-left-color:#9b7ec8">
+      <div class="sug-badge" style="background:#9b7ec8">12+ luni înainte</div>
+      <ul class="sug-list">
+        <li>Stabilește data și bugetul total</li>
+        <li>Rezervă locația — cele populare se ocupă rapid!</li>
+        <li>Angajează fotograful și videograful</li>
+        <li>Începe lista de invitați</li>
+        <li>Fă-ți cont pe Pinterest pentru inspirație</li>
+      </ul>
+    </div>
+    <div class="sug-card" style="border-left-color:var(--rose)">
+      <div class="sug-badge" style="background:var(--rose)">9–12 luni înainte</div>
+      <ul class="sug-list">
+        <li>Alege rochia de mireasă (livrarea durează 4–6 luni!)</li>
+        <li>Rezervă DJ-ul sau formația</li>
+        <li>Decide tema și paleta de culori</li>
+        <li>Stabilește meniul cu cateringul</li>
+        <li>Programează starea civilă</li>
+      </ul>
+    </div>
+    <div class="sug-card" style="border-left-color:var(--gold)">
+      <div class="sug-badge" style="background:var(--gold)">6–9 luni înainte</div>
+      <ul class="sug-list">
+        <li>Trimite save-the-date-urile</li>
+        <li>Rezervă makeup artist și hair stylist</li>
+        <li>Alege buchetul și aranjamentele florale</li>
+        <li>Comandă inelele (livrare 2–3 luni)</li>
+        <li>Planifică luna de miere și rezervă biletele</li>
+        <li>Angajează animatorul pentru copii (dacă e cazul)</li>
+      </ul>
+    </div>
+    <div class="sug-card" style="border-left-color:var(--sage)">
+      <div class="sug-badge" style="background:var(--sage)">3–6 luni înainte</div>
+      <ul class="sug-list">
+        <li>Trimite invitațiile (cu 3 luni înainte)</li>
+        <li>Rezervă cazarea pentru invitați din altă localitate</li>
+        <li>Probele rochiei (2–3 probe necesare)</li>
+        <li>Pregătește lista de melodii cu DJ-ul</li>
+        <li>Comandă tortul</li>
+        <li>Planifică decorațiunile DIY</li>
+      </ul>
+    </div>
+    <div class="sug-card" style="border-left-color:var(--blush)">
+      <div class="sug-badge" style="background:var(--blush);color:var(--deep)">1–3 luni înainte</div>
+      <ul class="sug-list">
+        <li>Confirmă toți furnizorii cu detalii finale</li>
+        <li>Finalizează planul meselor</li>
+        <li>Pregătește plicurile cu locurile la masă</li>
+        <li>Cumpără cadourile pentru nași și părinți</li>
+        <li>Degustare finală tort și meniu</li>
+        <li>Repetițiile la coafor/makeup</li>
+      </ul>
+    </div>
+    <div class="sug-card" style="border-left-color:var(--muted)">
+      <div class="sug-badge" style="background:var(--muted)">Ultima săptămână</div>
+      <ul class="sug-list">
+        <li>Confirmă numărul final de invitați cu cateringul</li>
+        <li>Pregătește plicurile cu plățile pentru furnizori</li>
+        <li>Pregătește geanta de mireasă (kit urgențe)</li>
+        <li>Odihnește-te! Nu programa nimic stresant</li>
+        <li>Delegă responsabilități prietenilor/familiei</li>
+      </ul>
+    </div>
+    <div class="sug-card" style="border-left-color:var(--rose)">
+      <div class="sug-badge" style="background:var(--rose)">Ziua nunții</div>
+      <ul class="sug-list">
+        <li>Mănâncă un mic dejun consistent!</li>
+        <li>Lasă telefonul la un prieten de încredere</li>
+        <li>Bucură-te de fiecare moment — trece repede</li>
+        <li>Desemnează pe cineva să fie "problem solver"</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- BUGET -->
+  <div class="sug-section">
+    <div class="sug-title">💰 Sfaturi Buget</div>
+    <div class="sug-card">
+      <div class="sug-subtitle">📊 Distribuție recomandată buget</div>
+      <div class="sug-budget-row"><span>🍽️ Catering (mâncare + băuturi)</span><span class="sug-pct">35–40%</span></div>
+      <div class="sug-budget-row"><span>📷 Foto + Video</span><span class="sug-pct">10–15%</span></div>
+      <div class="sug-budget-row"><span>🎵 Muzică</span><span class="sug-pct">8–10%</span></div>
+      <div class="sug-budget-row"><span>🏛️ Locație</span><span class="sug-pct">8–12%</span></div>
+      <div class="sug-budget-row"><span>💐 Flori + Decor</span><span class="sug-pct">8–10%</span></div>
+      <div class="sug-budget-row"><span>👗 Ținute mireasă + mire</span><span class="sug-pct">6–8%</span></div>
+      <div class="sug-budget-row"><span>🎂 Tort</span><span class="sug-pct">2–3%</span></div>
+      <div class="sug-budget-row"><span>💌 Invitații + papetărie</span><span class="sug-pct">2–3%</span></div>
+      <div class="sug-budget-row"><span>🚗 Transport</span><span class="sug-pct">2–3%</span></div>
+      <div class="sug-budget-row" style="border-top:1px solid var(--blush);padding-top:6px;margin-top:4px"><span><strong>🛡️ Fond de urgență</strong></span><span class="sug-pct" style="color:var(--rose)">5–10%</span></div>
+    </div>
+    <div class="sug-card">
+      <div class="sug-subtitle">💡 Trucuri pentru economii</div>
+      <ul class="sug-list">
+        <li><strong>Ziua săptămânii</strong> — Vineri sau duminică poate fi cu 20–30% mai ieftin decât sâmbăta</li>
+        <li><strong>Sezonul</strong> — Noiembrie–Martie prețuri mai mici, disponibilitate mai mare</li>
+        <li><strong>Florile de sezon</strong> — costă de 2–3x mai puțin decât cele exotice</li>
+        <li><strong>Bara de cocktail DIY</strong> — cumperi tu băuturile, economisești mult</li>
+        <li><strong>Tort simplu + candy bar</strong> în loc de tort elaborat</li>
+        <li><strong>Playlist Spotify</strong> pentru cocktail hour în loc de live music</li>
+        <li><strong>Imprimă invitațiile acasă</strong> sau folosește variante digitale</li>
+        <li><strong>Negociază pachetele</strong> — mulți furnizori oferă discount la pachet</li>
+      </ul>
+    </div>
+    <div class="sug-card" style="border-left-color:var(--rose)">
+      <div class="sug-subtitle">⚠️ Costuri ascunse de care să ții cont</div>
+      <ul class="sug-list">
+        <li>Taxa de serviciu la restaurant (10–15% din total)</li>
+        <li>Coafura și machiajul pentru probe (nu doar ziua Z)</li>
+        <li>Alterările rochiei (200–500 RON)</li>
+        <li>Bacșișuri pentru furnizori</li>
+        <li>Transportul invitaților (dacă e la distanță)</li>
+        <li>Îmbrăcămintea pentru luna de miere</li>
+        <li>Cadourile pentru nași, martori, părinți</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- TEME & DECOR -->
+  <div class="sug-section">
+    <div class="sug-title">🎨 Teme & Idei Decor</div>
+    <div class="sug-tema-grid">
+      <div class="sug-tema" style="background:linear-gradient(135deg,#f5e6d3,#e8c4b0)">
+        <div class="sug-tema-icon">🌹</div>
+        <div class="sug-tema-name">Romantic Rose Gold</div>
+        <div class="sug-tema-desc">Nuanțe de roz, auriu și crem. Trandafiri, lumânări, oglinzi vintage.</div>
+      </div>
+      <div class="sug-tema" style="background:linear-gradient(135deg,#d4e8d4,#b8d4b8)">
+        <div class="sug-tema-icon">🌿</div>
+        <div class="sug-tema-name">Garden Boho</div>
+        <div class="sug-tema-desc">Verde, alb, bej. Verdeață luxuriantă, flori sălbatice, macramé.</div>
+      </div>
+      <div class="sug-tema" style="background:linear-gradient(135deg,#d4dde8,#b8c8d8)">
+        <div class="sug-tema-icon">🏛️</div>
+        <div class="sug-tema-name">Classic Elegance</div>
+        <div class="sug-tema-desc">Alb, negru și auriu. Aranjamente înalte, cristale, candelabre.</div>
+      </div>
+      <div class="sug-tema" style="background:linear-gradient(135deg,#e8e4d4,#d4c8a8)">
+        <div class="sug-tema-icon">🌾</div>
+        <div class="sug-tema-name">Rustic Chic</div>
+        <div class="sug-tema-desc">Lemn, iută, floarea-soarelui. Lăzi vintage, lumânări în borcane.</div>
+      </div>
+      <div class="sug-tema" style="background:linear-gradient(135deg,#2d2d3d,#4a3d5a)">
+        <div class="sug-tema-icon">🌙</div>
+        <div class="sug-tema-name">Midnight Glamour</div>
+        <div class="sug-tema-desc" style="color:#e8c4b0">Bleumarin, auriu, argintiu. Stele, lumini scânteietoare.</div>
+      </div>
+      <div class="sug-tema" style="background:linear-gradient(135deg,#e8d4d4,#d4a8a8)">
+        <div class="sug-tema-icon">🌸</div>
+        <div class="sug-tema-name">Sakura Pastel</div>
+        <div class="sug-tema-desc">Roz pudrat, liliac, alb. Petale de floare de cireș, delicatețe.</div>
+      </div>
+    </div>
+    <div class="sug-card" style="margin-top:10px">
+      <div class="sug-subtitle">✨ Idei DIY pentru decor</div>
+      <ul class="sug-list">
+        <li>Aranjamente cu flori uscate — durabile și accesibile</li>
+        <li>Lumânări personalizate cu numele invitaților</li>
+        <li>Photo booth cu props handmade</li>
+        <li>Borcane Mason cu lumânări LED pe mese</li>
+        <li>Tablouri cu mesaje pentru invitați</li>
+        <li>Coș cu lavandă la ieșire în loc de confetti</li>
+        <li>Semne de masă din lemn cu crenguțe naturale</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- MUZICĂ & DANS -->
+  <div class="sug-section">
+    <div class="sug-title">🎵 Muzică & Dans</div>
+    <div class="sug-card">
+      <div class="sug-subtitle">💃 Sugestii dans miri — Romantice</div>
+      <ul class="sug-list">
+        <li>🎸 <strong>Perfect</strong> — Ed Sheeran</li>
+        <li>🎸 <strong>A Thousand Years</strong> — Christina Perri</li>
+        <li>🎸 <strong>All of Me</strong> — John Legend</li>
+        <li>🎸 <strong>Can't Help Falling in Love</strong> — Elvis Presley</li>
+        <li>🎸 <strong>At Last</strong> — Etta James</li>
+        <li>🎸 <strong>La Vie en Rose</strong> — Édith Piaf</li>
+        <li>🎸 <strong>Thinking Out Loud</strong> — Ed Sheeran</li>
+        <li>🎸 <strong>Speechless</strong> — Dan + Shay</li>
+      </ul>
+    </div>
+    <div class="sug-card">
+      <div class="sug-subtitle">🎉 Dans miri — Pop/Modern</div>
+      <ul class="sug-list">
+        <li>🎵 <strong>Lover</strong> — Taylor Swift</li>
+        <li>🎵 <strong>Better Together</strong> — Jack Johnson</li>
+        <li>🎵 <strong>From the Ground Up</strong> — Dan + Shay</li>
+        <li>🎵 <strong>Marry Me</strong> — Train</li>
+        <li>🎵 <strong>I Choose You</strong> — Sara Bareilles</li>
+        <li>🎵 <strong>Amazed</strong> — Lonestar</li>
+        <li>🎵 <strong>Te Amo</strong> — Rihanna</li>
+      </ul>
+    </div>
+    <div class="sug-card">
+      <div class="sug-subtitle">🎼 Structură playlist recomandată</div>
+      <div class="sug-budget-row"><span>🥂 Cocktail hour</span><span class="sug-pct">Jazz / Lounge</span></div>
+      <div class="sug-budget-row"><span>🍽️ Cină</span><span class="sug-pct">Pop soft / Acustic</span></div>
+      <div class="sug-budget-row"><span>💃 Dansul mirilor</span><span class="sug-pct">Balada aleasă</span></div>
+      <div class="sug-budget-row"><span>👨‍👩‍👧 Dans cu părinții</span><span class="sug-pct">Melodie sentimentală</span></div>
+      <div class="sug-budget-row"><span>🎉 Party timp</span><span class="sug-pct">Dance / Pop / Manele</span></div>
+      <div class="sug-budget-row"><span>🌅 Final seară</span><span class="sug-pct">Slow dance / Melodii retro</span></div>
+    </div>
+    <div class="sug-card">
+      <div class="sug-subtitle">📝 Întrebări pentru DJ</div>
+      <ul class="sug-list">
+        <li>Ce echipament folosești? (backup inclus?)</li>
+        <li>Ai mai cântat la această locație?</li>
+        <li>Cum gestionezi cererile din public?</li>
+        <li>Oferi și servicii de MC (prezentator)?</li>
+        <li>Care e politica pentru melodii interzise?</li>
+        <li>Faci și iluminat / efecte speciale?</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- INVITAȚII & PAPETĂRIE -->
+  <div class="sug-section">
+    <div class="sug-title">💌 Invitații & Papetărie</div>
+    <div class="sug-card">
+      <div class="sug-subtitle">📬 Când să trimiți</div>
+      <div class="sug-budget-row"><span>📧 Save-the-date digital</span><span class="sug-pct">6–12 luni</span></div>
+      <div class="sug-budget-row"><span>💌 Invitații formale</span><span class="sug-pct">2–3 luni</span></div>
+      <div class="sug-budget-row"><span>📲 Reminder invitați</span><span class="sug-pct">3–4 săptămâni</span></div>
+      <div class="sug-budget-row"><span>✅ Deadline confirmare</span><span class="sug-pct">4–6 săptămâni înainte</span></div>
+    </div>
+    <div class="sug-card">
+      <div class="sug-subtitle">📋 Ce să incluzi în invitație</div>
+      <ul class="sug-list">
+        <li>Numele mirilor (complet)</li>
+        <li>Data, ora și locația exactă (cu adresa)</li>
+        <li>Codul vestimentar (dacă există)</li>
+        <li>Detalii cazare pentru invitați din afară</li>
+        <li>Informații transfer/parcare</li>
+        <li>Card RSVP sau link online de confirmare</li>
+        <li>Număr de telefon de contact</li>
+        <li>Preferințe meniu (dacă există opțiuni)</li>
+      </ul>
+    </div>
+    <div class="sug-card">
+      <div class="sug-subtitle">🎁 Papetărie completă nuntă</div>
+      <ul class="sug-list">
+        <li><strong>Save-the-date</strong> — anunță data devreme</li>
+        <li><strong>Invitații</strong> — designul principal</li>
+        <li><strong>Program ceremonie</strong> — ordinea momentelor</li>
+        <li><strong>Meniuri de masă</strong> — câte unul per loc</li>
+        <li><strong>Place cards</strong> — numele pe masă</li>
+        <li><strong>Table numbers</strong> — numărul mesei</li>
+        <li><strong>Seating chart</strong> — planul meselor la intrare</li>
+        <li><strong>Thank you cards</strong> — după nuntă</li>
+        <li><strong>Etichete cadouri nași/părinți</strong></li>
+      </ul>
+    </div>
+    <div class="sug-card">
+      <div class="sug-subtitle">💻 Platforme online recomandate</div>
+      <ul class="sug-list">
+        <li><strong>Canva.com</strong> — design invitații DIY gratuit</li>
+        <li><strong>Minted.com</strong> — invitații premium</li>
+        <li><strong>Paperpapa.ro</strong> — furnizor local Romania</li>
+        <li><strong>Zola.com</strong> — website nuntă + RSVP online</li>
+        <li><strong>Greenvelope.com</strong> — invitații digitale elegante</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- FOTO/VIDEO -->
+  <div class="sug-section">
+    <div class="sug-title">📸 Sfaturi Foto & Video</div>
+    <div class="sug-card">
+      <div class="sug-subtitle">📷 Poze esențiale de nu ratat</div>
+      <ul class="sug-list">
+        <li>Mireasa îmbrăcându-se cu mama/prietenele</li>
+        <li>Detalii — pantofi, bijuterii, buchet, inel</li>
+        <li>Prima vedere (first look) dacă optați</li>
+        <li>Reacția mirelui când intri pe culoar</li>
+        <li>Schimbul de inele în prim-plan</li>
+        <li>Primul sărut ca soți</li>
+        <li>Poze cu fiecare masă de invitați</li>
+        <li>Portrete cu nașii și părinții</li>
+        <li>Momentul tăierii tortului</li>
+        <li>Invitații dansând — atmosfera petrecerii</li>
+      </ul>
+    </div>
+    <div class="sug-card">
+      <div class="sug-subtitle">🎬 Întrebări pentru fotograf</div>
+      <ul class="sug-list">
+        <li>Câți fotografi vin în ziua nunții?</li>
+        <li>În câte zile primim pozele editate?</li>
+        <li>Câte poze editate incluzi în pachet?</li>
+        <li>Faci și trash the dress/next day shoot?</li>
+        <li>Ce se întâmplă dacă te îmbolnăvești?</li>
+        <li>Ai asigurare pentru echipament?</li>
+        <li>Poți vedea un album complet (nu highlights)?</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SEZON -->
+  <div class="sug-section">
+    <div class="sug-title">🌿 Sfaturi per Sezon</div>
+    <div class="sug-card">
+      <div class="sug-budget-row" style="margin-bottom:8px"><span style="font-size:20px">🌸</span><strong style="color:var(--rose)">Primăvară (Mar–Mai)</strong></div>
+      <ul class="sug-list">
+        <li>Flori disponibile: bujori, lalele, liliac, cireș</li>
+        <li>Temperaturi plăcute dar vremea impredictibilă — ai plan B</li>
+        <li>Lumină naturală excelentă pentru poze</li>
+        <li>Rezervă devreme — sezon popular</li>
+      </ul>
+    </div>
+    <div class="sug-card">
+      <div class="sug-budget-row" style="margin-bottom:8px"><span style="font-size:20px">☀️</span><strong style="color:var(--gold)">Vară (Iun–Aug)</strong></div>
+      <ul class="sug-list">
+        <li>Cel mai popular sezon — rezervă cu 12+ luni înainte</li>
+        <li>Căldura mare — asigură răcire la sală și hidratare</li>
+        <li>Nunțile în aer liber sunt spectaculoase</li>
+        <li>Golden hour fotografic superb seara</li>
+        <li>Atenție la costuri — sezon de vârf = prețuri mari</li>
+      </ul>
+    </div>
+    <div class="sug-card">
+      <div class="sug-budget-row" style="margin-bottom:8px"><span style="font-size:20px">🍂</span><strong style="color:#c17b3a">Toamnă (Sep–Nov)</strong></div>
+      <ul class="sug-list">
+        <li>Culorile naturii sunt spectaculoase pentru poze</li>
+        <li>Temperaturi ideale, invitații confortabili</li>
+        <li>Septembrie — sezon de vârf în România</li>
+        <li>Flori: trandafiri, dalie, hortensii, frunze colorate</li>
+        <li>Prețuri mai mici față de vară (oct–nov)</li>
+      </ul>
+    </div>
+    <div class="sug-card">
+      <div class="sug-budget-row" style="margin-bottom:8px"><span style="font-size:20px">❄️</span><strong style="color:#5a8a9a">Iarnă (Dec–Feb)</strong></div>
+      <ul class="sug-list">
+        <li>Prețuri semnificativ mai mici la furnizori</li>
+        <li>Disponibilitate mare — alegi ce vrei</li>
+        <li>Atmosferă intimă și magică</li>
+        <li>Poze în zăpadă — unice și memorabile</li>
+        <li>Atenție la drumuri și transport pentru invitați</li>
+        <li>Decor: conuri de brad, lumânări, scorțișoară</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- KIT URGENTE -->
+  <div class="sug-section">
+    <div class="sug-title">🎒 Kit Urgențe Ziua Nunții</div>
+    <div class="sug-card">
+      <ul class="sug-list">
+        <li>💊 Analgezice și antiacide</li>
+        <li>🩹 Plasturi (mai ales pentru pantofi noi!)</li>
+        <li>📌 Ace de siguranță + agrafă de păr</li>
+        <li>🧵 Kit cusut de urgență (ață, ac, foarfecă)</li>
+        <li>🌂 Umbrelă transparentă (pentru poze pe ploaie)</li>
+        <li>🧴 Deodorant + fixativ păr</li>
+        <li>💧 Spray hidratant față</li>
+        <li>🍬 Bomboane mentă</li>
+        <li>📱 Power bank încărcat</li>
+        <li>💵 Cash pentru bacșișuri</li>
+        <li>🧻 Șervețele umede</li>
+        <li>👠 Balerini pentru când te dor picioarele</li>
+        <li>🪡 Bandă dublă față (pentru ținută)</li>
+        <li>✏️ Lista cu numerele de telefon ale furnizorilor</li>
+      </ul>
+    </div>
+  </div>
+
 </div>
 
 </div><!-- /content -->
