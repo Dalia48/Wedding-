@@ -1757,7 +1757,7 @@ function renderMese() {
           ${liber>3?`<span class="masa-loc">+${liber-3} libere</span>`:''}
         </div>
         ${liber>0?`<div class="row" style="gap:6px">
-          <select id="ocp-${m.id}" style="font-size:14px;padding:8px 10px">${buildGuestOptions(${m.id})}</select>
+          <select id="ocp-${m.id}" style="font-size:14px;padding:8px 10px">${buildGuestOptions(m.id)}</select>
           <button class="btn small" onclick="addOcupant(${m.id})">+</button>
         </div>`:`<div style="font-size:12px;color:var(--rose);text-align:center">Masă completă</div>`}
       </div>`;
@@ -2185,9 +2185,6 @@ function getDeadlineInfo(deadline) {
 
 function renderAll() { loadSetup(); updateHeader(); renderTasks(); renderBudget(); renderGuests(); renderVendors(); renderProgram(); renderNotes(); loadCalc(); calcUpdate(); renderDashboard(); renderMese(); renderCadouri(); renderJurnal(); }
 
-// Fetch BNR la start
-fetchBNR();
-
 // ── UTILS ─────────────────────────────────────────────────────
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
@@ -2233,6 +2230,9 @@ function fmtSimple(n) {
 
 function now(){return new Date().toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'});}
 function setStatus(msg){const el=document.getElementById('sync-status');if(el)el.textContent=msg;}
+
+// Fetch BNR la start
+fetchBNR();
 
 </script>
 
