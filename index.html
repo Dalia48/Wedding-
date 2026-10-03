@@ -464,7 +464,9 @@
       <div><div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--deep)" id="mese-total-locuri">0</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Total locuri</div></div>
       <div><div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--rose)" id="mese-ocupate">0</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Ocupate</div></div>
       <div><div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--sage)" id="mese-libere">0</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Libere</div></div>
+      <div><div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--gold)" id="mese-neplasati">0</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Neplasați</div></div>
     </div>
+    <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:10px">Mesele și persoanele se salvează automat în baza de date.</div>
   </div>
   <!-- VIEW TOGGLE -->
   <div class="mese-view-toggle">
@@ -482,6 +484,7 @@
       <span>🔴 Masă completă</span>
       <span>🟡 Aproape plină</span>
     </div>
+    <div id="masa-detail"></div>
   </div>
   <!-- LISTA VIEW -->
   <div id="mese-list-wrap" style="display:none">
@@ -1087,6 +1090,7 @@ function listenToData() {
           S[k] = toArray(data[k]);
         }
       });
+      S.mese = normalizeMese(S.mese);
       if (data.extraChelt !== undefined && data.extraChelt !== null) {
         S.extraChelt = toArray(data.extraChelt);
       }
@@ -1103,7 +1107,8 @@ function saveToFirebase() {
     setStatus('💾 Se salvează...');
     isSyncing = true;
     try {
-      await set(ref(db, 'nunta'), S);
+      S.mese = normalizeMese(S.mese);
+      await set(ref(db, 'nunta'), JSON.parse(JSON.stringify(S)));
       setStatus('✅ Salvat · ' + now());
       if(typeof renderDashboard==='function') renderDashboard();
     } catch(e) {
@@ -1120,6 +1125,7 @@ window.showTab = (id, btn) => {
   document.getElementById('sec-'+id).classList.add('active');
   btn.classList.add('active');
   btn.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  if (id === 'mese') renderMese();
 };
 // ── SETUP ─────────────────────────────────────────────────────
 window.saveSetup = () => {
@@ -1309,7 +1315,16 @@ window.updGuest = (id, val) => {
   const g = S.guests.find(x=>x.id===id); if(g) g.status=val;
   renderGuests(); saveToFirebase();
 };
-window.delGuest = (id) => { S.guests=S.guests.filter(x=>x.id!==id); renderGuests(); saveToFirebase(); };
+window.delGuest = (id) => {
+  S.guests=S.guests.filter(x=>x.id!==id);
+  S.mese.forEach(m => {
+    m.ocupanti = toArray(m.ocupanti).filter(o => {
+      if (typeof o === 'string') return true;
+      return String(o.guestId) !== String(id);
+    });
+  });
+  renderGuests(); renderMese(); saveToFirebase();
+};
 window.filterGuests = (f, btn) => {
   guestFilter = f;
   document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
@@ -1623,7 +1638,15 @@ window.saveGuestEdit = () => {
   g.transfer = document.getElementById('edit-g-transfer').checked;
   g.cazare = document.getElementById('edit-g-cazare').checked;
   closeGuestModalBtn();
-  renderGuests(); saveToFirebase();
+  S.mese.forEach(m => {
+    toArray(m.ocupanti).forEach(o => {
+      if (o && typeof o === 'object' && String(o.guestId) === String(id)) {
+        o.name = g.name;
+        o.nr = g.nr;
+      }
+    });
+  });
+  renderGuests(); renderMese(); saveToFirebase();
 };
 window.exportGuests = (filtru) => {
   const gs = S.guests;
@@ -1668,84 +1691,212 @@ window.exportGuests = (filtru) => {
   a.click(); URL.revokeObjectURL(a.href);
 };
 // ══ PLAN MESE ═══════════════════════════════════════════════
+function asCount(n) {
+  const v = parseInt(n, 10);
+  return Number.isFinite(v) && v > 0 ? v : 1;
+}
+function ocupantName(o) {
+  if (!o) return '';
+  if (typeof o === 'string') return o;
+  if (o.guestId != null) {
+    const g = S.guests.find(x => String(x.id) === String(o.guestId));
+    if (g) return g.name || o.name || '';
+  }
+  return o.name || '';
+}
+function ocupantNr(o) {
+  if (!o) return 1;
+  if (typeof o === 'string') {
+    const g = S.guests.find(x => x.name === o);
+    return asCount(g?.nr);
+  }
+  if (o.guestId != null) {
+    const g = S.guests.find(x => String(x.id) === String(o.guestId));
+    if (g) return asCount(g.nr);
+  }
+  return asCount(o.nr);
+}
+function ocupantGuestId(o) {
+  if (!o || typeof o === 'string') return null;
+  return o.guestId != null ? o.guestId : null;
+}
+function masaSeatsUsed(m) {
+  return toArray(m?.ocupanti).reduce((s,o) => s + asCount(ocupantNr(o)), 0);
+}
+function masaSeatLabels(m) {
+  const labels = [];
+  toArray(m?.ocupanti).forEach(o => {
+    const name = ocupantName(o);
+    const n = asCount(ocupantNr(o));
+    for (let i = 0; i < n; i++) labels.push(name);
+  });
+  return labels;
+}
+function seatedGuestIds() {
+  const ids = new Set();
+  toArray(S.mese).forEach(m => {
+    toArray(m.ocupanti).forEach(o => {
+      const gid = ocupantGuestId(o);
+      if (gid != null) ids.add(String(gid));
+    });
+  });
+  return ids;
+}
+function normalizeMese(mese) {
+  return toArray(mese).map(m => {
+    const ocupanti = toArray(m.ocupanti).map(o => {
+      if (typeof o === 'string') {
+        const g = S.guests.find(x => x.name === o);
+        return { guestId: g ? g.id : null, name: o, nr: g?.nr || 1 };
+      }
+      return {
+        guestId: o.guestId != null ? o.guestId : null,
+        name: o.name || ocupantName(o),
+        nr: ocupantNr(o)
+      };
+    });
+    return {
+      id: m.id,
+      nume: m.nume || '',
+      locuri: parseInt(m.locuri, 10) || 0,
+      ocupanti
+    };
+  });
+}
+function findMasa(id) {
+  return S.mese.find(m => String(m.id) === String(id));
+}
 window.addMasa = () => {
   const nume = document.getElementById('masa-nume').value.trim();
-  const locuri = parseInt(document.getElementById('masa-locuri').value) || 8;
+  const locuri = parseInt(document.getElementById('masa-locuri').value, 10) || 8;
   if (!nume) return;
-  S.mese.push({id:Date.now(), nume, locuri, ocupanti:[]});
-  document.getElementById('masa-nume').value='';
-  document.getElementById('masa-locuri').value='';
+  S.mese.push({id: Date.now(), nume, locuri, ocupanti: []});
+  document.getElementById('masa-nume').value = '';
+  document.getElementById('masa-locuri').value = '';
   renderMese(); saveToFirebase();
 };
-window.delMasa = (id) => { S.mese=S.mese.filter(x=>x.id!==id); renderMese(); saveToFirebase(); };
+window.delMasa = (id) => {
+  S.mese = S.mese.filter(x => String(x.id) !== String(id));
+  if (String(selectedMasaId) === String(id)) selectedMasaId = null;
+  renderMese(); saveToFirebase();
+};
 window.addOcupant = (masaId) => {
+  const masa = findMasa(masaId); if (!masa) return;
+  masa.ocupanti = toArray(masa.ocupanti);
   const sel = document.getElementById('ocp-'+masaId);
-  const val = sel?.value; if(!val) return;
-  const masa = S.mese.find(m=>m.id===masaId); if(!masa) return;
-  if (!masa.ocupanti) masa.ocupanti=[];
-  // Evită duplicate
-  if (masa.ocupanti.includes(val)) return;
-  masa.ocupanti.push(val);
+  const customEl = document.getElementById('ocp-custom-'+masaId);
+  const guestId = sel?.value || '';
+  const customName = customEl?.value?.trim() || '';
+  const used = masaSeatsUsed(masa);
+  const liber = masa.locuri - used;
+  if (liber <= 0) return;
+  if (guestId) {
+    const g = S.guests.find(x => String(x.id) === String(guestId));
+    if (!g) return;
+    if (masa.ocupanti.some(o => String(ocupantGuestId(o)) === String(g.id))) return;
+    const nr = g.nr || 1;
+    if (nr > liber) {
+      alert(`La ${masa.nume} au rămas ${liber} locuri, iar ${g.name} are ${nr} persoane.`);
+      return;
+    }
+    masa.ocupanti.push({ guestId: g.id, name: g.name, nr });
+  } else if (customName) {
+    masa.ocupanti.push({ guestId: null, name: customName, nr: 1 });
+  } else {
+    return;
+  }
+  if (sel) sel.value = '';
+  if (customEl) customEl.value = '';
   renderMese(); saveToFirebase();
 };
 function buildGuestOptions(masaId) {
-  // Invitați confirmați care nu sunt deja la o masă
-  const confirmed = S.guests.filter(g=>g.status==='confirmat');
-  const toateOcupantii = S.mese.flatMap(m=>m.ocupanti||[]);
-  const masa = S.mese.find(m=>m.id===masaId);
-  const ocupantiAcestaMasa = masa?.ocupanti||[];
-  const disponibili = confirmed.filter(g=>!toateOcupantii.includes(g.name)||ocupantiAcestaMasa.includes(g.name));
-  if (!disponibili.length) return '<option value="">— Niciun invitat confirmat disponibil —</option>';
-  return '<option value="">— Alege invitat confirmat —</option>' +
-    disponibili.map(g=>`<option value="${esc(g.name)}">${esc(g.name)}${(g.nr||1)>1?' ('+g.nr+' pers.)':''}</option>`).join('');
+  const seated = seatedGuestIds();
+  const disponibili = S.guests.filter(g =>
+    g.status !== 'anulat' && !seated.has(String(g.id))
+  );
+  if (!disponibili.length) return '<option value="">— Niciun invitat disponibil —</option>';
+  return '<option value="">— Alege invitat —</option>' +
+    disponibili.map(g => {
+      const st = g.status === 'confirmat' ? '' : ' · în așteptare';
+      const nr = (g.nr||1) > 1 ? ` (${g.nr} pers.)` : '';
+      return `<option value="${g.id}">${esc(g.name)}${nr}${st}</option>`;
+    }).join('');
 }
 window.delOcupant = (masaId, idx) => {
-  const masa = S.mese.find(m=>m.id===masaId); if(!masa) return;
-  masa.ocupanti.splice(idx,1);
+  const masa = findMasa(masaId); if (!masa) return;
+  masa.ocupanti = toArray(masa.ocupanti);
+  masa.ocupanti.splice(idx, 1);
   renderMese(); saveToFirebase();
 };
+function masaCardHtml(m) {
+  const ocp = toArray(m.ocupanti);
+  const used = masaSeatsUsed(m);
+  const liber = m.locuri - used;
+  const people = ocp.map((o,i) => {
+    const label = ocupantName(o);
+    const nr = ocupantNr(o);
+    return `<span class="masa-loc ocupat">${esc(label)}${nr>1?' ×'+nr:''} <button onclick="delOcupant(${m.id},${i})" style="background:none;border:none;cursor:pointer;font-size:10px;color:var(--rose);padding:0 0 0 3px">✕</button></span>`;
+  }).join('');
+  return `<div class="masa-card" style="border-left-color:${liber===0?'var(--rose)':liber<=2?'var(--gold)':'var(--sage)'}">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <div class="masa-title" style="flex:1">${esc(m.nume)}</div>
+      <span style="font-size:12px;color:var(--muted)">${used}/${m.locuri} locuri</span>
+      <button class="del" onclick="delMasa(${m.id})">✕</button>
+    </div>
+    <div style="margin-bottom:8px">
+      ${people}
+      ${liber>0?Array(Math.min(liber,3)).fill(0).map(()=>'<span class="masa-loc">liber</span>').join(''):''}
+      ${liber>3?`<span class="masa-loc">+${liber-3} libere</span>`:''}
+    </div>
+    ${liber>0?`<div class="row" style="gap:6px;margin-bottom:6px">
+      <select id="ocp-${m.id}" style="font-size:14px;padding:8px 10px">${buildGuestOptions(m.id)}</select>
+      <button class="btn small" onclick="addOcupant(${m.id})">+</button>
+    </div>
+    <div class="row" style="gap:6px">
+      <input type="text" id="ocp-custom-${m.id}" placeholder="Sau nume manual...">
+      <button class="btn small ghost" onclick="addOcupant(${m.id})">Adaugă</button>
+    </div>`:`<div style="font-size:12px;color:var(--rose);text-align:center">Masă completă</div>`}
+  </div>`;
+}
 function renderMese() {
+  S.mese = normalizeMese(S.mese);
   const totalLocuri = S.mese.reduce((s,m)=>s+m.locuri,0);
-  const ocupate = S.mese.reduce((s,m)=>s+(m.ocupanti?.length||0),0);
+  const ocupate = S.mese.reduce((s,m)=>s+masaSeatsUsed(m),0);
+  const seated = seatedGuestIds();
+  const neplasati = S.guests.filter(g => g.status !== 'anulat' && !seated.has(String(g.id))).reduce((s,g)=>s+(g.nr||1),0);
   const el=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
   el('mese-total-locuri',totalLocuri);
   el('mese-ocupate',ocupate);
-  el('mese-libere',totalLocuri-ocupate);
-  // Render lista
+  el('mese-libere',Math.max(0, totalLocuri-ocupate));
+  el('mese-neplasati',neplasati);
   const listEl = document.getElementById('mese-list');
+  const detail = document.getElementById('masa-detail');
   if (listEl) {
-    listEl.innerHTML = S.mese.length ? S.mese.map(m=>{
-      const ocp = m.ocupanti||[];
-      const liber = m.locuri - ocp.length;
-      return `<div class="masa-card" style="border-left-color:${liber===0?'var(--rose)':liber<=2?'var(--gold)':'var(--sage)'}">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-          <div class="masa-title" style="flex:1">${esc(m.nume)}</div>
-          <span style="font-size:12px;color:var(--muted)">${ocp.length}/${m.locuri} locuri</span>
-          <button class="del" onclick="delMasa(${m.id})">✕</button>
-        </div>
-        <div style="margin-bottom:8px">
-          ${ocp.map((o,i)=>`<span class="masa-loc ocupat">${esc(o)} <button onclick="delOcupant(${m.id},${i})" style="background:none;border:none;cursor:pointer;font-size:10px;color:var(--rose);padding:0 0 0 3px">✕</button></span>`).join('')}
-          ${liber>0?Array(Math.min(liber,3)).fill(0).map(()=>'<span class="masa-loc">liber</span>').join(''):''}
-          ${liber>3?`<span class="masa-loc">+${liber-3} libere</span>`:''}
-        </div>
-        ${liber>0?`<div class="row" style="gap:6px">
-          <select id="ocp-${m.id}" style="font-size:14px;padding:8px 10px">${buildGuestOptions(m.id)}</select>
-          <button class="btn small" onclick="addOcupant(${m.id})">+</button>
-        </div>`:`<div style="font-size:12px;color:var(--rose);text-align:center">Masă completă</div>`}
-      </div>`;
-    }).join('') : '<div class="empty">Nicio masă adăugată.</div>';
+    listEl.innerHTML = (meseView === 'lista')
+      ? (S.mese.length ? S.mese.map(masaCardHtml).join('') : '<div class="empty">Nicio masă adăugată.</div>')
+      : '';
   }
-  // Render canvas vizual
+  if (detail) {
+    if (meseView === 'viz') {
+      const selected = findMasa(selectedMasaId);
+      detail.innerHTML = selected
+        ? `<div style="font-size:12px;color:var(--muted);margin-bottom:6px">Persoane la masă — salvate în baza de date</div>${masaCardHtml(selected)}`
+        : (S.mese.length ? '<div class="empty" style="padding:12px 0">Click pe o masă din plan ca să pui persoane.</div>' : '');
+    } else {
+      detail.innerHTML = '';
+    }
+  }
   drawMeseCanvas();
 }
 let meseView = 'viz';
+let selectedMasaId = null;
 window.setMeseView = (v) => {
   meseView = v;
   document.getElementById('mese-viz-wrap').style.display = v==='viz' ? 'block' : 'none';
   document.getElementById('mese-list-wrap').style.display = v==='lista' ? 'block' : 'none';
   document.getElementById('btn-view-viz').classList.toggle('active', v==='viz');
   document.getElementById('btn-view-lista').classList.toggle('active', v==='lista');
-  if (v==='viz') drawMeseCanvas();
+  renderMese();
 };
 // Store masa positions for click detection
 let masaPositions = [];
@@ -1787,9 +1938,10 @@ function drawMeseCanvas() {
     const row = Math.floor(i / cols);
     const cx = col * cellW + cellW / 2;
     const cy = row * cellH + cellH / 2;
-    const ocp = m.ocupanti || [];
-    const liber = m.locuri - ocp.length;
-    const pct = m.locuri > 0 ? ocp.length / m.locuri : 0;
+    const seatLabels = masaSeatLabels(m);
+    const used = seatLabels.length;
+    const liber = m.locuri - used;
+    const pct = m.locuri > 0 ? used / m.locuri : 0;
     // Color based on occupancy
     const tableColor = pct >= 1 ? '#c17b6a' : pct >= 0.8 ? '#b89a6e' : '#7a9e7a';
     const tableBorder = pct >= 1 ? '#a8624f' : pct >= 0.8 ? '#9a8060' : '#5a8060';
@@ -1801,7 +1953,15 @@ function drawMeseCanvas() {
     ctx.strokeStyle = tableBorder;
     ctx.lineWidth = 2;
     ctx.stroke();
-    // Table name
+    if (String(selectedMasaId) === String(m.id)) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, R + 6, 0, Math.PI * 2);
+      ctx.strokeStyle = '#3d2b2b';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
     ctx.fillStyle = '#fff';
     ctx.font = `bold ${Math.min(13, cellW*0.1)}px 'Jost', sans-serif`;
     ctx.textAlign = 'center';
@@ -1811,7 +1971,7 @@ function drawMeseCanvas() {
     // Occupancy text
     ctx.font = `${Math.min(11, cellW*0.085)}px 'Jost', sans-serif`;
     ctx.fillStyle = 'rgba(255,255,255,0.9)';
-    ctx.fillText(`${ocp.length}/${m.locuri}`, cx, cy + 8);
+    ctx.fillText(`${used}/${m.locuri}`, cx, cy + 8);
     // Draw seats around table
     const nSeats = Math.min(m.locuri, 16); // max 16 afișate
     for (let s = 0; s < nSeats; s++) {
@@ -1819,7 +1979,7 @@ function drawMeseCanvas() {
       const seatDist = R + rLoc + 8;
       const sx = cx + Math.cos(angle) * seatDist;
       const sy = cy + Math.sin(angle) * seatDist;
-      const isOccupied = s < ocp.length;
+      const isOccupied = s < used;
       // Seat circle
       ctx.beginPath();
       ctx.arc(sx, sy, rLoc, 0, Math.PI * 2);
@@ -1828,13 +1988,13 @@ function drawMeseCanvas() {
       ctx.strokeStyle = isOccupied ? '#c17b6a' : '#d0c8bf';
       ctx.lineWidth = 1.5;
       ctx.stroke();
-      // Seat initial (if occupied)
       if (isOccupied && ocp[s]) {
+        const nm = ocupantName(ocp[s]);
         ctx.fillStyle = '#3d2b2b';
         ctx.font = `bold ${Math.max(7, rLoc*0.9)}px 'Jost', sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(ocp[s][0].toUpperCase(), sx, sy);
+        if (nm) ctx.fillText(nm[0].toUpperCase(), sx, sy);
       }
     }
     // If more seats than displayed
@@ -1867,11 +2027,13 @@ function initCanvasEvents() {
     }
     if (found) {
       const m = found.masa;
-      const ocp = m.ocupanti || [];
-      const liber = m.locuri - ocp.length;
+      const ocp = toArray(m.ocupanti);
+      const used = masaSeatsUsed(m);
+      const liber = m.locuri - used;
+      const names = ocp.map(ocupantName).filter(Boolean);
       tooltip.innerHTML = `<strong>${esc(m.nume)}</strong><br>` +
-        `${ocp.length}/${m.locuri} locuri ocupate<br>` +
-        (ocp.length ? `<em style="color:var(--blush)">${ocp.slice(0,5).join(', ')}${ocp.length>5?'...':''}</em><br>` : '') +
+        `${used}/${m.locuri} locuri ocupate<br>` +
+        (names.length ? `<em style="color:var(--blush)">${esc(names.slice(0,5).join(', '))}${names.length>5?'...':''}</em><br>` : '') +
         (liber > 0 ? `<span style="color:#7a9e7a">${liber} locuri libere</span>` : `<span style="color:#c17b6a">Masă completă</span>`);
       tooltip.style.display = 'block';
       tooltip.style.left = (e.clientX + 12) + 'px';
@@ -1887,6 +2049,22 @@ function initCanvasEvents() {
   }
   canvas.addEventListener('mousemove', e => showTooltip(e.clientX, e.clientY, e));
   canvas.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+  canvas.addEventListener('click', e => {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const cx = (e.clientX - rect.left) * scaleX;
+    const cy = (e.clientY - rect.top) * scaleY;
+    let found = null;
+    for (const pos of masaPositions) {
+      const dist = Math.sqrt((cx-pos.cx)**2 + (cy-pos.cy)**2);
+      if (dist < pos.r) { found = pos; break; }
+    }
+    if (found) {
+      selectedMasaId = found.id;
+      renderMese();
+    }
+  });
   canvas.addEventListener('touchstart', e => {
     const t = e.touches[0];
     showTooltip(t.clientX, t.clientY, t);
