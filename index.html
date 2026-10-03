@@ -313,6 +313,332 @@ textarea{min-height:78px;resize:vertical;font-size:15px;}
 .modal-close:active{color:var(--rose);}
 .edit-btn{background:none;border:1px solid var(--blush);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--gold);cursor:pointer;white-space:nowrap;flex-shrink:0;}
 .edit-btn:active{background:var(--gold);color:var(--white);}.nc-text{font-family:'Cormorant Garamond',serif;font-size:15px;padding-right:24px;white-space:pre-wrap;}.nc-date{font-size:11px;color:var(--gold);margin-top:6px;}.nc .del{position:absolute;top:8px;right:8px;}
+
+
+/* =========================================================
+   DESKTOP / TABLET RESPONSIVE LAYOUT
+   Păstrează UI-ul mobil și transformă aplicația într-un
+   dashboard veritabil pe ecrane mari.
+   ========================================================= */
+@media (min-width: 901px){
+  html,body{
+    width:100%;
+    max-width:none;
+    height:100%;
+    overflow:hidden;
+  }
+
+  body{
+    min-height:100vh;
+    margin:0;
+    background:
+      radial-gradient(circle at top right, rgba(232,196,176,.22), transparent 28%),
+      var(--cream);
+  }
+
+  /* HEADER */
+  #header{
+    margin-left:260px;
+    min-height:128px;
+    padding:22px 36px 16px;
+    text-align:left;
+  }
+  #header .sub{font-size:10px;letter-spacing:.24em;}
+  #header h1{font-size:31px;margin-top:3px;}
+  #header .venue{font-size:13px;margin-top:4px;}
+  #header .wdate{font-size:12px;margin-top:3px;}
+  #countdown{
+    display:flex;
+    justify-content:flex-start;
+    gap:30px;
+    margin-top:14px;
+    padding-top:11px;
+    width:max-content;
+    min-width:280px;
+  }
+  #countdown .cn{font-size:28px;}
+  #countdown .cl{font-size:9px;}
+  #bnr-rate{font-size:10px;margin-top:5px;}
+
+  /* SYNC */
+  #sync-bar{
+    margin-left:260px;
+    padding:8px 36px 9px;
+  }
+  #sync-status{font-size:12px;}
+  #sync-btn{padding:5px 14px;font-size:12px;}
+
+  /* SIDEBAR */
+  #tabs{
+    position:fixed;
+    z-index:100;
+    left:0;
+    top:0;
+    bottom:0;
+    width:260px;
+    height:100vh;
+    padding:22px 14px 18px;
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    justify-content:flex-start;
+    gap:3px;
+    overflow-y:auto;
+    overflow-x:hidden;
+    background:
+      linear-gradient(180deg, #fffdfa 0%, #f8efe7 100%);
+    border-right:1px solid var(--blush);
+    border-bottom:none;
+    box-shadow:8px 0 28px rgba(61,43,43,.07);
+    scrollbar-width:thin;
+  }
+  #tabs::before{
+    content:'AGENDA NUNTĂ';
+    display:block;
+    padding:4px 12px 14px;
+    font-family:'Cormorant Garamond',serif;
+    font-size:16px;
+    letter-spacing:.16em;
+    color:var(--gold);
+    text-align:left;
+    border-bottom:1px solid rgba(184,154,110,.2);
+    margin-bottom:8px;
+  }
+  #tabs button{
+    width:100%;
+    min-width:0;
+    min-height:46px;
+    margin:0;
+    padding:9px 13px;
+    border:none;
+    border-bottom:none;
+    border-radius:11px;
+    flex:0 0 auto;
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:flex-start;
+    gap:12px;
+    font-size:13px;
+    letter-spacing:.01em;
+    color:var(--muted);
+    text-align:left;
+    transition:background .2s,color .2s,transform .2s;
+  }
+  #tabs button .ti{
+    width:26px;
+    flex:0 0 26px;
+    font-size:20px;
+    text-align:center;
+  }
+  #tabs button:hover:not(.active){
+    background:rgba(232,196,176,.28);
+    color:var(--deep);
+    opacity:1;
+    transform:translateX(2px);
+  }
+  #tabs button.active{
+    background:var(--deep);
+    color:var(--blush);
+    border-bottom-color:transparent;
+    box-shadow:0 4px 14px rgba(61,43,43,.14);
+    font-weight:500;
+  }
+
+  /* CONTENT */
+  #content{
+    margin-left:260px;
+    padding:28px 34px 42px;
+    overflow-y:auto;
+    background:transparent;
+  }
+  .section{
+    max-width:1500px;
+    margin:0 auto;
+  }
+  .sec-title{
+    font-size:30px;
+    margin-bottom:18px;
+    padding-bottom:10px;
+  }
+
+  /* DASHBOARD */
+  #sec-dashboard{
+    display:grid;
+    grid-template-columns:repeat(12,minmax(0,1fr));
+    gap:16px;
+  }
+  #sec-dashboard > .sec-title{
+    grid-column:1/-1;
+    margin-bottom:0;
+  }
+  #sec-dashboard > .dash-grid{
+    grid-column:span 6;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:16px;
+    margin-bottom:0 !important;
+  }
+  #sec-dashboard > .dash-full{
+    grid-column:span 6;
+    margin-bottom:0;
+    padding:19px 20px;
+  }
+  .dash-card{
+    min-height:136px;
+    padding:20px;
+  }
+  .dash-card .big{font-size:40px;}
+  .dash-card .lbl{font-size:11px;}
+  .dash-card .sub{font-size:12px;}
+  .dash-full-title{font-size:20px;}
+  .dash-task-item{font-size:15px;padding:9px 0;}
+
+  /* COMMON CARDS / FORMS */
+  .card{
+    padding:20px 22px;
+    margin-bottom:15px;
+    border-left-width:4px;
+  }
+  .row{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+  }
+  .field{margin-bottom:14px;}
+  .field label{font-size:11px;}
+  input[type=text],input[type=number],input[type=date],input[type=time],select,textarea{
+    padding:12px 15px;
+    font-size:16px;
+  }
+  .btn{width:auto;min-width:180px;}
+  .btn.small{min-width:0;}
+
+  /* LISTS */
+  #guests-list,
+  #vendors-list,
+  #budget-list,
+  #cadouri-list,
+  #jurnal-list{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+    align-items:start;
+  }
+  #guests-list > *,
+  #vendors-list > *,
+  #budget-list > *,
+  #cadouri-list > *,
+  #jurnal-list > *{
+    margin-bottom:0 !important;
+  }
+  #tasks-list,
+  #program-list,
+  #notes-list{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+    align-items:start;
+  }
+  #tasks-list > *,
+  #program-list > *,
+  #notes-list > *{
+    margin-bottom:0 !important;
+  }
+
+  /* SPECIAL SECTIONS */
+  #sec-guests > .card:first-of-type,
+  #sec-budget > .b-summary,
+  #sec-mese > .card:first-of-type{
+    margin-bottom:16px;
+  }
+
+  #sec-mese .card{
+    padding:20px;
+  }
+  #mese-canvas-wrap{
+    padding:18px;
+    min-height:360px;
+  }
+  #mese-canvas{
+    width:100% !important;
+    height:auto;
+    max-width:none;
+  }
+
+  /* Budget summary gets more breathing room */
+  .b-summary{padding:20px 22px;}
+
+  /* Keep modals desktop-friendly rather than full-screen mobile sheets */
+  .modal-overlay{
+    align-items:center;
+    padding:30px;
+  }
+  .modal-box{
+    width:min(760px,calc(100vw - 80px));
+    max-width:760px;
+    max-height:88vh;
+    border-radius:20px;
+    padding:24px 26px 28px;
+    box-shadow:0 18px 50px rgba(61,43,43,.24);
+  }
+  .modal-title{font-size:24px;}
+
+  /* Full-width utility cards inside narrow sections */
+  #extra-cheltuieli-list,
+  #mese-list,
+  #sugestii-content{
+    width:100%;
+  }
+
+  /* Wider visual planning area */
+  #mese-viz-wrap{
+    width:100%;
+  }
+
+  /* More generous reading width for guide */
+  #sec-sugestii .sug-section{
+    max-width:1180px;
+  }
+  #sec-sugestii .sug-tema-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:12px;
+  }
+
+  /* Inline action groups behave more like toolbar on desktop */
+  #sec-guests [style*="flex-wrap:wrap"],
+  #sec-budget [style*="flex-wrap:wrap"]{
+    align-items:center;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1200px){
+  #tabs{width:220px;}
+  #header,#sync-bar,#content{margin-left:220px;}
+  #content{padding-left:24px;padding-right:24px;}
+  #header{padding-left:28px;padding-right:28px;}
+  #sec-dashboard > .dash-grid,
+  #sec-dashboard > .dash-full{
+    grid-column:1/-1;
+  }
+  #guests-list,
+  #vendors-list,
+  #budget-list,
+  #cadouri-list,
+  #jurnal-list,
+  #tasks-list,
+  #program-list,
+  #notes-list{
+    grid-template-columns:1fr;
+  }
+}
+
+@media (min-width: 1500px){
+  #tabs{width:280px;}
+  #header,#sync-bar,#content{margin-left:280px;}
+  #content{padding-left:46px;padding-right:46px;}
+  #header{padding-left:46px;padding-right:46px;}
+}
+
 </style>
 </head>
 <body>
