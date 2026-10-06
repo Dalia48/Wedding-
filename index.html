@@ -1827,6 +1827,16 @@ function normalizeMese(mese) {
     };
   });
 }
+async function saveMeseNow() {
+  S.mese = normalizeMese(S.mese);
+  setStatus('💾 Se salvează mesele...');
+  try {
+    await set(ref(db, 'nunta/mese'), JSON.parse(JSON.stringify(S.mese)));
+    setStatus('✅ Mese salvate · ' + now());
+  } catch (e) {
+    setStatus('❌ Eroare mese: ' + e.message);
+  }
+}
 function findMasa(id) {
   return S.mese.find(m => String(m.id) === String(id));
 }
@@ -1837,12 +1847,12 @@ window.addMasa = () => {
   S.mese.push({id: Date.now(), nume, locuri, ocupanti: []});
   document.getElementById('masa-nume').value = '';
   document.getElementById('masa-locuri').value = '';
-  renderMese(); saveToFirebase();
+  saveMeseNow(); renderMese(); saveToFirebase();
 };
 window.delMasa = (id) => {
   S.mese = S.mese.filter(x => String(x.id) !== String(id));
   if (String(selectedMasaId) === String(id)) selectedMasaId = null;
-  renderMese(); saveToFirebase();
+  saveMeseNow(); renderMese(); saveToFirebase();
 };
 window.addOcupant = (masaId) => {
   const masa = findMasa(masaId); if (!masa) return;
@@ -1871,7 +1881,7 @@ window.addOcupant = (masaId) => {
   }
   if (sel) sel.value = '';
   if (customEl) customEl.value = '';
-  renderMese(); saveToFirebase();
+  saveMeseNow(); renderMese(); saveToFirebase();
 };
 function buildGuestOptions(masaId) {
   const seated = seatedGuestIds();
@@ -1890,7 +1900,7 @@ window.delOcupant = (masaId, idx) => {
   const masa = findMasa(masaId); if (!masa) return;
   masa.ocupanti = toArray(masa.ocupanti);
   masa.ocupanti.splice(idx, 1);
-  renderMese(); saveToFirebase();
+  saveMeseNow(); renderMese(); saveToFirebase();
 };
 function masaCardHtml(m) {
   const ocp = toArray(m.ocupanti);
@@ -2052,8 +2062,8 @@ function drawMeseCanvas() {
       ctx.strokeStyle = isOccupied ? '#c17b6a' : '#d0c8bf';
       ctx.lineWidth = 1.5;
       ctx.stroke();
-      if (isOccupied && ocp[s]) {
-        const nm = ocupantName(ocp[s]);
+      if (isOccupied && seatLabels[s]) {
+        const nm = seatLabels[s];
         ctx.fillStyle = '#3d2b2b';
         ctx.font = `bold ${Math.max(7, rLoc*0.9)}px 'Jost', sans-serif`;
         ctx.textAlign = 'center';
